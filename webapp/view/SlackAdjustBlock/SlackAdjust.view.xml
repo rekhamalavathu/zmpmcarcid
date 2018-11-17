@@ -1,0 +1,59 @@
+<mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
+controllerName="com.nscorp.car.componentid.controller.OnChange">
+	<VBox class="sapUiNoContentPadding">
+		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+			<core:Title text=" "/>
+			<Label text="{i18n>label.SACondCode}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C901' }]}" 
+			          selectedKey="{addCIDView>/response/SaConditionCode}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.SAMonth}" />
+			<Input value="{addCIDView>/response/SaStampedMonth}" type="Number"/>
+			<Label text="{i18n>label.SARecondDate}" required="true"/>
+			<DatePicker id="idDatePickerSaReconditionDate" 
+			          value="{path: 'addCIDView>/response/SaReconditionDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}" 
+			          change="onChangeMandatory">
+			</DatePicker>
+			<Label text="{i18n>label.SAModelNo}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C907' }]}" 
+			          selectedKey="{addCIDView>/response/SaOemModelNo}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.SerialNo}"/>
+			<Input value="{addCIDView>/response/SaSerialNo}" maxLength="15"/>
+        	
+			<core:Title text=" "/>
+			<Label text="{i18n>label.AARCode}"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C902' }]}" 
+			          selectedKey="{addCIDView>/response/SaAarCode}" showSecondaryValues="true" change="onChangeComboBox">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.SAYear}"/>
+			<Input value="{addCIDView>/response/SaStampedYear}" type="Number"/>
+			<Label text="{i18n>label.SAGroup}"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C906' }]}" 
+			          selectedKey="{addCIDView>/response/SaAarGroup}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.SAManufacturer}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C908' }]}" 
+			          selectedKey="{addCIDView>/response/SaManufacturer}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.MFGConfCode}"/>
+			<Input value="{addCIDView>/response/SaMfgConfigCode}" maxLength="6"/>
+		</forms:SimpleForm>
+	</VBox>
+</mvc:View>

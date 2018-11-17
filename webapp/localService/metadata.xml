@@ -1,0 +1,21 @@
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+	<edmx:DataServices m:DataServiceVersion="2.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZMPM_CAR_CID_SRV" xml:lang="en" sap:schema-version="1">
+			<EntityType Name="ZMPMCAR_CID_REQ" sap:content-version="1">
+				<Key><PropertyRef Name="CompanyId"/><PropertyRef Name="MessageId"/></Key><Property Name="CompanyId" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="CAR: Company ID"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="MessageId" Type="Edm.String" Nullable="false" MaxLength="64" sap:unicode="false" sap:label="CAR: Message ID"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="CorrelationId" Type="Edm.String" Nullable="false" MaxLength="64" sap:unicode="false" sap:label="CAR: Correlation ID"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="MessageTimestamp" Type="Edm.Decimal" Nullable="false" Precision="15" Scale="0" sap:unicode="false"
+					sap:label="CAR: MssgTimeStamp" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="SystemId" Type="Edm.String" Nullable="false" MaxLength="64" sap:unicode="false" sap:label="CAR: System ID"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="ModuleId" Type="Edm.String" Nullable="false" MaxLength="64" sap:unicode="false" sap:label="CAR: System Version"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="SystemVersion" Type="Edm.String" Nullable="false" MaxLength="24" sap:unicode="false" sap:label="CAR: System Version"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="ForCause" Type="Edm.String" Nullable="false" MaxLength="20" sap:unicode="false" sap:label="CAR: For Cause"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="PlannedRepairDate" Type="Edm.DateTime" Nullable="false" Precision="7" sap:unicode="false" sap:label="CAR: Repair Date"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="CompanyCode" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="CAR: Company Code"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="IdNumber" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="CAR: ID Number"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/></EntityType>
+			<EntityContainer Name="ZMPM_CAR_CID_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx"><EntitySet Name="ZMPMCAR_CID_REQSet" EntityType="ZMPM_CAR_CID_SRV.ZMPMCAR_CID_REQ" sap:creatable="false" sap:updatable="false"
+				sap:deletable="false" sap:pageable="false" sap:content-version="1"/></EntityContainer><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/ZMPM_CAR_CID_SRV/$metadata"/><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/ZMPM_CAR_CID_SRV/$metadata"/></Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

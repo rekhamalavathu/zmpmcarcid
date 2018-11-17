@@ -1,0 +1,137 @@
+{
+	"_version": "1.7.0",
+	"sap.app": {
+		"id": "com.nscorp.car.componentid",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"sourceTemplate": {
+			"id": "servicecatalog.connectivityComponentForManifest",
+			"version": "0.0.0"
+		},
+		"dataSources": {
+			"ZMPM_CAR_CID_SRV": {
+				"uri": "/sap/opu/odata/sap/ZMPM_CAR_CID_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml"
+				}
+			},
+			"WOModel_Src": {
+				"uri": "model/WOModel.json",
+				"type": "JSON"
+			},
+			"RepairConfig_Src": {
+				"uri": "model/RepairConfig.json",
+				"type": "JSON"
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"fullWidth": true,
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": ["sap_hcb", "sap_bluecrystal", "sap_belize"]
+	},
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "com.nscorp.car.componentid.view.App",
+			"type": "XML",
+			"async": true
+		},
+		"dependencies": {
+			"minUI5Version": "1.36.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.ui.layout": {},
+				"sap.ushell": {},
+				"sap.collaboration": {},
+				"sap.ui.comp": {},
+				"sap.uxap": {},
+				"com.nscorp.car.common": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.nscorp.car.componentid.i18n.i18n"
+				}
+			},
+			"": {
+				"uri": "/sap/opu/odata/sap/ZMPM_CAR_CID_SRV/",
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "TwoWay",
+					"defaultCountMode": "Request"
+				},
+				"dataSource": "ZMPM_CAR_CID_SRV",
+				"preload": true
+			},
+			"WOModel": {
+				"type": "sap.ui.model.json.JSONModel",
+				"settings": {},
+				"uri": "model/WOModel.json"
+
+			},
+			"RepairConfig": {
+				"type": "sap.ui.model.json.JSONModel",
+				"settings": {},
+				"uri": "model/RepairConfig.json"
+			}
+		},
+		"resources": {
+			"css": [{
+				"uri": "css/style.css"
+			}]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "com.nscorp.car.componentid.view",
+				"controlId": "idAppControl",
+				"controlAggregation": "pages",
+				"async": true
+			},
+			"routes": [{
+				"pattern": "",
+				"name": "addCID",
+				"target": "addCID"
+			}],
+			"targets": {
+				"addCID": {
+					"viewName": "AddCID",
+					"viewLevel": 1,
+					"transition": "show"
+				}
+			}
+		},
+		"resourceRoots": {
+			"com.nscorp.car.common": "../sap/bc/ui5_ui5/sap/zmpmcarcommon/"
+		}
+	}
+}

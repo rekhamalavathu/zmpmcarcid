@@ -1,0 +1,44 @@
+<mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
+controllerName="com.nscorp.car.componentid.controller.OnChange">
+	<VBox class="sapUiNoContentPadding">
+		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+			<core:Title text=" "/>
+			<Label text="{i18n>label.BolsterCondCode}"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C414' }]}" 
+			          selectedKey="{addCIDView>/response/BolsterConditionCode}" showSecondaryValues="true" change="onChangeComboBox">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.BolsterMM}" required="true"/>
+			<Input type="Number" value="{path: 'addCIDView>/response/BolsterCastMonth', constraints : { minimum: 1, maximum: 12 }}" change="onChangeMandatoryMonth"/>
+			<Label text="{i18n>label.BolsterDesignCode}" required="true"/>
+			<Input value="{addCIDView>/response/BolsterAarDesignCode}" maxLength="12" change="onChangeMandatoryInput"/>
+			<Label text="{i18n>label.MFGNo}" required="true"/>
+			<Input value="{addCIDView>/response/BolsterMfgPatternNo}" maxLength="12" change="onChangeMandatoryInput"/>
+			<Label text="{i18n>label.WearPlate}" required="true"/>
+			<ComboBox id="idBolsterWearPlate" items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C415' }]}" 
+			          selectedKey="{addCIDView>/response/BolsterWearPlate}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			
+			<core:Title text=" "/>
+			<Label text="{i18n>label.BolsterAARcode}"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C401' }]}" 
+			          selectedKey="{addCIDView>/response/BolsterAarCode}" showSecondaryValues="true" change="onChangeComboBox">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.BolsterYY}" required="true"/>
+			<Input type="Number" value="{addCIDView>/response/BolsterCastYear}" change="onChangeMandatoryYear"/>
+			<Label text="{i18n>label.BolsterAARId}"/>
+			<Input value="{addCIDView>/response/BolsterAarIdCode}" maxLength="8"/>
+			<Label text="{i18n>label.MFGSerialNo}"/>
+			<Input value="{addCIDView>/response/BolsterMfgSerialNo}" maxLength="10"/>
+		</forms:SimpleForm>
+	</VBox>
+</mvc:View>

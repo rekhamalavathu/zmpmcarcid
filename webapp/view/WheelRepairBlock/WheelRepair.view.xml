@@ -1,0 +1,122 @@
+<mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
+	controllerName="com.nscorp.car.componentid.controller.Repair">
+	<VBox class="sapUiNoContentPadding">
+		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+			<!--Left-->
+			<core:Title text="{i18n>label.Left}"/>
+			<!--Applied Job Code Left-->
+			<Label text="{i18n>label.AJC}"/>
+			<Input id="idRepairAJCLeft" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/WrAppliedJobCodeLeft}" showValueHelp="true"
+				valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/AppliedJobCodeLeft}"
+				suggestionItemSelected="onSuggestionItemSelected">
+				<suggestionItems>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</suggestionItems>
+			</Input>
+			<!--Condition Code Left-->
+			<Label text="{i18n>label.CondCode}"/>
+			<ComboBox id="idRepairCondCodeLeft" selectedKey="{addCIDView>/response/WrConditionCodeLeft}"
+				items="{path: 'RepairsModel>/comboBoxValues/ConditionCodeLeft', sorter: { path: 'key' } }" showSecondaryValues="true"
+				selectionChange="onChangeConditionCode">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<!--Applied Qualifier Left-->
+			<Label text="{i18n>label.AQ}"/>
+			<ComboBox id="idRepairAQLeft" selectedKey="{addCIDView>/response/WrAppQualifierLeft}"
+				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifierLeft', sorter: { path: 'key' } }" selectionChange="onChangeAppliedQualifier"
+				showSecondaryValues="true">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<!--Removed Job Code Left-->
+			<Label text="{i18n>label.RJC}"/>
+			<Input id="idRepairRJCLeft" type="Text" showSuggestion="true" maxSuggestionWidth="45%"
+				selectedKey="{addCIDView>/response/WrRemovedJobCodeLeft}" showValueHelp="true" valueHelpRequest="onValueHelp"
+				suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCodeLeft}" suggestionItemSelected="onSuggestionItemSelected"
+				editable="{addCIDView>/editSetEnable}">
+				<suggestionItems>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</suggestionItems>
+			</Input>
+			<!--Removed Qualifier-->
+			<Label text="{i18n>label.RQ}"/>
+			<!--<Input value="{addCIDView>/response/WrRemovedQualifierLeft}" editable="{addCIDView>/editSetEnable}"/>-->
+			<ComboBox id="idRepairRemovedQualifierLeft" selectedKey="{addCIDView>/response/WrRemovedQualifierLeft}"
+				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifierLeft', sorter: { path: 'key' } }" showSecondaryValues="true"
+				editable="{addCIDView>/editSetEnable}">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<!--Why made Code Left-->
+			<Label text="{i18n>label.WhyMadeCode}"/>
+			<ComboBox id="idRepairWhyMadeCodeLeft" selectedKey="{addCIDView>/response/WrWhyMadeCodeLeft}"
+				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCodeLeft', sorter: { path: 'key' } }" showSecondaryValues="true">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<!--Right			-->
+			<core:Title text="{i18n>label.Right}"/>
+			<!--Applied Job Code-->
+			<Label text="{i18n>label.AJC}"/>
+			<Input id="idRepairAJC" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/WrAppliedJobCodeRight}" showValueHelp="true"
+				valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/AppliedJobCode}"
+				suggestionItemSelected="onSuggestionItemSelected">
+				<suggestionItems>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</suggestionItems>
+			</Input>
+			<!--Condition Code Right-->
+			<Label text="{i18n>label.CondCode}"/>
+			<ComboBox id="idRepairCondCode" selectedKey="{addCIDView>/response/WrConditionCodeRight}"
+				items="{path: 'RepairsModel>/comboBoxValues/ConditionCode', sorter: { path: 'key' } }" showSecondaryValues="true"
+				selectionChange="onChangeConditionCode">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<!--Applied Qualifier Right-->
+			<Label text="{i18n>label.AQ}"/>
+			<ComboBox id="idRepairAQ" selectedKey="{addCIDView>/response/WrAppQualifierRight}"
+				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifierLeft', sorter: { path: 'key' } }" selectionChange="onChangeAppliedQualifier"
+				showSecondaryValues="true">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<!--Removed Job Code Right-->
+			<Label text="{i18n>label.RJC}"/>
+			<Input id="idRepairRJC" type="Text" showSuggestion="true" maxSuggestionWidth="45%"
+				selectedKey="{addCIDView>/response/WrRemovedJobCodeRight}" showValueHelp="true" valueHelpRequest="onValueHelp"
+				suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCode}" suggestionItemSelected="onSuggestionItemSelected"
+				editable="{addCIDView>/editSetEnable}">
+				<suggestionItems>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</suggestionItems>
+			</Input>
+			<!--Removed Qualifier RIght-->
+			<Label text="{i18n>label.RQ}"/>
+			<!--<Input value="{addCIDView>/response/WrRemovedQualifierRight}" editable="{addCIDView>/editSetEnable}"/>-->
+			<ComboBox id="idRepairRemovedQualifier" selectedKey="{addCIDView>/response/WrRemovedQualifierRight}"
+				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifier', sorter: { path: 'key' } }" showSecondaryValues="true"
+				editable="{addCIDView>/editSetEnable}">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<!--Why Made Code Right-->
+			<Label text="{i18n>label.WhyMadeCode}"/>
+			<ComboBox id="idRepairWhyMadeCode" selectedKey="{addCIDView>/response/WrWhyMadeCodeRight}"
+				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCode', sorter: { path: 'key' } }" showSecondaryValues="true">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+		</forms:SimpleForm>
+	</VBox>
+</mvc:View>

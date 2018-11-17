@@ -1,0 +1,58 @@
+<mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
+controllerName="com.nscorp.car.componentid.controller.OnChange">
+	<VBox class="sapUiNoContentPadding">
+		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+			<core:Title text=" "/>
+			<Label text="{i18n>label.SFCondCode}"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C514' }]}" 
+			          selectedKey="{addCIDView>/response/SfConditonCode}" showSecondaryValues="true" change="onChangeComboBox">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.SFMonth}" required="true"/>
+			<Input value="{addCIDView>/response/SfCastMonth} " type="Number" change="onChangeMandatoryMonth"/>
+			<Label text="{i18n>label.SFDesignCode}" required="true"/>
+			<Input value="{addCIDView>/response/SfAarDesignCode}" change="onChangeMandatory" maxLength="12"/>
+			<Label text="{i18n>label.MFGNo}" required="true"/>
+			<Input value="{addCIDView>/response/SfMfgPatternNo}" change="onChangeMandatory" maxLength="12"/>
+			<Label text="{i18n>label.SFWearPlate}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C515' }]}" 
+			          selectedKey="{addCIDView>/response/SfWearPlate}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.SFButton}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C517' }]}" 
+			          selectedKey="{addCIDView>/response/SfButtonCount}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			
+			<core:Title text=" "/>
+			<Label text="{i18n>label.SFAARCode}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C501' }]}" 
+			          selectedKey="{addCIDView>/response/SfAarCode}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.SFYear}" required="true"/>
+			<Input value="{addCIDView>/response/SfCastYear}" type="Number" change="onChangeMandatoryYear"/>
+			<Label text="{i18n>label.SFAARId}"/>
+			<Input value="{addCIDView>/response/SfAarIdCode}" maxLength="8"/>
+			<Label text="{i18n>label.MFGSerialNo}"/>
+			<Input value="{addCIDView>/response/SfMfgSerialNo}" maxLength="10"/>
+			<Label text="{i18n>label.SFWheelBase}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C516' }]}" 
+			          selectedKey="{addCIDView>/response/SfNominalWheelBase}" showSecondaryValues="true" change="onChangeMandatory">
+				<items>
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
+				</items>
+			</ComboBox>
+		</forms:SimpleForm>
+	</VBox>
+</mvc:View>

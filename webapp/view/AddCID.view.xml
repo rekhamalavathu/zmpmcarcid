@@ -1,0 +1,146 @@
+<core:View xmlns:core="sap.ui.core" xmlns="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:m="sap.m" xmlns:t="sap.ui.table"
+	xmlns:u="sap.ui.unified" xmlns:forms="sap.ui.layout.form" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:semantic="sap.m.semantic"
+	xmlns:headerinfo="com.nscorp.car.componentid.view.CIDHeaderBlock" xmlns:wheelset="com.nscorp.car.componentid.view.WheelSetBlock"
+	xmlns:wheelrepair="com.nscorp.car.componentid.view.WheelRepairBlock" xmlns:appwheelread="com.nscorp.car.componentid.view.AppWheelReadBlock"
+	xmlns:remwheelread="com.nscorp.car.componentid.view.RemWheelReadBlock"
+	xmlns:bearingrepair="com.nscorp.car.componentid.view.BearingRepairBlock" xmlns:axlerepair="com.nscorp.car.componentid.view.AxleRepairBlock"
+	xmlns:bolster="com.nscorp.car.componentid.view.BolsterBlock" xmlns:coupler="com.nscorp.car.componentid.view.CouplerBlock"
+	xmlns:emervalve="com.nscorp.car.componentid.view.EmerValveBlock" xmlns:servvalve="com.nscorp.car.componentid.view.ServValveBlock"
+	xmlns:sideframe="com.nscorp.car.componentid.view.SideFrameBlock" xmlns:slackadjust="com.nscorp.car.componentid.view.SlackAdjustBlock"
+	controllerName="com.nscorp.car.componentid.controller.AddCID" busy="{app>/addCidBusy}" busyIndicatorDelay="{app>/addCidDelay}">
+	<ObjectPageLayout id="idObjectPageLayout" flexEnabled="true" enableLazyLoading="true" showTitleInHeaderContent="true"
+		showHeaderContent="true" showFooter="true">
+		<headerTitle>
+			<ObjectPageHeader objectTitle="NS487387" objectSubtitle="86'. Double Plug Doors" isObjectTitleAlwaysVisible="false"/>
+		</headerTitle>
+		<sections>
+			<ObjectPageSection title="{i18n>section.cidInfo}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.cidInfo}">
+						<blocks>
+							<headerinfo:CIDHeaderBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.WheelSet}" visible="{addCIDView>/wheelSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.WheelSet}">
+						<blocks>
+							<wheelset:WheelSetBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.WheelRepair}" visible="{addCIDView>/wheelSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.WheelRepair}">
+						<blocks>
+							<wheelrepair:WheelRepairBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.AppWheelRead}" visible="{addCIDView>/wheelSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.AppWheelRead}">
+						<blocks>
+							<appwheelread:AppWheelReadBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.RemWheelRead}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.RemWheelRead}" visible="{addCIDView>/wheelSetVisible}">
+						<blocks>
+							<remwheelread:RemWheelReadBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.BearingRepair}" visible="{addCIDView>/wheelSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.BearingRepair}">
+						<blocks>
+							<bearingrepair:BearingRepairBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.AxleRepair}" visible="{addCIDView>/wheelSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.AxleRepair}">
+						<blocks>
+							<axlerepair:AxleRepairBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.Bolster}" visible="{addCIDView>/bolsterSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.Bolster}">
+						<blocks>
+							<bolster:BolsterBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.Coupler}" visible="{addCIDView>/couplerSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.Coupler}">
+						<blocks>
+							<coupler:CouplerBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.EmerValve}" visible="{addCIDView>/emerValveSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.EmerValve}">
+						<blocks>
+							<emervalve:EmerValveBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.ServValve}" visible="{addCIDView>/servValveSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.ServValve}">
+						<blocks>
+							<servvalve:ServValveBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.SideFrame}" visible="{addCIDView>/sideFrameSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.SideFrame}">
+						<blocks>
+							<sideframe:SideFrameBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="{i18n>section.SlackAdjust}" visible="{addCIDView>/slackAdjusterSetVisible}">
+				<subSections>
+					<ObjectPageSubSection title="{i18n>section.SlackAdjust}">
+						<blocks>
+							<slackadjust:SlackAdjustBlock/>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+		</sections>
+		<footer>
+			<m:OverflowToolbar>
+				<m:Button icon="sap-icon://message-popup" text="{message>/length}" type="Emphasized" visible="{= ${message>/length} > 0 ? true : false}" press="onMsgIndPress"/>
+				<m:ToolbarSpacer/>
+				<m:Button text="{i18n>buttonSave}" type="Accept" press="onSavePress" enabled="{addCIDView>/buttonSetEnable}"/>
+					<!--visible="{addCIDView>/componentTypeSetVisible}"/>-->
+				<m:Button text="{i18n>buttonCancel}" type="Reject"/>
+				<!--visible="{addCIDView>/componentTypeSetVisible}"/>-->
+			</m:OverflowToolbar>
+		</footer>
+	</ObjectPageLayout>
+</core:View>
