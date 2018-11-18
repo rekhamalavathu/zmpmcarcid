@@ -15,7 +15,6 @@ sap.ui.define([
 			var oModel = this.getView().getModel();
 			var cidHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 
-			var carmark = "NS  297016";
 			if (cidHeader.cid === "" || cidHeader.location === "" || cidHeader.responsibility === "") {
 				this.getModel("app").setProperty("/addCidBusy", false);
 				sap.m.MessageBox.error("Please Enter Component ID, Location and Responsibility");
@@ -30,8 +29,7 @@ sap.ui.define([
 					"ComponentId": cidHeader.cid,
 					"Location": cidHeader.location,
 					"Responsibility": cidHeader.responsibility,
-					// "CarMark": cidHeader.carMark
-					"CarMark": carmark
+					"CarMark": cidHeader.carMark
 				});
 
 				sap.ui.getCore().getMessageManager().removeAllMessages();
@@ -41,13 +39,12 @@ sap.ui.define([
 
 						var oViewModel = this.getModel("addCIDView");
 						oViewModel.setProperty("/response", oData);
-						// oViewModel.setProperty("/response/Guid", cidHeader.guid);
-						oViewModel.setProperty("/response/Guid", "d3f6879c-ea23-11e8-9f32-f2801f1b9fd1");
+						oViewModel.setProperty("/response/Guid", cidHeader.guid);
 
 						// clone original data returned by Railinc Web Service
 						var oDataClone = JSON.parse(JSON.stringify(oData));
 						oViewModel.setProperty("/oCloneData", oDataClone);
-						
+
 						// set component indicator
 						var resp = oViewModel.getProperty("/response");
 						oViewModel.setProperty("/wheelSetVisible", resp.WheelSetFlag);
@@ -103,7 +100,6 @@ sap.ui.define([
 			if (resp.ComponentType === "" || typeof resp.ComponentType === "undefined") {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-				// MessageBox.error("Please enter required field");
 
 			} else {
 				oInputControl.setValueState(sap.ui.core.ValueState.None);
@@ -117,7 +113,6 @@ sap.ui.define([
 				this.getModel("addCIDView").setProperty("/sideFrameSetVisible", false);
 				this.getModel("addCIDView").setProperty("/slackAdjusterSetVisible", false);
 
-				// if (resp.ComponentType === "WHEELSET") {
 				if (resp.ComponentType === "WHEELSET") {
 					this.getModel("addCIDView").setProperty("/wheelSetVisible", true);
 				}
@@ -158,7 +153,7 @@ sap.ui.define([
 			} else {
 				oInputControl.setValueState(sap.ui.core.ValueState.None);
 			}
-		},
+		}
 
 		/* =========================================================== */
 		/* begin: internal methods                                     */
@@ -169,10 +164,10 @@ sap.ui.define([
 		 * @private
 		 * @return {sap.ui.model.json.JSONModel} JSON Model
 		 */
-		_onObjectMatched: function (oEvent) {
-			// this.setModel(this._createViewModel(), "RepairsModel");
-			// this.getModel("RepairsModel").setSizeLimit(10000000);
-		}
+		// _onObjectMatched: function (oEvent) {
+		// 	// this.setModel(this._createViewModel(), "RepairsModel");
+		// 	// this.getModel("RepairsModel").setSizeLimit(10000000);
+		// }
 
 	});
 }());

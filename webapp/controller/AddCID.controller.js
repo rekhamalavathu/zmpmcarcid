@@ -68,24 +68,23 @@ sap.ui.define([
 				this.getModel("addCIDView").setProperty("/response/UpdateFlag", false);
 			} else {
 				this.getModel("addCIDView").setProperty("/response/UpdateFlag", true);
+				this._checkMandatoryField(oResponse);
 			}
 			var updateFlag = this.getModel("addCIDView").getProperty("/response/UpdateFlag");
+
 			sap.ui.getCore().getMessageManager().removeAllMessages();
 			oModel.create("/ComponentSet", oResponse, {
 				method: "POST",
 				success: function (oData, resp) {
-					this.getModel("app").setProperty("/addCidBusy", false);
 					var oViewModel = this.getModel("addCIDView");
-					oViewModel.setProperty("/response", oData);
-					var newComponentId = this.getModel("addCIDView").getProperty("/response/ComponentId");
-					this.getModel("addCIDView").setProperty("/cidHeader/cid", newComponentId);
-
 					var sMessageLength = sap.ui.getCore().getMessageManager().getMessageModel().getData().length;
 					if (sMessageLength === 0 && updateFlag === true) {
+						oViewModel.setProperty("/response", oData);
+						var newComponentId = this.getModel("addCIDView").getProperty("/response/ComponentId");
+						this.getModel("addCIDView").setProperty("/cidHeader/cid", newComponentId);
 						sap.m.MessageBox.success("Component ID register successfully");
 						this.getModel("app").setProperty("/addCidBusy", false);
 					} else {
-
 						this.getModel("app").setProperty("/addCidBusy", false);
 					}
 
@@ -354,6 +353,58 @@ sap.ui.define([
 
 				}
 			});
+
+		},
+
+		_checkMandatoryField: function (oResponse) {
+			// check if required fields has data
+			if (oResponse.WheelSetFlag === true) {
+				if (oResponse.WsFacilityCode === "" || oResponse.AwSerialNoLeft === "" || oResponse.AwSerialNoRight === "") {
+					sap.m.MessageBox.error(this.getResourceBundle().getText("error.requiredField"));
+				}
+			}
+
+			if (oResponse.BolsterFlag === true) {
+				if (oResponse.BolsterCastMonth === "" || oResponse.BolsterAarDesignCode === "" || oResponse.BolsterMfgPatternNo === "" ||
+					oResponse.BolsterWearPlate === "" || oResponse.BolsterCastYear === "") {
+					sap.m.MessageBox.error(this.getResourceBundle().getText("error.requiredField"));
+				}
+			}
+
+			if (oResponse.CouplerFlag === true) {
+				if (oResponse.CouplerCastMonth === "" || oResponse.CouplerClassDate === "" || oResponse.CouplerCastYear === "" ||
+					oResponse.CouplerCavityNo === "" || oResponse.CouplerAarFacilityCode === "") {
+					sap.m.MessageBox.error(this.getResourceBundle().getText("requiredField"));
+				}
+			}
+
+			if (oResponse.EmerValveFlag === true) {
+				if (oResponse.EvConditionCode === "" || oResponse.EvPartNo === "" || oResponse.EvValveType === "" ||
+					oResponse.EvAarCode === "") {
+					sap.m.MessageBox.error(this.getResourceBundle().getText("requiredField"));
+				}
+			}
+
+			if (oResponse.ServValveFlag === true) {
+				if (oResponse.SvConditionCode === "" || oResponse.SvPartNo === "" || oResponse.SvValveType === "" ||
+					oResponse.SvAarCode === "") {
+					sap.m.MessageBox.error(this.getResourceBundle().getText("requiredField"));
+				}
+			}
+			if (oResponse.SideFrameFlag === true) {
+				if (oResponse.SfCastMonth === "" || oResponse.SfAarDesignCode === "" || oResponse.SfMfgPatternNo === "" ||
+					oResponse.SfWearPlate === "" || oResponse.SfButtonCount === "" || oResponse.SfAarCode === "" ||
+					oResponse.SfCastYear === "" || oResponse.SfNominalWheelBase === "") {
+					sap.m.MessageBox.error(this.getResourceBundle().getText("requiredField"));
+				}
+			}
+
+			if (oResponse.SlakAdjustFlag === true) {
+				if (oResponse.SaConditionCode === "" || oResponse.SaReconditionDate === "" || oResponse.SaOemModelNo === "" ||
+					oResponse.SaManufacturer === "") {
+					sap.m.MessageBox.error(this.getResourceBundle().getText("requiredField"));
+				}
+			}
 
 		}
 

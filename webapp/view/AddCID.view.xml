@@ -11,7 +11,8 @@
 	<ObjectPageLayout id="idObjectPageLayout" flexEnabled="true" enableLazyLoading="true" showTitleInHeaderContent="true"
 		showHeaderContent="true" showFooter="true">
 		<headerTitle>
-			<ObjectPageHeader objectTitle="NS487387" objectSubtitle="86'. Double Plug Doors" isObjectTitleAlwaysVisible="false"/>
+			<ObjectPageHeader objectTitle="{addCIDView>/cidHeader/carMark}"
+				objectSubtitle="{ path: 'WOModel>/StationName', formatter: '.formatter.formatStationName'}" isObjectTitleAlwaysVisible="false"/>
 		</headerTitle>
 		<sections>
 			<ObjectPageSection title="{i18n>section.cidInfo}">
@@ -134,10 +135,11 @@
 		</sections>
 		<footer>
 			<m:OverflowToolbar>
-				<m:Button icon="sap-icon://message-popup" text="{message>/length}" type="Emphasized" visible="{= ${message>/length} > 0 ? true : false}" press="onMsgIndPress"/>
+				<m:Button icon="sap-icon://message-popup" text="{message>/length}" type="Emphasized" visible="{= ${message>/length} > 0 ? true : false}"
+					press="onMsgIndPress"/>
 				<m:ToolbarSpacer/>
 				<m:Button text="{i18n>buttonSave}" type="Accept" press="onSavePress" enabled="{addCIDView>/buttonSetEnable}"/>
-					<!--visible="{addCIDView>/componentTypeSetVisible}"/>-->
+				<!--visible="{addCIDView>/componentTypeSetVisible}"/>-->
 				<m:Button text="{i18n>buttonCancel}" type="Reject"/>
 				<!--visible="{addCIDView>/componentTypeSetVisible}"/>-->
 			</m:OverflowToolbar>

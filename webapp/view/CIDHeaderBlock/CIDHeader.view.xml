@@ -25,7 +25,7 @@
 			
 			<core:Title text=""/>
 			<Label text="{i18n>location}"/>
-			<Input id="idLocation" value="{addCIDView>/cidHeader/location}" maxLength="1"/>
+			<Input id="idLocation" value="{addCIDView>/cidHeader/location}" maxLength="2"/>
 		    <Label/>
 			<Button id="retrieveButton" text="{i18n>buttonRetrieve}" press="onRetrievePress"/>
 		</forms:SimpleForm>
