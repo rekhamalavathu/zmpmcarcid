@@ -71,7 +71,6 @@ sap.ui.define([
 					}.bind(this)
 				});
 
-				// this.getView().setBusy(false);
 			}
 		},
 
@@ -88,7 +87,6 @@ sap.ui.define([
 				this.getView().byId("idLocation").setEditable(false);
 
 			} else {
-				// this.getView().byId("registerButton").setEnabled(false);
 				sap.m.MessageBox.error("Please Enter Location and Responsibility");
 			}
 		},

@@ -5,13 +5,14 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/m/MessagePopover",
 	"sap/m/Link",
-	"sap/m/MessageItem"
-], function (BaseController, Device, JSONModel, MessageBox, MessagePopover, Link, MessageItem) {
+	"sap/m/MessageItem",
+	"com/nscorp/car/componentid/model/formatter"
+], function (BaseController, Device, JSONModel, MessageBox, MessagePopover, Link, MessageItem, formatter) {
 	"use strict";
 
 	return BaseController.extend("com.nscorp.car.componentid.controller.AddCID", {
 
-		//	formatter: formatter,
+		formatter: formatter,
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */
