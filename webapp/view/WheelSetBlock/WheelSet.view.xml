@@ -6,29 +6,29 @@
 			<!--Left-->
 			<core:Title text=" "/>
 			<Label text="{i18n>label.AJC}"/>
-			<Input id="idRepairAJC" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/WsAppliedJobCode}" showValueHelp="true"
-				valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/AppliedJobCode}"
+			<Input id="idRepairAJCCid" selectedKey="{addCIDView>/response/WsAppliedJobCode}" type="Text" showSuggestion="true" showValueHelp="true"
+				valueHelpRequest="onValueHelp" suggestionItems="{addCIDView>/comboBoxValues/AppliedJobCode}"
 				suggestionItemSelected="onSuggestionItemSelected">
 				<suggestionItems>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{addCIDView>key}" text="{addCIDView>key} - {addCIDView>text}"/>
 				</suggestionItems>
 			</Input>
 			<!--Removed Job Code-->
 			<Label text="{i18n>label.RJC}"/>
-			<Input id="idRepairRJC" type="Text" showSuggestion="true" maxSuggestionWidth="45%" selectedKey="{addCIDView>/response/WsRemovedJobCode}"
-				showValueHelp="true" valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCode}"
+			<Input id="idRepairRJCCid" type="Text" showSuggestion="true" maxSuggestionWidth="45%" selectedKey="{addCIDView>/response/WsRemovedJobCode}"
+				showValueHelp="true" valueHelpRequest="onValueHelp" suggestionItems="{addCIDView>/comboBoxValues/RemovedJobCode}"
 				suggestionItemSelected="onSuggestionItemSelected">
 				<suggestionItems>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{addCIDView>key}" text="{addCIDView>key} - {addCIDView>text}"/>
 				</suggestionItems>
 			</Input>
 			<!--Material-->
 			<Label text="{i18n>label.Material}"/>
-			<Input id="idRepairMaterial" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/Material}" showValueHelp="true"
-				valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/MaterialNumber}"
+			<Input id="idRepairMaterialCid" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/Material}" showValueHelp="true"
+				valueHelpRequest="onValueHelp" suggestionItems="{addCIDView>/comboBoxValues/MaterialNumber}"
 				suggestionItemSelected="onSuggestionItemSelected">
 				<suggestionItems>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{addCIDView>key}" text="{addCIDView>key} - {addCIDView>text}"/>
 				</suggestionItems>
 			</Input>
 			<!--Quantity On Hand-->
@@ -37,31 +37,30 @@
 			<!--Quantity Available-->
 			<Label text="{i18n>label.QuantityAvailable}"/>
 			<Input value="{addCIDView>/response/MaterialQav}" type="Number" editable="editable="/>
-			
 			<!--Right-->
 			<core:Title text=" "/>
 			<!--Condition Code-->
 			<Label text="{i18n>label.CondCode}"/>
-			<ComboBox id="idRepairCondCode" selectedKey="{addCIDView>/response/WsConditionCode}"
-				items="{path: 'RepairsModel>/comboBoxValues/ConditionCode', sorter: { path: 'key' } }" showSecondaryValues="true"
+			<ComboBox id="idRepairCondCodeCid" selectedKey="{addCIDView>/response/WsConditionCode}"
+				items="{path: 'addCIDView>/comboBoxValues/ConditionCode', sorter: { path: 'key' } }" showSecondaryValues="true"
 				selectionChange="onChangeConditionCode">
 				<items>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{addCIDView>key}" text="{addCIDView>key} - {addCIDView>text}"/>
 				</items>
 			</ComboBox>
 			<!--Why Made Code-->
 			<Label text="{i18n>label.WhyMadeCode}"/>
-			<ComboBox id="idRepairWhyMadeCode" selectedKey="{addCIDView>/response/WsWhyMadeCode}"
-				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCode', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<ComboBox id="idRepairWhyMadeCodeCid" selectedKey="{addCIDView>/response/WsWhyMadeCode}"
+				items="{path: 'addCIDView>/comboBoxValues/WhyMadeCode', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{addCIDView>key}" text="{addCIDView>key} - {addCIDView>text}"/>
 				</items>
 			</ComboBox>
 			<!--Component AAR Facility Code-->
 			<Label text="{i18n>label.FacilityCode}" required="true"/>
 			<!--<Input value="" maxLength="4" /> -->
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_FACILITY_CODE', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C003' }]}" 
-			          selectedKey="{addCIDView>/response/WsFacilityCode}" showSecondaryValues="true" change="onChangeMandatory">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_FACILITY_CODE', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C003' }]}"
+				selectedKey="{addCIDView>/response/WsFacilityCode}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>
 					<core:ListItem key="{FacilityCode}" text="{Value} - {Description}"/>
 				</items>

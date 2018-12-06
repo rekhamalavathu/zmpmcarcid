@@ -25,15 +25,17 @@ sap.ui.define([
 		onInit: function () {
 			// set view model
 			this.setModel(this._createViewModel(), "addCIDView");
+			this.getModel("addCIDView").setSizeLimit(10000000);
 			this.getView().addEventDelegate({
 				onAfterShow: function () {
 					var oComponentData = this.getOwnerComponent().getComponentData();
-					// sSelectedCarMark = this.getModel("addCIDView").getProperty("/response/CarMark");
+
 					if (oComponentData && oComponentData.startupParameters.CarMark && oComponentData.startupParameters.Guid) {
-						this.getModel("addCIDViewaddCIDView").setProperty("/cidHeader/carMark", oComponentData.startupParameters.CarMark[0]);
-						this.getModel("addCIDViewaddCIDView").setProperty("/cidHeader/guid", oComponentData.startupParameters.Guid[0]);
+						this.getModel("addCIDView").setProperty("/cidHeader/carMark", oComponentData.startupParameters.CarMark[0]);
+						this.getModel("addCIDView").setProperty("/cidHeader/guid", oComponentData.startupParameters.Guid[0]);
 
 						this.getRouter().getRoute("addCID").attachPatternMatched(this._onObjectMatched, this);
+						// this._onObjectMatched;
 						// }
 
 					}
@@ -109,6 +111,44 @@ sap.ui.define([
 			}
 			this._oMessagePopover.openBy(oEvent.getSource());
 
+		},
+
+		getNewRepairConfigMatNumber: function () {
+			return {
+				AppliedJobCodeCheck: "",
+				AppliedJobCode: "",
+				ConditionCodeCheck: "",
+				ConditionCode: "",
+				MaterialCostRequired: "",
+				MaterialNumRequired: "",
+				SearchTable: ""
+			};
+		},
+
+		getNewRepairConfigMatCond: function () {
+			return {
+				MaterialCodeCheck: "",
+				MaterialCode: "",
+				ConditionCode: ""
+			};
+		},
+
+		getNewRepairConfigMatCost: function () {
+			return {
+				AppliedJobCodeCheck: "",
+				AppliedJobCode: "",
+				EnableFlag: ""
+			};
+		},
+
+		getNewRepairConfigMatReservation: function () {
+			return {
+				ConditionCodeCheck: "",
+				ConditionCode: "",
+				SpecialStock: "",
+				Vendor: "",
+				LocationField: ""
+			};
 		},
 
 		// onChange: function (oEvent) {

@@ -48,7 +48,11 @@
 			"tablet": true,
 			"phone": true
 		},
-		"supportedThemes": ["sap_hcb", "sap_bluecrystal", "sap_belize"]
+		"supportedThemes": [
+			"sap_hcb",
+			"sap_bluecrystal",
+			"sap_belize"
+		]
 	},
 	"sap.ui5": {
 		"rootView": {
@@ -95,7 +99,6 @@
 				"type": "sap.ui.model.json.JSONModel",
 				"settings": {},
 				"uri": "model/WOModel.json"
-
 			},
 			"RepairConfig": {
 				"type": "sap.ui.model.json.JSONModel",
@@ -104,9 +107,11 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "css/style.css"
-			}]
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
 		},
 		"routing": {
 			"config": {
@@ -117,11 +122,13 @@
 				"controlAggregation": "pages",
 				"async": true
 			},
-			"routes": [{
-				"pattern": "",
-				"name": "addCID",
-				"target": "addCID"
-			}],
+			"routes": [
+				{
+					"pattern": "",
+					"name": "addCID",
+					"target": "addCID"
+				}
+			],
 			"targets": {
 				"addCID": {
 					"viewName": "AddCID",
@@ -133,5 +140,9 @@
 		"resourceRoots": {
 			"com.nscorp.car.common": "../sap/bc/ui5_ui5/sap/zmpmcarcommon/"
 		}
+	},
+	"sap.platform.abap": {
+		"uri": "/sap/bc/ui5_ui5/sap/zmpmcarrepcid/webapp",
+		"_version": "1.1.0"
 	}
 }

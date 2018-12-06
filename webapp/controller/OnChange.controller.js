@@ -154,35 +154,6 @@ sap.ui.define([
 			}
 		}
 
-		// onChangeAppliedJobCode: function (oEvent) {
-		// 	// var oContext = this.getModel().getProperty();
-		// 	// var oJobCode = {};
-		// 	var sPath;
-		// 	var oModel = this.getView().getModel();
-		// 	var appliedJobCode = this.getView().byId("idRepairAJC").getValue();
-		// 	var oJobCode = {};
-		// 	// var sPath;
-		// 	this.getModel("app").setProperty("/addCidBusy", true);
-		// 	// //Get property of the applied job code
-		// 	sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-		// 		JobCode: appliedJobCode
-		// 	});
-
-		// 	// oModel.read(sPath, {
-		// 	// 	success: function (oData, response) {
-
-		// 	// 		var oViewModel = this.getModel("addCIDView");
-		// 	// 		// oViewModel.setProperty("/", oData);
-		// 	// 		this.getModel("app").setProperty("/addCidBusy", false);
-
-		// 	// 	}.bind(this),
-		// 	// 	error: function (oError) {
-		// 	// 		this.getModel("app").setProperty("/addCidBusy", false);
-		// 	// 	}.bind(this)
-		// 	// });
-		// 	oJobCode = this.getModel().getProperty(sPath);
-
-		// },
 
 	});
 });
