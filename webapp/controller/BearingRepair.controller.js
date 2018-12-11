@@ -6,7 +6,7 @@ sap.ui.define([
 	"sap/m/MessageBox"
 ], function (BaseController, JSONModel, MessagePopover, Link, MessageBox) {
 	"use strict";
-	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.Repair", {
+	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.BearingRepair", {
 
 		onInit: function (oEvent) {
 			this.setModel(this._createViewModel(), "RepairsModel");
@@ -22,14 +22,13 @@ sap.ui.define([
 			var appliedJobCodeLeft = this.getView().byId("idRepairAJCLeft").getSelectedKey();
 			var oJobCode = {};
 
-			// Determine Removed Job Code
+			// //Determine Removed Job Code
 			switch (sInputId) {
 				// Right Wheel
 			case "idRepairAJC":
 				if (appliedJobCode === "") {
 					this.getView().byId("idRepairAJC").setValue("");
 					this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.Error);
-
 					return;
 				} else {
 					this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
@@ -193,6 +192,7 @@ sap.ui.define([
 		},
 
 		onChangeAppliedQualifier: function (oEvent, sInputId) {
+			// var aRule = this._oController.getModel("RepairConfig").getProperty("/Description");
 			var sPath;
 			var oAppliedQualifier = {};
 			var oAppliedQualifierLeft = {};
@@ -250,12 +250,12 @@ sap.ui.define([
 			case "idRepairRJCLeft":
 				var removedJobCodeLeft = this.getView().byId("idRepairRJCLeft").getSelectedKey();
 				if (removedJobCodeLeft === "") {
-				this.getView().byId("idRepairRJCLeft").setValue("");
-				this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.Error);
-				return;
-			} else {
-				this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.None);
-			}
+					this.getView().byId("idRepairRJCLeft").setValue("");
+					this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.Error);
+					return;
+				} else {
+					this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.None);
+				}
 				if (removedJobCodeLeft) {
 					this._getRemovedQualifier(removedJobCodeLeft, "idRepairRemovedQualifierLeft");
 				} else {
@@ -274,7 +274,7 @@ sap.ui.define([
 
 		onChangeConditionCode: function (oEvent) {
 
-			// var key = oEvent.getSource().getSelectedItem();
+			var key = oEvent.getSource().getSelectedItem();
 
 			//Check Why Made Code
 			this._determineWhyMadeCode();
@@ -396,8 +396,7 @@ sap.ui.define([
 
 		_determineConditionCode: function () {
 			var aFilter;
-			// var sPath;
-			// var oAppliedJobCode;
+
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -417,8 +416,7 @@ sap.ui.define([
 
 		_determineConditionCodeLeft: function () {
 			var aFilter;
-			// var sPath;
-			// var oAppliedJobCode;
+
 			var appliedJobCode = this.getView().byId("idRepairAJCLeft").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -461,34 +459,35 @@ sap.ui.define([
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
 			var oAppliedJobCode;
+			// var oRemovedJobCode;
 			var aFilter;
 			var sPath;
 
 			//All must filled
-			if (oContext.WrAppliedJobCodeRight === undefined || oContext.WrRemovedJobCodeRight === undefined || responsibilityCode ===
+			if (oContext.BrAppliedJobCodeRight === undefined || oContext.BrRemovedJobCodeRight === undefined || responsibilityCode ===
 				undefined ||
-				oContext.WrAppliedJobCodeRight === "" ||
-				oContext.WrRemovedJobCodeRight === "" || responsibilityCode === "" || oContext.WrConditionCodeRight === undefined ||
-				oContext.WrConditionCodeRight === "") {
+				oContext.BrAppliedJobCodeRight === "" ||
+				oContext.BrRemovedJobCodeRight === "" || responsibilityCode === "" || oContext.BrConditionCodeRight === undefined ||
+				oContext.BrConditionCodeRight === "") {
 				return;
 			}
 
 			//Get Applied Job Code context
 			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.WrAppliedJobCodeRight
+				JobCode: oContext.BrAppliedJobCodeRight
 			});
 			oAppliedJobCode = this.getModel().getProperty(sPath);
 
 			aFilter = [new sap.ui.model.Filter({
 					path: "AppliedJobCode",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WrAppliedJobCode,
+					value1: oContext.BrAppliedJobCode,
 					and: true
 				}),
 				new sap.ui.model.Filter({
 					path: "RemovedJobCode",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WrRemovedJobCodeRight,
+					value1: oContext.BrRemovedJobCodeRight,
 					and: true
 				}),
 				new sap.ui.model.Filter({
@@ -522,29 +521,29 @@ sap.ui.define([
 			var sPath;
 
 			//All must filled
-			if (oContext.WrAppliedJodCodeLeft === undefined || oContext.WrRemovedJobCodeLeft === undefined || responsibilityCode === undefined ||
-				oContext.WrAppliedJodCodeLeft === "" ||
-				oContext.WrRemovedJobCodeLeft === "" || responsibilityCode === "" || oContext.WrConditionCodeLeft === undefined ||
-				oContext.WrConditionCodeLeft === "") {
+			if (oContext.BrAppliedJodCodeLeft === undefined || oContext.BrRemovedJobCodeLeft === undefined || responsibilityCode === undefined ||
+				oContext.BrAppliedJodCodeLeft === "" ||
+				oContext.BrRemovedJobCodeLeft === "" || responsibilityCode === "" || oContext.BrConditionCodeLeft === undefined ||
+				oContext.BrConditionCodeLeft === "") {
 				return;
 			}
 
 			//Get Applied Job Code context
 			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.WrAppliedJodCodeLeft
+				JobCode: oContext.BrAppliedJodCodeLeft
 			});
 			oAppliedJobCode = this.getModel().getProperty(sPath);
 
 			aFilter = [new sap.ui.model.Filter({
 					path: "AppliedJobCode",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WrAppliedJodCodeLeft,
+					value1: oContext.BrAppliedJodCodeLeft,
 					and: true
 				}),
 				new sap.ui.model.Filter({
 					path: "RemovedJobCode",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WrRemovedJobCodeLeft,
+					value1: oContext.BrRemovedJobCodeLeft,
 					and: true
 				}),
 				new sap.ui.model.Filter({
@@ -573,7 +572,7 @@ sap.ui.define([
 			var aFilter;
 			var sPath;
 			var oAppliedJobCode;
-			var wheelAppJobCode = this.getModel("addCIDView").getProperty("/response/WrAppliedJobCodeRight"),
+			var wheelAppJobCode = this.getModel("addCIDView").getProperty("/response/BrAppliedJobCodeRight"),
 
 				//Get Applied Job Code context
 				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
@@ -607,7 +606,7 @@ sap.ui.define([
 			var aFilter;
 			var sPath;
 			var oAppliedJobCode;
-			var wheelAppJobCode = this.getModel("addCIDView").getProperty("/response/WrAppliedJobCodeLeft"),
+			var wheelAppJobCode = this.getModel("addCIDView").getProperty("/response/BrAppliedJobCodeLeft"),
 
 				//Get Applied Job Code context
 				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {

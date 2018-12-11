@@ -10,13 +10,6 @@ sap.ui.define([
 			var oModel = new JSONModel(Device);
 			oModel.setDefaultBindingMode("OneWay");
 			return oModel;
-		},
-		
-		createAppModel: function() {
-			return new JSONModel({
-				addCidBusy: false,
-				addCidDelay: 0
-			});
 		}
 
 	};

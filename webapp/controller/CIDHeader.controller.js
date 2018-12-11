@@ -9,21 +9,14 @@ sap.ui.define([
 
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.CIDHeader", {
 
-		onInit: function (oEvent) {
-			// this.setModel(this._createViewModel(), "RepairsModel");
-			// this.getModel("addCIDView").setSizeLimit(10000000);
-			this._initScreenValues();
-
-		},
-
 		onRetrievePress: function (oEvent) {
-			this.getModel("app").setProperty("/addCidBusy", true);
+			this.getModel("addCIDView").setProperty("/busy", true);
 
 			var oModel = this.getView().getModel();
 			var cidHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 
 			if (cidHeader.cid === "" || cidHeader.location === "" || cidHeader.responsibility === "") {
-				this.getModel("app").setProperty("/addCidBusy", false);
+				this.getModel("addCIDView").setProperty("/busy", false);
 				sap.m.MessageBox.error("Please Enter Component ID, Location and Responsibility");
 			} else {
 				this.getView().byId("retrieveButton").setEnabled(true);
@@ -42,7 +35,7 @@ sap.ui.define([
 				sap.ui.getCore().getMessageManager().removeAllMessages();
 				oModel.read(sPath, {
 					success: function (oData, response) {
-						this.getModel("app").setProperty("/addCidBusy", false);
+						this.getModel("addCIDView").setProperty("/busy", false);
 
 						var oViewModel = this.getModel("addCIDView");
 						oViewModel.setProperty("/wheelSetVisible", oData.WheelSetFlag);
@@ -63,12 +56,10 @@ sap.ui.define([
 						var oDataClone = JSON.parse(JSON.stringify(oData));
 						oViewModel.setProperty("/oCloneData", oDataClone);
 
-						// set component indicator
-						// var resp = oViewModel.getProperty("/response");
 
 					}.bind(this),
 					error: function (oError) {
-						this.getModel("app").setProperty("/addCidBusy", false);
+						this.getModel("addCIDView").setProperty("/busy", false);
 						this.getView().byId("retrieveButton").setEnabled(true);
 						this.getView().byId("idComponentId").setEditable(true);
 						this.getView().byId("idRepairRespCode").setEditable(true);
@@ -183,122 +174,8 @@ sap.ui.define([
 					Location: []
 				}
 			});
-		},
-
-		_initScreenValues: function () {
-			// this._getResponsibilityCode("/comboBoxValues/ResponsibilityCode");
-
-			this._getAppliedJobCode();
-			// 	this._getRemovedJobCode("RJC");
-
-			this._getMaterialNumber("ZMPM_CDS_CAR_JOBCD_MAT", "/comboBoxValues/MaterialNumber");
-			this._getMaterialCondCode(null, "/comboBoxValues/ConditionCode");
-
-			// }
-		},
-
-		_getAppliedJobCode: function () {
-			var dateTime = new Date();
-			var aFilter = [new sap.ui.model.Filter({
-					path: "EffectiveDate",
-					operator: sap.ui.model.FilterOperator.LE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "ExpirationDate",
-					operator: sap.ui.model.FilterOperator.GE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "AppliedRemovedIndicator",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: "B",
-					and: true
-				})
-			];
-			this.getModel("app").setProperty("/addCidBusy", true);
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode").then(function (sStatus) {
-				this.getModel("app").setProperty("/addCidBusy", false);
-			}.bind(this));
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode");
-		},
-
-		_getJobCode: function (aFilter, sProperty) {
-			var sPath = "/ZMPM_CDS_CAR_REPAIR_JOBCODE";
-			var aComboBoxItem = [];
-			var oComboBoxItem;
-
-			return new Promise(function (resolve) {
-				this.getModel().read(sPath, {
-					filters: aFilter,
-					success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
-							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].JobCode;
-							oComboBoxItem.text = oData.results[i].JobCodeDescription;
-							aComboBoxItem.push(oComboBoxItem);
-						}
-						this._aAppliedJobCodeResults = oData.results;
-						this._aAppliedJobCode = aComboBoxItem;
-						this.getModel("addCIDView").setProperty(sProperty, aComboBoxItem);
-						resolve("Completed");
-					}.bind(this),
-					error: function (sMsg) {
-						resolve("Error");
-					}
-				});
-			}.bind(this));
-		},
-
-		_getMaterialNumber: function (sCDS, sProperty, aFilter) {
-			var sPath = "/" + sCDS;
-			var aComboBoxItem = [];
-			var oComboBoxItem;
-
-			return new Promise(function (resolve) {
-				this.getModel().read(sPath, {
-					filters: aFilter,
-					success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
-							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].matnr;
-							oComboBoxItem.text = oData.results[i].maktx;
-							oComboBoxItem.jobcode = oData.results[i].jobcode;
-							oComboBoxItem.maktx = oData.results[i].maktx;
-							aComboBoxItem.push(oComboBoxItem);
-						}
-						this._sMaterialNumberSearch = sPath;
-						this.getModel("addCIDView").setProperty(sProperty, aComboBoxItem);
-						resolve(aComboBoxItem);
-					}.bind(this),
-					error: function (sMsg) {
-
-					}.bind(this)
-				});
-			}.bind(this));
-		},
-
-		_getMaterialCondCode: function (aFilter, sProperty) {
-			var aComboBoxItem = [];
-			var oComboBoxItem;
-
-			this.getModel().read("/ZMPM_CDS_CAR_MATERIALCONDCD", {
-				filters: aFilter,
-				success: function (oData) {
-					for (var i = 0; i < oData.results.length; i++) {
-						oComboBoxItem = {};
-						oComboBoxItem.key = oData.results[i].ConditionCode;
-						oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
-						aComboBoxItem.push(oComboBoxItem);
-					}
-					this.getModel("addCIDView").setProperty(sProperty, aComboBoxItem);
-				}.bind(this),
-				error: function (sMsg) {
-
-				}.bind(this)
-			});
 		}
+
+		
 	});
 }());

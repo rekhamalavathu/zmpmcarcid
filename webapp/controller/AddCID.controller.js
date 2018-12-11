@@ -6,8 +6,9 @@ sap.ui.define([
 	"sap/m/MessagePopover",
 	"sap/m/Link",
 	"sap/m/MessageItem",
-	"com/nscorp/car/componentid/model/formatter"
-], function (BaseController, Device, JSONModel, MessageBox, MessagePopover, Link, MessageItem, formatter) {
+	"com/nscorp/car/componentid/model/formatter",
+	"sap/ui/core/routing/History"
+], function (BaseController, Device, JSONModel, MessageBox, MessagePopover, Link, MessageItem, formatter, History) {
 	"use strict";
 
 	return BaseController.extend("com.nscorp.car.componentid.controller.AddCID", {
@@ -19,23 +20,24 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
-		 * Called when the ViewTrackList controller is instantiated.
+		 * Called when the controller is instantiated.
 		 * @public
 		 */
 		onInit: function () {
 			// set view model
 			this.setModel(this._createViewModel(), "addCIDView");
-			this.getModel("addCIDView").setSizeLimit(10000000);
+
 			this.getView().addEventDelegate({
 				onAfterShow: function () {
 					var oComponentData = this.getOwnerComponent().getComponentData();
 
 					if (oComponentData && oComponentData.startupParameters.CarMark && oComponentData.startupParameters.Guid) {
 						this.getModel("addCIDView").setProperty("/cidHeader/carMark", oComponentData.startupParameters.CarMark[0]);
+						this.getModel("addCIDView").setProperty("/response/CarMark", oComponentData.startupParameters.CarMark[0]);
 						this.getModel("addCIDView").setProperty("/cidHeader/guid", oComponentData.startupParameters.Guid[0]);
-
-						this.getRouter().getRoute("addCID").attachPatternMatched(this._onObjectMatched, this);
-						// this._onObjectMatched;
+						this.getModel("addCIDView").setProperty("/response/Guid", oComponentData.startupParameters.Guid[0]);
+						// this.getRouter().getRoute("addCID").attachPatternMatched(this._onObjectMatched, this);
+						this._onObjectMatched();
 						// }
 
 					}
@@ -49,6 +51,19 @@ sap.ui.define([
 			oView.setModel(sap.ui.getCore().getMessageManager().getMessageModel(), "message");
 			sap.ui.getCore().getMessageManager().registerObject(oView, true);
 
+			this.getView().addEventDelegate({
+				onAfterShow: function () {
+					this.getModel("addCIDView").setProperty("/wheelSetVisible", false);
+					this.getModel("addCIDView").setProperty("/bolsterSetVisible", false);
+					this.getModel("addCIDView").setProperty("/couplerSetVisible", false);
+					this.getModel("addCIDView").setProperty("/emerValveSetVisible", false);
+					this.getModel("addCIDView").setProperty("/servValveSetVisible", false);
+					this.getModel("addCIDView").setProperty("/sideFrameSetVisible", false);
+					this.getModel("addCIDView").setProperty("/slackAdjusterSetVisible", false);
+				}.bind(this)
+			});
+
+			this.getModel("addCIDView").setProperty("busy", false);
 		},
 
 		/* =========================================================== */
@@ -62,10 +77,17 @@ sap.ui.define([
 		 */
 		onSavePress: function () {
 
-			this.getModel("app").setProperty("/addCidBusy", true);
+			this.getModel("addCIDView").setProperty("/busy", true);
 			var oModel = this.getView().getModel();
 			var oResponse = this.getModel("addCIDView").getProperty("/response");
+			var oHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 			var oOriData = this.getModel("addCIDView").getProperty("/oCloneData");
+
+			// get Header Data
+			this.getModel("addCIDView").setProperty("/response/Guid", oHeader.guid);
+			this.getModel("addCIDView").setProperty("/response/CarMark", oHeader.carMark);
+			this.getModel("addCIDView").setProperty("/response/Responsibility", oHeader.responsibility);
+			this.getModel("addCIDView").setProperty("/response/Location", oHeader.location);
 
 			if (JSON.stringify(oOriData) === JSON.stringify(oResponse)) {
 				this.getModel("addCIDView").setProperty("/response/UpdateFlag", false);
@@ -86,14 +108,15 @@ sap.ui.define([
 						var newComponentId = this.getModel("addCIDView").getProperty("/response/ComponentId");
 						this.getModel("addCIDView").setProperty("/cidHeader/cid", newComponentId);
 						sap.m.MessageBox.success("Component ID register successfully");
-						this.getModel("app").setProperty("/addCidBusy", false);
+						this.getModel("addCIDView").setProperty("/busy", false);
 					} else {
-						this.getModel("app").setProperty("/addCidBusy", false);
+						this.getModel("addCIDView").setProperty("/busy", false);
+						sap.m.MessageBox.success("Component ID save successfully");
 					}
 
 				}.bind(this),
 				error: function (oError) {
-					this.getModel("app").setProperty("/addCidBusy", false);
+					this.getModel("addCIDView").setProperty("/busy", false);
 					var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData(),
 						sMsg = oMessage[1].message;
 
@@ -141,6 +164,15 @@ sap.ui.define([
 			};
 		},
 
+		getNewRepairConfigApplQual: function () {
+			return {
+				JobCodeOpTypeIDCheck: "",
+				JobCodeOpTypeID: "",
+				SearchTable: "",
+				SearchExclusion: ""
+			};
+		},
+
 		getNewRepairConfigMatReservation: function () {
 			return {
 				ConditionCodeCheck: "",
@@ -151,29 +183,26 @@ sap.ui.define([
 			};
 		},
 
-		// onChange: function (oEvent) {
+		addObjectToModel: function (oModel, sProperty, oObject) {
+			var aItems = oModel.getProperty(sProperty);
+			aItems.push(oObject);
+			oModel.setProperty(sProperty, aItems);
 
-		// },
+			//return latest item index based on Model
+			return aItems.length - 1;
+		},
 
+		onNavBack: function () {
+			// navigate to previous screen
+			sap.ui.getCore().byId("backBtn").firePress();
+
+		},
 		/*
-				onNavBack: function () {
-
-					var oHistory = History.getInstance();
-					var sPreviousHash = oHistory.getPreviousHash();
-
-					if (sPreviousHash !== undefined) {
-						window.history.go(-1);
-					} else {
-						var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-						oRouter.navTo("ViewTrackList", true);
-					}
-				},
-
-				/**
-				 * Handle when icon tab bar is selected
-				 * @public
-				 * @param {sap.ui.base.Event} oEvent - Event object from Icon Tab Bar select
-				 */
+		/**
+		 * Handle when icon tab bar is selected
+		 * @public
+		 * @param {sap.ui.base.Event} oEvent - Event object from Icon Tab Bar select
+	   */
 
 		/**
 		 * Handle when track item table update finished
@@ -198,15 +227,16 @@ sap.ui.define([
 		 */
 		_createViewModel: function () {
 			return new JSONModel({
+				busy: true,
+				busyDelay: 0,
 				componentTypeSetVisible: false,
-				wheelSetVisible: false,
-				bolsterSetVisible: false,
-				couplerSetVisible: false,
-				emerValveSetVisible: false,
-				servValveSetVisible: false,
-				sideFrameSetVisible: false,
-				slackAdjusterSetVisible: false,
-				footerSetVisible: false,
+				wheelSetVisible: true,
+				bolsterSetVisible: true,
+				couplerSetVisible: true,
+				emerValveSetVisible: true,
+				servValveSetVisible: true,
+				sideFrameSetVisible: true,
+				slackAdjusterSetVisible: true,
 				hasChange: false,
 				buttonSetEnable: false,
 				editSetEnable: false,
@@ -280,18 +310,14 @@ sap.ui.define([
 					}
 
 					this.getModel().read(sPath, {
-						urlParameters: {
-							"$expand": "to_StationsData,to_WcsLocData"
-						},
+						// urlParameters: {
+						// 	"$expand": "to_StationsData,to_WcsLocData"
+						// },
 						filters: aFilter,
 						success: function (oDataStation) {
-							this.getModel("WOModel").setProperty("/StationNumber", oDataStation.results[0].to_StationsData.stationnum);
-							this.getModel("WOModel").setProperty("/StationName", oDataStation.results[0].to_StationsData.stationname);
-							this.getModel("WOModel").setProperty("/SPLC", oDataStation.results[0].to_StationsData.splccode);
-							this.getModel("WOModel").setProperty("/RepairsLocation", oDataStation.results[0].to_WcsLocData.repairsloc);
-							this.getModel("WOModel").setProperty("/WheelsetsLocation", oDataStation.results[0].to_WcsLocData.wheelsetsloc);
-							this.getModel("WOModel").setProperty("/Plant", oDataStation.results[0].to_WcsLocData.plant);
-							this.getModel("WOModel").setProperty("/MainWorkCenter", oDataStation.results[0].to_WcsLocData.mainworkcenter);
+							this.getModel("WOModel").setProperty("/StationNumber", oDataStation.results[0].stationnum);
+							this.getModel("WOModel").setProperty("/StationName", oDataStation.results[0].stationname);
+
 						}.bind(this),
 						error: function (sMsg) {
 
@@ -449,28 +475,6 @@ sap.ui.define([
 
 		}
 
-		// _getCarMark: function () {
-		// 	return new Promise(function (resolve) {
-		// 		var oComponentData = this.getOwnerComponent().getComponentData(),
-		// 			sSelectedCarMark = this.getModel("WOModel").getProperty("/CarMark");
-		// 		if (oComponentData && oComponentData.startupParameters.CarMark && sSelectedCarMark === "") {
-		// 			this.getModel("WOModel").setProperty("/CarMark", oComponentData.startupParameters.CarMark);
-		// 		} else if (sSelectedCarMark === "") {
-		// 			var oCarMarkDialog = new com.nscorp.car.common.controls.CarMarkDialog({
-		// 				mode: "Single",
-		// 				afterSelection: function (oEvent) {
-		// 					if (oEvent.getParameter("selectedCarMark")) {
-		// 						this.getModel("WOModel").setProperty("/CarMark", oEvent.getParameter("selectedCarMark"));
-		// 						resolve("Completed");
-		// 					} else {
-		// 						this.onNavBack();
-		// 					}
-		// 				}.bind(this)
-		// 			});
-		// 			oCarMarkDialog.open();
-		// 		}
-		// 	}.bind(this));
-		// }
 	});
 
 });

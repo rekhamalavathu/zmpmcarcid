@@ -7,9 +7,9 @@
 	xmlns:bolster="com.nscorp.car.componentid.view.BolsterBlock" xmlns:coupler="com.nscorp.car.componentid.view.CouplerBlock"
 	xmlns:emervalve="com.nscorp.car.componentid.view.EmerValveBlock" xmlns:servvalve="com.nscorp.car.componentid.view.ServValveBlock"
 	xmlns:sideframe="com.nscorp.car.componentid.view.SideFrameBlock" xmlns:slackadjust="com.nscorp.car.componentid.view.SlackAdjustBlock"
-	controllerName="com.nscorp.car.componentid.controller.AddCID" busy="{app>/addCidBusy}" busyIndicatorDelay="{app>/addCidDelay}">
-	<ObjectPageLayout id="idObjectPageLayout" flexEnabled="true" enableLazyLoading="true" showTitleInHeaderContent="true"
-		showHeaderContent="true" showFooter="true">
+	controllerName="com.nscorp.car.componentid.controller.AddCID" busy="{addCIDView>/busy}" busyIndicatorDelay="{addCIDView>/busyDelay}">
+	<ObjectPageLayout id="idObjectPageLayout" flexEnabled="true" showTitleInHeaderContent="true"
+		showHeaderContent="true" showFooter="true"  busy="{addCIDView>/busy}" busyIndicatorDelay="{addCIDView>/busyDelay}">
 		<headerTitle>
 			<ObjectPageHeader objectTitle="{addCIDView>/cidHeader/carMark}"
 				objectSubtitle="{ path: 'WOModel>/StationName', formatter: '.formatter.formatStationName'}" isObjectTitleAlwaysVisible="false"/>
@@ -139,9 +139,7 @@
 					press="onMsgIndPress"/>
 				<m:ToolbarSpacer/>
 				<m:Button text="{i18n>buttonSave}" type="Accept" press="onSavePress" enabled="{addCIDView>/buttonSetEnable}"/>
-				<!--visible="{addCIDView>/componentTypeSetVisible}"/>-->
-				<m:Button text="{i18n>buttonCancel}" type="Reject"/>
-				<!--visible="{addCIDView>/componentTypeSetVisible}"/>-->
+				<m:Button text="{i18n>buttonCancel}" type="Reject" press="onNavBack"/>
 			</m:OverflowToolbar>
 		</footer>
 	</ObjectPageLayout>

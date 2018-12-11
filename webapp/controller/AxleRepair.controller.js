@@ -17,9 +17,17 @@ sap.ui.define([
 
 		onChangeAppliedJobCode: function (oEvent) {
 			var sPath;
-			var oContext = this.getModel("addCIDView").getProperty("/response");
+			// var oContext = this.getModel("addCIDView").getProperty("/response");
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 			var oJobCode = {};
+
+			if (appliedJobCode === "") {
+				this.getView().byId("idRepairAJC").setValue("");
+				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.Error);
+				return;
+			} else {
+				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
+			}
 
 			// //Get property of the applied job code
 			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
@@ -103,13 +111,11 @@ sap.ui.define([
 
 		onValueHelpConfirm: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
-			// var oContext = this.getModel("addCIDView").getProperty("/response");
 
 			if (oSelectedItem) {
 				this.byId(this._sInputId).setSelectedKey(oSelectedItem.getTitle());
 			}
 			oEvent.getSource().getBinding("items").filter([]);
-			// this._sInputId = oEvent.getSource().getId();
 			switch (this.getElementRealID(this._sInputId)) {
 			case "idRepairAJC":
 				this.onChangeAppliedJobCode();
@@ -139,6 +145,20 @@ sap.ui.define([
 			}
 		},
 
+		onChangedRemovedJobCode: function () {
+			var removedJobCode = this.getView().byId("idRepairRJC").getSelectedKey();
+
+			if (removedJobCode === "") {
+				this.getView().byId("idRepairRJC").setValue("");
+				this.getView().byId("idRepairRJC").setValueState(sap.ui.core.ValueState.Error);
+				return;
+			} else {
+				this.getView().byId("idRepairRJC").setValueState(sap.ui.core.ValueState.None);
+			}
+			//Determine Why Made C
+			this._determineWhyMadeCode();
+		},
+
 		handleChangeRemovedJobCodeAJC: function () {
 
 			this.getModel("RepairsModel").setProperty("/comboBoxValues/ConditionCode", []);
@@ -152,10 +172,9 @@ sap.ui.define([
 		},
 
 		onChangeConditionCode: function (oEvent) {
-			// var oContext = this.getModel("addCIDView").getProperty(this._sContextPath);
-			var key = oEvent.getSource().getSelectedItem();
-			// var materialNumber = this.getView().byId("idRepairMaterial").getValue();
-
+		
+			// var key = oEvent.getSource().getSelectedItem();
+		
 			//Check Why Made Code
 			this._determineWhyMadeCode();
 
@@ -208,7 +227,7 @@ sap.ui.define([
 			];
 			// this.getModel("app").setProperty("/addCidBusy", true);
 			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode").then(function (sStatus) {
-				this.getModel("app").setProperty("/addCidBusy", false);
+				this.getModel("addCIDView").setProperty("/busy", false);
 			}.bind(this));
 			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode");
 		},
@@ -242,8 +261,7 @@ sap.ui.define([
 
 		_determineConditionCode: function () {
 			var aFilter;
-			// var sPath;
-			// var oAppliedJobCode;
+			
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -286,7 +304,7 @@ sap.ui.define([
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
 			var oAppliedJobCode;
-			// var oRemovedJobCode;
+		
 			var aFilter;
 			var sPath;
 
@@ -425,9 +443,9 @@ sap.ui.define([
 							}
 
 							if (bConditionCode) {
-								// if (aWhyMadeCodeAdded.includes(oData.results[i].WhyMadeCode)) {
-								// 	continue;
-								// }
+								if (aWhyMadeCodeAdded.includes(oData.results[i].WhyMadeCode)) {
+									continue;
+								}
 								oComboBoxItem.key = oData.results[i].ConditionCode;
 								oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
 								aComboBoxItem.push(oComboBoxItem);

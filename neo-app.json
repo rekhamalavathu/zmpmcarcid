@@ -6,7 +6,8 @@
       "target": {
         "type": "service",
         "name": "sapui5",
-        "entryPath": "/resources"
+        "entryPath": "/resources",
+        "version": "1.52.24"
       },
       "description": "SAPUI5 Resources"
     },
@@ -15,7 +16,8 @@
       "target": {
         "type": "service",
         "name": "sapui5",
-        "entryPath": "/test-resources"
+        "entryPath": "/test-resources",
+        "version": "1.52.24"
       },
       "description": "SAPUI5 Test Resources"
     },
@@ -29,14 +31,14 @@
       "description": "Project Landscape"
     },
     {
-		"path": "/sap/bc/ui5_ui5/sap/zmpmcarcommon",
-		"target": {
-			"type": "destination",
-			"name": "H1D",
-			"entryPath": "/sap/bc/ui5_ui5/sap/zmpmcarcommon"
-		},
-		"description": "Car Common Library"
-	}
+      "path": "/sap/bc/ui5_ui5/sap/zmpmcarcommon",
+      "target": {
+        "type": "destination",
+        "name": "H1D",
+        "entryPath": "/sap/bc/ui5_ui5/sap/zmpmcarcommon"
+      },
+      "description": "Car Common Library"
+    }
   ],
   "sendWelcomeFileRedirect": true
 }
