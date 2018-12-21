@@ -150,6 +150,18 @@ sap.ui.define([
 				oInputControl.setValueState(sap.ui.core.ValueState.None);
 			}
 		},
+		
+		onChangeLocation: function (oEvent) {
+			var oInputControl = oEvent.getSource();
+			var header = this.getModel("addCIDView").getProperty("/cidHeader");
+
+			if (header.location === "" || typeof header.location === "undefined") {
+				oInputControl.setValueState(sap.ui.core.ValueState.Error);
+				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
+			} else {
+				oInputControl.setValueState(sap.ui.core.ValueState.None);
+			}
+		},
 
 		/* =========================================================== */
 		/* begin: internal methods                                     */

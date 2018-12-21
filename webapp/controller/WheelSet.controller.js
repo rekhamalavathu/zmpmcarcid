@@ -58,9 +58,6 @@ sap.ui.define([
 
 			oJobCode = this.getModel().getProperty(sPath);
 
-			//Check Description Rule
-			// this._determineDescription(appliedJobCode, oContext.AppliedQualifier);
-
 			//Check Condition Code
 			this._determineConditionCode();
 
@@ -423,11 +420,14 @@ sap.ui.define([
 						aComboBoxItem.push(oComboBoxItem);
 					}
 					this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-				}.bind(this),
-				error: function (sMsg) {
+					if(aComboBoxItem.length === 1){
+						this.getView().byId("idRepairCondCode").setSelectedKey(aComboBoxItem[0].key);
+					}
 
-				}.bind(this)
+				}.bind(this),
+				error: function (sMsg) {}.bind(this)
 			});
+
 		},
 
 		_getMaterialCondCode: function (aFilter, sProperty) {
@@ -463,7 +463,7 @@ sap.ui.define([
 			if (oContext.WsAppliedJobCode === undefined || oContext.WsRemovedJobCode === undefined || responsibilityCode === undefined ||
 				oContext.WsAppliedJobCode === "" ||
 				oContext.WsRemovedJobCode === "" || responsibilityCode === "" || oContext.ConditionCode === undefined ||
-				oContext.ConditionCode === "") {
+				oContext.WsConditionCode === "") {
 				return;
 			}
 
@@ -500,8 +500,8 @@ sap.ui.define([
 			];
 
 			this._getJobCodePrice(aFilter, "/comboBoxValues/WhyMadeCode", true, null).then(function (aItems) {
-				if (aItems.length === "1") {
-					this.getView.byId("idRepairWhyMadeCode").setValue(aItems[0].key);
+				if (aItems.length === 1) {
+					this.getView().byId("idRepairWhyMadeCode").setSelectedKey(aItems[0].key);
 				}
 			}.bind(this));
 
@@ -577,31 +577,6 @@ sap.ui.define([
 					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
 				}
 			}.bind(this));
-			// var dateTime = new Date();
-			// var aFilter = [new sap.ui.model.Filter({
-			// 		path: "EffectiveDate",
-			// 		operator: sap.ui.model.FilterOperator.LE,
-			// 		value1: dateTime,
-			// 		and: true
-			// 	}),
-			// 	new sap.ui.model.Filter({
-			// 		path: "ExpirationDate",
-			// 		operator: sap.ui.model.FilterOperator.GE,
-			// 		value1: dateTime,
-			// 		and: true
-			// 	}),
-			// 	new sap.ui.model.Filter({
-			// 		path: "AppliedRemovedIndicator",
-			// 		operator: sap.ui.model.FilterOperator.NE,
-			// 		value1: "N",
-			// 		and: true
-			// 	})
-			// ];
-
-			// // this._oController.getView().byId("idRepairRJC").setBusy(true);
-			// this._getJobCode(aFilter, "/comboBoxValues/RemovedJobCode").then(function (sStatus) {
-			// 	this.getModel("addCIDView").setProperty("/busy", false);
-			// }.bind(this));
 
 		},
 
@@ -703,13 +678,6 @@ sap.ui.define([
 								value1: sAppliedJobCode,
 								and: true
 							})];
-							// this._getMaterialNumber(aRule[i].SearchTable, "/comboBoxValues/MaterialNumber", aFilter).then(function (aItems) {
-							// 	if (aItems.length > 0) {
-							// 		this.getView().byId("idRepairMaterialCalculator").setEnabled(true);
-							// 	} else if (aItems.length === 0) {
-							// 		this._oController.byId("idRepairMaterialCalculator").setEnabled(false);
-							// 	}
-							// }.bind(this));
 							break;
 						}
 					}

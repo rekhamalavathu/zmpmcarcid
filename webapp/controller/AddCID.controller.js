@@ -103,15 +103,27 @@ sap.ui.define([
 				success: function (oData, resp) {
 					var oViewModel = this.getModel("addCIDView");
 					var sMessageLength = sap.ui.getCore().getMessageManager().getMessageModel().getData().length;
-					if (sMessageLength === 0 && updateFlag === true) {
-						oViewModel.setProperty("/response", oData);
-						var newComponentId = this.getModel("addCIDView").getProperty("/response/ComponentId");
-						this.getModel("addCIDView").setProperty("/cidHeader/cid", newComponentId);
-						sap.m.MessageBox.success("Component ID register successfully");
-						this.getModel("addCIDView").setProperty("/busy", false);
+					if (sMessageLength === 0) {
+						if (updateFlag === true) {
+							oViewModel.setProperty("/response", oData);
+							var newComponentId = this.getModel("addCIDView").getProperty("/response/ComponentId");
+							this.getModel("addCIDView").setProperty("/cidHeader/cid", newComponentId);
+							sap.m.MessageBox.success("Component ID registered successfully", {
+								onClose: function (sAction) {
+								this.onNavBack();
+								}.bind(this)
+							});
+							this.getModel("addCIDView").setProperty("/busy", false);
+						} else {
+							this.getModel("addCIDView").setProperty("/busy", false);
+							sap.m.MessageBox.success("Component ID is saved successfully", {
+								onClose: function (sAction) {
+								this.onNavBack();
+								}.bind(this)
+							});
+						}
 					} else {
 						this.getModel("addCIDView").setProperty("/busy", false);
-						sap.m.MessageBox.success("Component ID save successfully");
 					}
 
 				}.bind(this),

@@ -172,9 +172,9 @@ sap.ui.define([
 		},
 
 		onChangeConditionCode: function (oEvent) {
-		
+
 			// var key = oEvent.getSource().getSelectedItem();
-		
+
 			//Check Why Made Code
 			this._determineWhyMadeCode();
 
@@ -261,7 +261,7 @@ sap.ui.define([
 
 		_determineConditionCode: function () {
 			var aFilter;
-			
+
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -293,6 +293,9 @@ sap.ui.define([
 						aComboBoxItem.push(oComboBoxItem);
 					}
 					this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+					if (aComboBoxItem.length === 1) {
+						this.getView().byId("idRepairCondCode").setSelectedKey(aComboBoxItem[0].key);
+					}
 				}.bind(this),
 				error: function (sMsg) {
 
@@ -304,7 +307,7 @@ sap.ui.define([
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
 			var oAppliedJobCode;
-		
+
 			var aFilter;
 			var sPath;
 
@@ -349,8 +352,8 @@ sap.ui.define([
 			];
 
 			this._getJobCodePrice(aFilter, "/comboBoxValues/WhyMadeCode", true, null).then(function (aItems) {
-				if (aItems.length === "1") {
-					this.getView.byId("idRepairWhyMadeCode").setValue(aItems[0].key);
+				if (aItems.length === 1) {
+					this.getView().byId("idRepairWhyMadeCode").setSelectedKey(aItems[0].key);
 				}
 			}.bind(this));
 

@@ -250,12 +250,12 @@ sap.ui.define([
 			case "idRepairRJCLeft":
 				var removedJobCodeLeft = this.getView().byId("idRepairRJCLeft").getSelectedKey();
 				if (removedJobCodeLeft === "") {
-				this.getView().byId("idRepairRJCLeft").setValue("");
-				this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.Error);
-				return;
-			} else {
-				this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.None);
-			}
+					this.getView().byId("idRepairRJCLeft").setValue("");
+					this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.Error);
+					return;
+				} else {
+					this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.None);
+				}
 				if (removedJobCodeLeft) {
 					this._getRemovedQualifier(removedJobCodeLeft, "idRepairRemovedQualifierLeft");
 				} else {
@@ -274,10 +274,16 @@ sap.ui.define([
 
 		onChangeConditionCode: function (oEvent) {
 
-			// var key = oEvent.getSource().getSelectedItem();
+			var sInputId = this.getElementRealID(oEvent.getSource().getId());
 
 			//Check Why Made Code
-			this._determineWhyMadeCode();
+			switch (sInputId) {
+			case "idRepairCondCode":
+				this._determineWhyMadeCode();
+				break;
+			case "idRepairCondCodeLeft":
+				this._determineWhyMadeCodeLeft();
+			}
 
 		},
 		// }
@@ -411,7 +417,7 @@ sap.ui.define([
 				and: true
 			})];
 
-			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter);
+			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter, "idRepairCondCode" );
 
 		},
 
@@ -432,11 +438,11 @@ sap.ui.define([
 				and: true
 			})];
 
-			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter);
+			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter, "idRepairCondCodeLeft" );
 
 		},
 
-		_getConditionCode: function (sPath, sProperty, aFilter) {
+		_getConditionCode: function (sPath, sProperty, aFilter, sInput) {
 			var aComboBoxItem = [];
 			var oComboBoxItem;
 
@@ -450,6 +456,9 @@ sap.ui.define([
 						aComboBoxItem.push(oComboBoxItem);
 					}
 					this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+					if(aComboBoxItem.length === 1){
+						this.getView().byId(sInput).setSelectedKey(aComboBoxItem[0].key);
+					}
 				}.bind(this),
 				error: function (sMsg) {
 
@@ -482,7 +491,7 @@ sap.ui.define([
 			aFilter = [new sap.ui.model.Filter({
 					path: "AppliedJobCode",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WrAppliedJobCode,
+					value1: oContext.WrAppliedJobCodeRight,
 					and: true
 				}),
 				new sap.ui.model.Filter({
@@ -506,8 +515,8 @@ sap.ui.define([
 			];
 
 			this._getJobCodePrice(aFilter, "/comboBoxValues/WhyMadeCode", true, null).then(function (aItems) {
-				if (aItems.length === "1") {
-					this.getView.byId("idRepairWhyMadeCode").setValue(aItems[0].key);
+				if (aItems.length === 1) {
+					this.getView().byId("idRepairWhyMadeCode").setSelectedKey(aItems[0].key);
 				}
 			}.bind(this));
 
@@ -522,8 +531,8 @@ sap.ui.define([
 			var sPath;
 
 			//All must filled
-			if (oContext.WrAppliedJodCodeLeft === undefined || oContext.WrRemovedJobCodeLeft === undefined || responsibilityCode === undefined ||
-				oContext.WrAppliedJodCodeLeft === "" ||
+			if (oContext.WrAppliedJobCodeLeft === undefined || oContext.WrRemovedJobCodeLeft === undefined || responsibilityCode === undefined ||
+				oContext.WrAppliedJobCodeLeft === "" ||
 				oContext.WrRemovedJobCodeLeft === "" || responsibilityCode === "" || oContext.WrConditionCodeLeft === undefined ||
 				oContext.WrConditionCodeLeft === "") {
 				return;
@@ -531,14 +540,14 @@ sap.ui.define([
 
 			//Get Applied Job Code context
 			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.WrAppliedJodCodeLeft
+				JobCode: oContext.WrAppliedJobCodeLeft
 			});
 			oAppliedJobCode = this.getModel().getProperty(sPath);
 
 			aFilter = [new sap.ui.model.Filter({
 					path: "AppliedJobCode",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WrAppliedJodCodeLeft,
+					value1: oContext.WrAppliedJobCodeLeft,
 					and: true
 				}),
 				new sap.ui.model.Filter({
@@ -562,8 +571,8 @@ sap.ui.define([
 			];
 
 			this._getJobCodePrice(aFilter, "/comboBoxValues/WhyMadeCodeLeft", true, null).then(function (aItems) {
-				if (aItems.length === "1") {
-					this.getView.byId("idRepairWhyMadeCodeLeft").setValue(aItems[0].key);
+				if (aItems.length === 1) {
+					this.getView().byId("idRepairWhyMadeCodeLeft").setSelectedKey(aItems[0].key);
 				}
 			}.bind(this));
 
@@ -741,7 +750,7 @@ sap.ui.define([
 							and: true
 						})];
 						this.getView().byId("idRepairAQ").setSelectedKey("");
-						this._getView().byId("idRepairAQ").setEnabled(true);
+						this.getView().byId("idRepairAQ").setEnabled(true);
 
 						this._sAppliedQualifierSearchTable = "/" + aRule[i].SearchTable;
 						this._getAppliedQualifier("idRepairAQ", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifier", aFilter, aRule[i].SearchExclusion);
@@ -770,7 +779,7 @@ sap.ui.define([
 							and: true
 						})];
 						this.getView().byId("idRepairAQLeft").setSelectedKey("");
-						this._getView().byId("idRepairAQLeft").setEnabled(true);
+						this.getView().byId("idRepairAQLeft").setEnabled(true);
 
 						this._sAppliedQualifierSearchTable = "/" + aRule[i].SearchTable;
 						this._getAppliedQualifier("idRepairAQLeft", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifierLeft", aFilter, aRule[i].SearchExclusion);
@@ -790,7 +799,6 @@ sap.ui.define([
 			var oComboBoxItem;
 			var sFilter;
 
-			// this._oController.getView().byId("idRepairAQ").setBusy(true);
 			if (sExclusion) {
 				sFilter = "not startswith(CarPart,'" + sExclusion + "')"; //Temporary expecting 1 exclusion only
 
@@ -807,10 +815,11 @@ sap.ui.define([
 							aComboBoxItem.push(oComboBoxItem);
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						// this._oController.getView().byId("idRepairAQ").setBusy(false);
+						if(aComboBoxItem.length === 1){
+							this.getView().byId(sInputId).setSelectedKey(aComboBoxItem[0].key);
+						}
 					}.bind(this),
 					error: function (sMsg) {
-						// this._oController.getView().byId("idRepairAQ").setBusy(false);
 					}.bind(this)
 				});
 			} else {
@@ -824,10 +833,11 @@ sap.ui.define([
 							aComboBoxItem.push(oComboBoxItem);
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						// this._oController.getView().byId("idRepairAQ").setBusy(false);
+						if(aComboBoxItem.length === 1){
+							this.getView().byId(sInputId).setSelectedKey(aComboBoxItem[0].key);
+						}
 					}.bind(this),
 					error: function (sMsg) {
-						// this._oController.getView().byId("idRepairAQ").setBusy(false);
 					}.bind(this)
 				});
 			}

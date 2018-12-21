@@ -1,32 +1,41 @@
 <mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
-	controllerName="com.nscorp.car.componentid.controller.CIDHeader" busy="{addCIDView>/busy}" busyIndicatorDelay="{addCIDView>/busyDelay}">
+	controllerName="com.nscorp.car.componentid.controller.CIDHeader">
 	<VBox class="sapUiNoContentPadding">
-		<forms:SimpleForm id="idCIDHeader" editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
-			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+		<forms:SimpleForm id="idCIDHeader" editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12"
+			labelSpanS="12" adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
 			<core:Title text=""/>
 			<Label text="{i18n>cid}"/>
 			<Input id="idComponentId" value="{addCIDView>/cidHeader/cid}" maxLength="14"/>
 			<Label text="{i18n>responsibility}"/>
-			<ComboBox id="idRepairRespCode" selectedKey="{addCIDView>/cidHeader/responsibility}" items="{path: '/ZMPM_CDS_CAR_RESPCODE', sorter: [{ path: 'ResponseCodeID'}]}" selectionChange="onChangeResponsibilityCode"
-			  		showSecondaryValues="true" change="onChangeResponsibilityCode">
+			<ComboBox id="idRepairRespCode" selectedKey="{addCIDView>/cidHeader/responsibility}"
+				items="{path: '/ZMPM_CDS_CAR_RESPCODE', sorter: [{ path: 'ResponseCodeID'}]}" selectionChange="onChangeResponsibilityCode"
+				showSecondaryValues="true" change="onChangeResponsibilityCode">
 				<items>
 					<core:ListItem key="{ResponseCodeID}" text="{ResponseCodeID} - {ResponseCodeDesc}"/>
 				</items>
 			</ComboBox>
-		    <Label/>
+			<Label/>
 			<Button id="registerButton" text="{i18n>buttonRegister}" press="onRegisterPress"/>
 			<Label text="{i18n>componentType}" visible="{addCIDView>/componentTypeSetVisible}"/>
-			<ComboBox id="idComponentType" visible="{addCIDView>/componentTypeSetVisible}" items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'TYPE' }]}"
-				selectedKey="{addCIDView>/response/ComponentType}" showSecondaryValues="true"  selectionChange="onComponentTypeChange" change="onComponentTypeChange">
+			<ComboBox id="idComponentType" visible="{addCIDView>/componentTypeSetVisible}"
+				items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'TYPE' }]}"
+				selectedKey="{addCIDView>/response/ComponentType}" showSecondaryValues="true" selectionChange="onComponentTypeChange"
+				change="onComponentTypeChange">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			
 			<core:Title text=""/>
 			<Label text="{i18n>location}"/>
-			<Input id="idLocation" value="{addCIDView>/cidHeader/location}" maxLength="2"/>
-		    <Label/>
+			<ComboBox id="idLocation" items="{path: '/ZMPM_CDS_CAR_LOCATION', sorter: [{ path: 'carlocid'}]}"
+				selectedKey="{addCIDView>/cidHeader/location}" showSecondaryValues="true" selectionChange="onChangeLocation"
+				change="onChangeLocation">
+				<items>
+					<core:ListItem key="{carlocid}" text="{carlocid}"/>
+				</items>
+			</ComboBox>
+			<Label/>
+			<!--<Input id="idLocation" value="{addCIDView>/cidHeader/location}" maxLength="2"/>-->
 			<Button id="retrieveButton" text="{i18n>buttonRetrieve}" press="onRetrievePress"/>
 		</forms:SimpleForm>
 	</VBox>
