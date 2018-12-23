@@ -16,7 +16,6 @@
 			</Input>
 			<!--Removed Job Code-->
 			<Label text="{i18n>label.RJC}"/>
-			<!--<Input value="{addCIDView>/response/AxleRemovedJobCode}" editable="{addCIDView>/editSetEnable}"/>-->
 			<Input id="idRepairRJC" type="Text" showSuggestion="true" maxSuggestionWidth="45%" selectedKey="{addCIDView>/response/AxleRemovedJobCode}"
 				showValueHelp="true" valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCode}"
 				suggestionItemSelected="onSuggestionItemSelected">

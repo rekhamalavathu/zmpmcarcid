@@ -36,8 +36,9 @@ sap.ui.define([
 				oModel.read(sPath, {
 					success: function (oData, response) {
 						this.getModel("addCIDView").setProperty("/busy", false);
-
+ 
 						var oViewModel = this.getModel("addCIDView");
+	
 						oViewModel.setProperty("/wheelSetVisible", oData.WheelSetFlag);
 						oViewModel.setProperty("/bolsterSetVisible", oData.BolsterFlag);
 						oViewModel.setProperty("/couplerSetVisible", oData.CouplerFlag);

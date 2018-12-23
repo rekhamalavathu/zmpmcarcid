@@ -83,7 +83,7 @@
 			<!--Applied Qualifier Right-->
 			<Label text="{i18n>label.AQ}"/>
 			<ComboBox id="idRepairAQ" selectedKey="{addCIDView>/response/WrAppQualifierRight}"
-				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifierLeft', sorter: { path: 'key' } }" selectionChange="onChangeAppliedQualifier"
+				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifier', sorter: { path: 'key' } }" selectionChange="onChangeAppliedQualifier"
 				showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>

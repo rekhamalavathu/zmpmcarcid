@@ -93,6 +93,9 @@ sap.ui.define([
 				sPath = "RepairsModel>/comboBoxValues/AppliedJobCode";
 				break;
 			case "idRepairRJC":
+				if (sInputValue === "0000" || sInputValue === ""){
+					this._getRemovedJobCode();
+				}
 				sTitle = this.getResourceBundle().getText("removedJobCodeDialog.Title");
 				sPath = "RepairsModel>/comboBoxValues/RemovedJobCode";
 				break;
@@ -101,6 +104,9 @@ sap.ui.define([
 				sPath = "RepairsModel>/comboBoxValues/AppliedJobCodeLeft";
 				break;
 			case "idRepairRJCLeft":
+				if (sInputValue === "0000" || sInputValue === "") {
+					this._getRemovedJobCodeLeft();
+				}
 				sTitle = this.getResourceBundle().getText("removedJobCodeDialog.Title");
 				sPath = "RepairsModel>/comboBoxValues/RemovedJobCodeLeft";
 				break;
@@ -246,6 +252,7 @@ sap.ui.define([
 				} else {
 					this.getModel("RepairsModel").setProperty("/comboBoxValues/ConditionCode", []);
 				}
+				this._determineWhyMadeCode();
 				break;
 			case "idRepairRJCLeft":
 				var removedJobCodeLeft = this.getView().byId("idRepairRJCLeft").getSelectedKey();
@@ -261,11 +268,12 @@ sap.ui.define([
 				} else {
 					this.getModel("RepairsModel").setProperty("/comboBoxValues/ConditionCodeLeft", []);
 				}
+				this._determineWhyMadeCodeLeft();
 				break;
 			}
 
 			//Determine Why Made C
-			this._determineWhyMadeCode();
+			// this._determineWhyMadeCode();
 		},
 
 		getElementRealID: function (sSourceID) {
@@ -417,7 +425,7 @@ sap.ui.define([
 				and: true
 			})];
 
-			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter, "idRepairCondCode" );
+			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter, "idRepairCondCode");
 
 		},
 
@@ -438,7 +446,7 @@ sap.ui.define([
 				and: true
 			})];
 
-			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter, "idRepairCondCodeLeft" );
+			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter, "idRepairCondCodeLeft");
 
 		},
 
@@ -456,7 +464,7 @@ sap.ui.define([
 						aComboBoxItem.push(oComboBoxItem);
 					}
 					this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-					if(aComboBoxItem.length === 1){
+					if (aComboBoxItem.length === 1) {
 						this.getView().byId(sInput).setSelectedKey(aComboBoxItem[0].key);
 					}
 				}.bind(this),
@@ -815,12 +823,11 @@ sap.ui.define([
 							aComboBoxItem.push(oComboBoxItem);
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						if(aComboBoxItem.length === 1){
+						if (aComboBoxItem.length === 1) {
 							this.getView().byId(sInputId).setSelectedKey(aComboBoxItem[0].key);
 						}
 					}.bind(this),
-					error: function (sMsg) {
-					}.bind(this)
+					error: function (sMsg) {}.bind(this)
 				});
 			} else {
 				this.getModel().read(sPath, {
@@ -833,12 +840,11 @@ sap.ui.define([
 							aComboBoxItem.push(oComboBoxItem);
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						if(aComboBoxItem.length === 1){
+						if (aComboBoxItem.length === 1) {
 							this.getView().byId(sInputId).setSelectedKey(aComboBoxItem[0].key);
 						}
 					}.bind(this),
-					error: function (sMsg) {
-					}.bind(this)
+					error: function (sMsg) {}.bind(this)
 				});
 			}
 		},
@@ -869,9 +875,15 @@ sap.ui.define([
 					switch (sInputId) {
 					case "idRepairRemovedQualifier":
 						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifier", aComboBoxItem);
+						if (aComboBoxItem.length === 1) {
+							this.getView().byId("idRepairRemovedQualifier").setSelectedKey(aComboBoxItem[0].key);
+						}
 						break;
 					case "idRepairRemovedQualifierLeft":
 						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifierLeft", aComboBoxItem);
+						if (aComboBoxItem.length === 1) {
+							this.getView().byId("idRepairRemovedQualifierLeft").setSelectedKey(aComboBoxItem[0].key);
+						}
 						break;
 					}
 

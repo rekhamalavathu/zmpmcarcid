@@ -45,9 +45,6 @@ sap.ui.define([
 			// //Determine Removed Job Code
 			this._getRemovedJobCode();
 
-			//Check Material Number Rule
-			// this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
-
 		},
 
 		onValueHelp: function (oEvent) {
@@ -62,6 +59,9 @@ sap.ui.define([
 				sPath = "RepairsModel>/comboBoxValues/AppliedJobCode";
 				break;
 			case "idRepairRJC":
+				if (sInputValue === "0000" || sInputValue === "") {
+					this._getRemovedJobCode();
+				}
 				sTitle = this.getResourceBundle().getText("removedJobCodeDialog.Title");
 				sPath = "RepairsModel>/comboBoxValues/RemovedJobCode";
 				break;
@@ -145,6 +145,13 @@ sap.ui.define([
 			}
 		},
 
+		onSelectRJC: function () {
+			var removedJobCode = this.getView().byId("idRepairRJC").getSelectedKey();
+			if (removedJobCode === "") {
+				this._getRemovedJobCode();
+			}
+		},
+
 		onChangedRemovedJobCode: function () {
 			var removedJobCode = this.getView().byId("idRepairRJC").getSelectedKey();
 
@@ -154,6 +161,7 @@ sap.ui.define([
 				return;
 			} else {
 				this.getView().byId("idRepairRJC").setValueState(sap.ui.core.ValueState.None);
+
 			}
 			//Determine Why Made C
 			this._determineWhyMadeCode();

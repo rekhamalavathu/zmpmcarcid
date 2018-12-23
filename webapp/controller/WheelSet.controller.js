@@ -88,6 +88,9 @@ sap.ui.define([
 				sPath = "RepairsModel>/comboBoxValues/AppliedJobCode";
 				break;
 			case "idRepairRJC":
+				if (sInputValue === "0000" || sInputValue === "") {
+					this._getRemovedJobCode();
+				}
 				sTitle = this.getResourceBundle().getText("removedJobCodeDialog.Title");
 				sPath = "RepairsModel>/comboBoxValues/RemovedJobCode";
 				break;
@@ -420,7 +423,7 @@ sap.ui.define([
 						aComboBoxItem.push(oComboBoxItem);
 					}
 					this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-					if(aComboBoxItem.length === 1){
+					if (aComboBoxItem.length === 1) {
 						this.getView().byId("idRepairCondCode").setSelectedKey(aComboBoxItem[0].key);
 					}
 
