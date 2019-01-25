@@ -3,6 +3,7 @@
 	<VBox class="sapUiNoContentPadding">
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+			<!--Left-->
 			<core:Title text=" "/>
 			<!--Bolster Condition Code-->
 			<Label text="{i18n>label.BolsterCondCode}"/>
@@ -12,7 +13,6 @@
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			
 			<!--Bolster MM-->
 			<Label text="{i18n>label.BolsterMM}" required="true"/>
 			<Input type="Number" value="{path: 'addCIDView>/response/BolsterCastMonth', constraints : { minimum: 1, maximum: 12 }}"
@@ -33,6 +33,7 @@
 				</items>
 			</ComboBox>
 			
+			<!--Right-->
 			<core:Title text=" "/>
 			<!--Bolster AAR Code-->
 			<Label text="{i18n>label.BolsterAARcode}"/>

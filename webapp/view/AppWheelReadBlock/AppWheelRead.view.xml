@@ -59,7 +59,6 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<Label text="{i18n>label.Scale}"/>
 			<Input value="{addCIDView>/response/AwScaleRight}" type="Number" change="onChangeScale"/>
 			<Label text="{i18n>label.Finger}"/>
-			<!--<Input value="{addCIDView>/response/AwFingerRight}"/>-->
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C110' }]}"
 				selectedKey="{addCIDView>/response/AwFingerRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>

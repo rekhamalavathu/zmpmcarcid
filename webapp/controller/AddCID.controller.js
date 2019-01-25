@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/m/Link",
 	"sap/m/MessageItem",
 	"com/nscorp/car/componentid/model/formatter",
-	"sap/ui/core/routing/History"
-], function (BaseController, Device, JSONModel, MessageBox, MessagePopover, Link, MessageItem, formatter, History) {
+	"sap/ui/core/routing/History",
+	"sap/m/MessageToast"
+], function (BaseController, Device, JSONModel, MessageBox, MessagePopover, Link, MessageItem, formatter, History, MessageToast) {
 	"use strict";
 
 	return BaseController.extend("com.nscorp.car.componentid.controller.AddCID", {
@@ -26,7 +27,6 @@ sap.ui.define([
 		onInit: function () {
 			// set view model
 			this.setModel(this._createViewModel(), "addCIDView");
-
 			this.getView().addEventDelegate({
 				onAfterShow: function () {
 					var oComponentData = this.getOwnerComponent().getComponentData();
@@ -36,10 +36,7 @@ sap.ui.define([
 						this.getModel("addCIDView").setProperty("/response/CarMark", oComponentData.startupParameters.CarMark[0]);
 						this.getModel("addCIDView").setProperty("/cidHeader/guid", oComponentData.startupParameters.Guid[0]);
 						this.getModel("addCIDView").setProperty("/response/Guid", oComponentData.startupParameters.Guid[0]);
-						// this.getRouter().getRoute("addCID").attachPatternMatched(this._onObjectMatched, this);
 						this._onObjectMatched();
-						// }
-
 					}
 				}.bind(this)
 			});
@@ -82,6 +79,7 @@ sap.ui.define([
 			var oResponse = this.getModel("addCIDView").getProperty("/response");
 			var oHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 			var oOriData = this.getModel("addCIDView").getProperty("/oCloneData");
+			var sMessage;
 
 			// get Header Data
 			this.getModel("addCIDView").setProperty("/response/Guid", oHeader.guid);
@@ -97,32 +95,40 @@ sap.ui.define([
 			}
 			var updateFlag = this.getModel("addCIDView").getProperty("/response/UpdateFlag");
 
+			oResponse.to_Message = [];
+
 			sap.ui.getCore().getMessageManager().removeAllMessages();
 			oModel.create("/ComponentSet", oResponse, {
 				method: "POST",
 				success: function (oData, resp) {
 					var oViewModel = this.getModel("addCIDView");
-					var sMessageLength = sap.ui.getCore().getMessageManager().getMessageModel().getData().length;
+					var sMessageLength = oData.to_Message.results.length;
+
 					if (sMessageLength === 0) {
 						if (updateFlag === true) {
 							oViewModel.setProperty("/response", oData);
 							var newComponentId = this.getModel("addCIDView").getProperty("/response/ComponentId");
 							this.getModel("addCIDView").setProperty("/cidHeader/cid", newComponentId);
-							sap.m.MessageBox.success("Component ID registered successfully", {
-								onClose: function (sAction) {
-								this.onNavBack();
-								}.bind(this)
-							});
+							sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.componentRegistered");
 							this.getModel("addCIDView").setProperty("/busy", false);
 						} else {
+							sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.componentSaved");
 							this.getModel("addCIDView").setProperty("/busy", false);
-							sap.m.MessageBox.success("Component ID is saved successfully", {
-								onClose: function (sAction) {
-								this.onNavBack();
-								}.bind(this)
-							});
 						}
+						MessageToast.show(sMessage, {
+							duration: 2000,
+							onClose: function () {
+								this.onNavBack();
+							}.bind(this)
+						});
 					} else {
+						for (var i = 0; i < oData.to_Message.results.length; i++) {
+							sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+								message: oData.to_Message.results[i].ResponseMessage,
+								persistent: true,
+								type: sap.ui.core.MessageType.Error
+							}));
+						}
 						this.getModel("addCIDView").setProperty("/busy", false);
 					}
 
@@ -252,6 +258,7 @@ sap.ui.define([
 				hasChange: false,
 				buttonSetEnable: false,
 				editSetEnable: false,
+				footerSetVisible: false,
 
 				cidHeader: {
 					cid: "",
@@ -322,13 +329,18 @@ sap.ui.define([
 					}
 
 					this.getModel().read(sPath, {
-						// urlParameters: {
-						// 	"$expand": "to_StationsData,to_WcsLocData"
-						// },
+						urlParameters: {
+							"$expand": "to_StationsData,to_WcsLocData"
+						},
 						filters: aFilter,
 						success: function (oDataStation) {
 							this.getModel("WOModel").setProperty("/StationNumber", oDataStation.results[0].stationnum);
 							this.getModel("WOModel").setProperty("/StationName", oDataStation.results[0].stationname);
+							this.getModel("WOModel").setProperty("/SPLC", oDataStation.results[0].to_StationsData.splccode);
+							this.getModel("WOModel").setProperty("/RepairsLocation", oDataStation.results[0].to_WcsLocData.repairsloc);
+							this.getModel("WOModel").setProperty("/WheelsetsLocation", oDataStation.results[0].to_WcsLocData.wheelsetsloc);
+							this.getModel("WOModel").setProperty("/Plant", oDataStation.results[0].to_WcsLocData.plant);
+							this.getModel("WOModel").setProperty("/MainWorkCenter", oDataStation.results[0].to_WcsLocData.mainworkcenter);
 
 						}.bind(this),
 						error: function (sMsg) {

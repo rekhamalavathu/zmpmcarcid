@@ -12,14 +12,18 @@ sap.ui.define([
 			this.setModel(this._createViewModel(), "RepairsModel");
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
+			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
+
+		},
+
+		onExit: function () {
+			sap.ui.getCore().getEventBus().unsubscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 
 		},
 
 		onChangeAppliedJobCode: function (oEvent) {
 			var sPath;
-			// var oContext = this.getModel("addCIDView").getProperty("/response");
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
-			var oJobCode = {};
 
 			if (appliedJobCode === "") {
 				this.getView().byId("idRepairAJC").setValue("");
@@ -28,13 +32,6 @@ sap.ui.define([
 			} else {
 				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
 			}
-
-			// //Get property of the applied job code
-			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: appliedJobCode
-			});
-
-			oJobCode = this.getModel().getProperty(sPath);
 
 			//Check Condition Code
 			this._determineConditionCode();
@@ -169,8 +166,6 @@ sap.ui.define([
 
 		handleChangeRemovedJobCodeAJC: function () {
 
-			this.getModel("RepairsModel").setProperty("/comboBoxValues/ConditionCode", []);
-
 			//Determine Why Made C
 			this._determineWhyMadeCode();
 		},
@@ -180,8 +175,8 @@ sap.ui.define([
 		},
 
 		onChangeConditionCode: function (oEvent) {
-
-			// var key = oEvent.getSource().getSelectedItem();
+			// get Condition Code
+			this._getConditionCode();
 
 			//Check Why Made Code
 			this._determineWhyMadeCode();
@@ -233,7 +228,6 @@ sap.ui.define([
 					and: true
 				})
 			];
-			// this.getModel("app").setProperty("/addCidBusy", true);
 			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode").then(function (sStatus) {
 				this.getModel("addCIDView").setProperty("/busy", false);
 			}.bind(this));
@@ -397,7 +391,9 @@ sap.ui.define([
 				if (aItems.length === 1) {
 					//If only 1 Item, set default
 					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
+					this._determineWhyMadeCode();
 				}
+				this._determineConditionCode();
 			}.bind(this));
 		},
 

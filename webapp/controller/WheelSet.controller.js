@@ -12,6 +12,12 @@ sap.ui.define([
 			this.setModel(this._createViewModel(), "RepairsModel");
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
+			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
+
+		},
+
+		onExit: function () {
+			sap.ui.getCore().getEventBus().unsubscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 
 		},
 
@@ -37,11 +43,13 @@ sap.ui.define([
 		},
 
 		onChangeAppliedJobCode: function () {
-			var sPath;
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
-			var oJobCode = {};
 
+			// Clear existing value for Material Quantity On Hand and Quantity Available
+			this.getView().byId("idQuantityOnHand").setValue("");
+			this.getView().byId("idQuantityAvailable").setValue("");
+			
 			if (appliedJobCode === "") {
 				this.getView().byId("idRepairAJC").setValue("");
 				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.Error);
@@ -50,13 +58,6 @@ sap.ui.define([
 			} else {
 				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
 			}
-
-			// //Get property of the applied job code
-			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: appliedJobCode
-			});
-
-			oJobCode = this.getModel().getProperty(sPath);
 
 			//Check Condition Code
 			this._determineConditionCode();
@@ -141,7 +142,6 @@ sap.ui.define([
 		onValueHelpConfirm: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			var oContext = this.getModel("addCIDView").getProperty("/response");
-			var oInputControl = oEvent.getSource();
 
 			if (oSelectedItem) {
 				this.byId(this._sInputId).setSelectedKey(oSelectedItem.getTitle());
@@ -194,7 +194,7 @@ sap.ui.define([
 			} else {
 				this.getView().byId("idRepairRJC").setValueState(sap.ui.core.ValueState.None);
 			}
-			//Determine Why Made C
+			//Determine Why Made Code
 			this._determineWhyMadeCode();
 		},
 
@@ -204,10 +204,10 @@ sap.ui.define([
 			var aRule;
 			var bIsMismatch;
 			var sReplaceCondCode;
-			// var oContext = this._oController.getModel("WOModel").getProperty(this._sContextPath);
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 
 			if (oContext.WsAppliedJobCode !== "" && oContext.Material !== "") {
+
 				sPath = this.getModel().createKey(this._sMaterialNumberSearch, {
 					jobcode: oContext.WsAppliedJobCode,
 					matnr: oContext.Material
@@ -221,7 +221,6 @@ sap.ui.define([
 				return;
 			}
 
-			// oContext.MaterialDescription = oMaterial.maktx;
 			//Check against Rule in Material Condition Code
 			aRule = this.getModel("RepairConfig").getProperty("/MaterialConditionCode");
 			for (var i = 0; i < aRule.length; i++) {
@@ -244,41 +243,28 @@ sap.ui.define([
 						onClose: function (sAction) {
 							if (sAction === this.getResourceBundle().getText("overwriteConditionCode")) {
 								oContext.WsConditionCode = sReplaceCondCode;
-							} else if (sAction === this._oController.getResourceBundle().getText(
-									"reselectMaterial")) {
+								//Determine Material Quantity
+								if (oContext.WsConditionCode !== "" && oContext.Material !== "") {
+									this._determineMaterialResQuantity();
+								}
+							} else if (sAction === this.getResourceBundle().getText("reselectMaterial")) {
 								oContext.Material = "";
-								// oContext.MaterialDescription = "";
+								this.getView().byId("idRepairMaterial").setValue("");
 							}
-							// this._oController.getModel("WOModel").updateBindings(true);
+							this.getModel("addCIDView").updateBindings(true);
 						}.bind(this)
 					}
 				);
 			} else {
 				//Determine Material Quantity
-				if (oContext.WsConditionCode !== "" && oContext.Material != "") {
+				if (oContext.WsConditionCode !== "" && oContext.Material !== "") {
 					this._determineMaterialResQuantity();
 				}
 			}
 		},
 
 		handleChangeRemovedJobCodeAJC: function () {
-			// var oContext = this._oController.getModel("WOModel").getProperty(this._sContextPath);
-			var oContext = this.getModel("addCIDView").getProperty("/response");
-
-			// if (oContext.WsRemovedJobCode) {
-			// 	//Get Removed Qualifier
-			// 	this._getRemovedQualifier(oContext.RemovedJobCode);
-
-			// } else {
-			this.getModel("RepairsModel").setProperty("/comboBoxValues/ConditionCode", []);
-			// }
-
-			// this._oController.byId("idRepairWhyMade08").setEnabled(false);
-
-			//Determine Quantity Removed Job Code
-			// this.determineQuantityRJC();
-
-			//Determine Why Made C
+			//Determine Why Made Code
 			this._determineWhyMadeCode();
 		},
 
@@ -287,7 +273,6 @@ sap.ui.define([
 		},
 
 		onChangeConditionCode: function (oEvent) {
-			// var oContext = this.getModel("addCIDView").getProperty(this._sContextPath);
 			var key = oEvent.getSource().getSelectedItem();
 			var materialNumber = this.getView().byId("idRepairMaterial").getValue();
 
@@ -295,7 +280,7 @@ sap.ui.define([
 			this._determineWhyMadeCode();
 
 			//Determine Material Stock Quantity
-			if (key !== "" && materialNumber != "") {
+			if (key !== "" && materialNumber !== "") {
 				this._determineMaterialResQuantity();
 			}
 
@@ -318,19 +303,16 @@ sap.ui.define([
 					Location: []
 				},
 
+				quantityOnHand: "",
+				quantityAvailable: ""
+
 			});
 		},
 
 		_initScreenValues: function () {
-			// this._getResponsibilityCode("/comboBoxValues/ResponsibilityCode");
-
+			// obtain initial value for AJC and Material Number
 			this._getAppliedJobCode();
-			// this._getRemovedJobCode();
-
 			this._getMaterialNumber("ZMPM_CDS_CAR_JOBCD_MAT", "/comboBoxValues/MaterialNumber");
-			this._getMaterialCondCode(null, "/comboBoxValues/ConditionCode");
-
-			// }
 		},
 
 		_getAppliedJobCode: function () {
@@ -354,9 +336,9 @@ sap.ui.define([
 					and: true
 				})
 			];
-			// this.getModel("addCIDView").setProperty("/busy", true);
+
 			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode").then(function (sStatus) {
-				// this.getModel("addCIDView").setProperty("/busy", false);
+
 			}.bind(this));
 			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode");
 		},
@@ -390,8 +372,6 @@ sap.ui.define([
 
 		_determineConditionCode: function () {
 			var aFilter;
-			// var sPath;
-			// var oAppliedJobCode;
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -458,14 +438,13 @@ sap.ui.define([
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
 			var oAppliedJobCode;
-			// var oRemovedJobCode;
 			var aFilter;
 			var sPath;
 
 			//All must filled
 			if (oContext.WsAppliedJobCode === undefined || oContext.WsRemovedJobCode === undefined || responsibilityCode === undefined ||
 				oContext.WsAppliedJobCode === "" ||
-				oContext.WsRemovedJobCode === "" || responsibilityCode === "" || oContext.ConditionCode === undefined ||
+				oContext.WsRemovedJobCode === "" || responsibilityCode === "" || oContext.WsConditionCode === undefined ||
 				oContext.WsConditionCode === "") {
 				return;
 			}
@@ -511,15 +490,14 @@ sap.ui.define([
 		},
 
 		_determineMaterialResQuantity: function () {
-			var oContext = this.getModel("WOModel").getProperty(this._sContextPath),
+			var oContext = this.getModel("WOModel").getProperty("/"),
 				aRule = this.getModel("RepairConfig").getProperty("/MaterialReservation"),
 				oWheelSet = this.getModel("addCIDView").getProperty("/response"),
-				// location = this.getModel("addCIDView").getProperty("/cidHeader/location"),
 				sPath;
 
 			//Determine Material Reservation
 			for (var i = 0; i < aRule.length; i++) {
-				if (this._compareRule(oWheelSet.ConditionCode, aRule[i].ConditionCodeCheck, aRule[i].ConditionCode)) {
+				if (this._compareRule(oWheelSet.WsConditionCode, aRule[i].ConditionCodeCheck, aRule[i].ConditionCode)) {
 					oContext.StorageLocation = this.getModel("WOModel").getProperty("/WheelsetsLocation");
 					oContext.SpecialStock = aRule[i].SpecialStock;
 					oContext.VendorNumber = aRule[i].Vendor;
@@ -538,12 +516,14 @@ sap.ui.define([
 
 			this.getModel().read(sPath, {
 				success: function (oData) {
+					// calculate Quantity On Hand & Quantity Available
 					oContext.QuantityOnHand = parseInt(oData.UnrestrictedUse, 10);
 					oContext.QuantityAvailable = oData.UnrestrictedUse - oData.Reserved;
 					this.getModel("WOModel").updateBindings(true);
-					var oViewModel = this.getModel("addCIDView");
-					oViewModel.setProperty("/response/MaterialQoh", oContext.QuantityOnHand);
-					oViewModel.setProperty("/response/MaterialQav", oContext.QuantityAvailable);
+					var oViewModel = this.getModel("RepairsModel");
+					oViewModel.setProperty("/quantityOnHand", oContext.QuantityOnHand);
+					oViewModel.setProperty("/quantityAvailable", oContext.QuantityAvailable);
+
 				}.bind(this)
 			});
 		},
@@ -552,12 +532,13 @@ sap.ui.define([
 			var aFilter;
 			var sPath;
 			var oAppliedJobCode;
-			var AppJobCode = this.getModel("addCIDView").getProperty("/response/WsAppliedJobCode"),
+			var AppJobCode = this.getModel("addCIDView").getProperty("/response/WsAppliedJobCode");
+			var oContext = this.getModel("addCIDView").getProperty("/response");
 
-				//Get Applied Job Code context
-				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-					JobCode: AppJobCode
-				});
+			//Get Applied Job Code context
+			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
+				JobCode: AppJobCode
+			});
 			oAppliedJobCode = this.getModel().getProperty(sPath);
 
 			aFilter = [new sap.ui.model.Filter({
@@ -578,7 +559,10 @@ sap.ui.define([
 				if (aItems.length === 1) {
 					//If only 1 Item, set default
 					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
+					this._determineWhyMadeCode();
 				}
+				this._determineConditionCode();
+				this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
 			}.bind(this));
 
 		},
@@ -636,9 +620,6 @@ sap.ui.define([
 							}
 
 							if (bConditionCode) {
-								// if (aWhyMadeCodeAdded.includes(oData.results[i].WhyMadeCode)) {
-								// 	continue;
-								// }
 								oComboBoxItem.key = oData.results[i].ConditionCode;
 								oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
 								aComboBoxItem.push(oComboBoxItem);
@@ -655,7 +636,6 @@ sap.ui.define([
 		_determineMaterialNumber: function (sAppliedJobCode, sConditionCode) {
 			//Check against Rule in Description
 			var aRule = this.getModel("RepairConfig").getProperty("/MaterialNumber");
-			// var aRule = this.getModel("addCIDView").getProperty("/response/Material");
 			var aFilter;
 
 			this.getView().byId("idRepairMaterial").setValue("");
@@ -681,6 +661,9 @@ sap.ui.define([
 								value1: sAppliedJobCode,
 								and: true
 							})];
+							this._getMaterialNumber(aRule[i].SearchTable, "/comboBoxValues/MaterialNumber", aFilter).then(function (aItems) {
+
+							}.bind(this));
 							break;
 						}
 					}

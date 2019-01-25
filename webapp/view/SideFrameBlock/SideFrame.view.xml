@@ -3,7 +3,9 @@ controllerName="com.nscorp.car.componentid.controller.OnChange" >
 	<VBox class="sapUiNoContentPadding">
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+			<!--Left-->
 			<core:Title text=" "/>
+			<!--Side Frame Condition Code-->
 			<Label text="{i18n>label.SFCondCode}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C514' }]}" 
 			          selectedKey="{addCIDView>/response/SfConditonCode}" showSecondaryValues="true" change="onChangeComboBox">
@@ -11,12 +13,16 @@ controllerName="com.nscorp.car.componentid.controller.OnChange" >
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
+			<!--Side Frame Cast Month-->
 			<Label text="{i18n>label.SFMonth}" required="true"/>
 			<Input value="{addCIDView>/response/SfCastMonth} " type="Number" change="onChangeMandatoryMonth"/>
+			<!--AAR Design Feature Code-->
 			<Label text="{i18n>label.SFDesignCode}" required="true"/>
-			<Input value="{addCIDView>/response/SfAarDesignCode}" change="onChangeMandatory" maxLength="12"/>
+			<Input value="{addCIDView>/response/SfAarDesignCode}" change="onChangeMandatoryInput" maxLength="12"/>
+			<!--MFG Pattern Number-->
 			<Label text="{i18n>label.MFGNo}" required="true"/>
-			<Input value="{addCIDView>/response/SfMfgPatternNo}" change="onChangeMandatory" maxLength="12"/>
+			<Input value="{addCIDView>/response/SfMfgPatternNo}" change="onChangeMandatoryInput" maxLength="12"/>
+			<!--Column Wear Plate Installed-->
 			<Label text="{i18n>label.SFWearPlate}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C515' }]}" 
 			          selectedKey="{addCIDView>/response/SfWearPlate}" showSecondaryValues="true" change="onChangeMandatory">
@@ -24,6 +30,7 @@ controllerName="com.nscorp.car.componentid.controller.OnChange" >
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
+			<!--Button Count-->
 			<Label text="{i18n>label.SFButton}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C517' }]}" 
 			          selectedKey="{addCIDView>/response/SfButtonCount}" showSecondaryValues="true" change="onChangeMandatory">
@@ -32,7 +39,9 @@ controllerName="com.nscorp.car.componentid.controller.OnChange" >
 				</items>
 			</ComboBox>
 			
+			<!--Right-->
 			<core:Title text=" "/>
+			<!--Side Frame AAR Foundry Facility Code-->
 			<Label text="{i18n>label.SFAARCode}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C501' }]}" 
 			          selectedKey="{addCIDView>/response/SfAarCode}" showSecondaryValues="true" change="onChangeMandatory">
@@ -40,12 +49,16 @@ controllerName="com.nscorp.car.componentid.controller.OnChange" >
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
+			<!--Side Frame Year-->
 			<Label text="{i18n>label.SFYear}" required="true"/>
 			<Input value="{addCIDView>/response/SfCastYear}" type="Number" change="onChangeMandatoryYear"/>
+			<!--Side Frame AAR ID Code-->
 			<Label text="{i18n>label.SFAARId}"/>
 			<Input value="{addCIDView>/response/SfAarIdCode}" maxLength="8"/>
+			<!--MFG Serial Number-->
 			<Label text="{i18n>label.MFGSerialNo}"/>
 			<Input value="{addCIDView>/response/SfMfgSerialNo}" maxLength="10"/>
+			<!--Nominal Wheel Base-->
 			<Label text="{i18n>label.SFWheelBase}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C516' }]}" 
 			          selectedKey="{addCIDView>/response/SfNominalWheelBase}" showSecondaryValues="true" change="onChangeMandatory">

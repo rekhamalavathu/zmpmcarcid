@@ -44,7 +44,6 @@
 			</Input>
 			<!--Removed Qualifier-->
 			<Label text="{i18n>label.RQ}"/>
-			<!--<Input value="{addCIDView>/response/WrRemovedQualifierLeft}" editable="{addCIDView>/editSetEnable}"/>-->
 			<ComboBox id="idRepairRemovedQualifierLeft" selectedKey="{addCIDView>/response/WrRemovedQualifierLeft}"
 				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifierLeft', sorter: { path: 'key' } }" showSecondaryValues="true"
 				editable="{addCIDView>/editSetEnable}">
@@ -101,7 +100,6 @@
 			</Input>
 			<!--Removed Qualifier RIght-->
 			<Label text="{i18n>label.RQ}"/>
-			<!--<Input value="{addCIDView>/response/WrRemovedQualifierRight}" editable="{addCIDView>/editSetEnable}"/>-->
 			<ComboBox id="idRepairRemovedQualifier" selectedKey="{addCIDView>/response/WrRemovedQualifierRight}"
 				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifier', sorter: { path: 'key' } }" showSecondaryValues="true"
 				editable="{addCIDView>/editSetEnable}">

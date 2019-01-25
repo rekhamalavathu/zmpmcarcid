@@ -33,10 +33,10 @@
 			</Input>
 			<!--Quantity On Hand-->
 			<Label text="{i18n>label.QuantityOnHand}"/>
-			<Input value="{addCIDView>/response/MaterialQoh}" type="Number" editable="false"/>
+			<Input id="idQuantityOnHand" value="{RepairsModel>/quantityOnHand}" type="Number" editable="false"/>
 			<!--Quantity Available-->
 			<Label text="{i18n>label.QuantityAvailable}"/>
-			<Input value="{addCIDView>/response/MaterialQav}" type="Number" editable="editable="/>
+				<Input id="idQuantityAvailable" value="{RepairsModel>/quantityAvailable}" type="Number" editable="editable="/>
 			<!--Right-->
 			<core:Title text=" "/>
 			<!--Condition Code-->

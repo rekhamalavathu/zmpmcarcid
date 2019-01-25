@@ -36,9 +36,8 @@ sap.ui.define([
 				oModel.read(sPath, {
 					success: function (oData, response) {
 						this.getModel("addCIDView").setProperty("/busy", false);
- 
+
 						var oViewModel = this.getModel("addCIDView");
-	
 						oViewModel.setProperty("/wheelSetVisible", oData.WheelSetFlag);
 						oViewModel.setProperty("/bolsterSetVisible", oData.BolsterFlag);
 						oViewModel.setProperty("/couplerSetVisible", oData.CouplerFlag);
@@ -52,11 +51,15 @@ sap.ui.define([
 						oViewModel.setProperty("/buttonSetEnable", true);
 						oViewModel.setProperty("/response", oData);
 						oViewModel.setProperty("/response/Guid", cidHeader.guid);
+						// Initial load for RJC for Wheel Set Component type
+						if (oData.ComponentType === "WHEELSET") {
+							sap.ui.getCore().getEventBus().publish("onLoadRemovedJobCode");
+							sap.ui.getCore().getEventBus().publish("onLoadRemovedJobCodeLeft");
+						}
 
 						// clone original data returned by Railinc Web Service
 						var oDataClone = JSON.parse(JSON.stringify(oData));
 						oViewModel.setProperty("/oCloneData", oDataClone);
-
 
 					}.bind(this),
 					error: function (oError) {
@@ -71,6 +74,7 @@ sap.ui.define([
 				});
 
 			}
+
 		},
 
 		onRegisterPress: function () {
@@ -151,7 +155,7 @@ sap.ui.define([
 				oInputControl.setValueState(sap.ui.core.ValueState.None);
 			}
 		},
-		
+
 		onChangeLocation: function (oEvent) {
 			var oInputControl = oEvent.getSource();
 			var header = this.getModel("addCIDView").getProperty("/cidHeader");
@@ -189,6 +193,5 @@ sap.ui.define([
 			});
 		}
 
-		
 	});
 }());

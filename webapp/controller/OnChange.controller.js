@@ -32,7 +32,6 @@ sap.ui.define([
 		onChangeMandatoryInput: function (oEvent) {
 			var oInput = oEvent.getParameter("newValue");
 			var oInputControl = oEvent.getSource();
-			// var key = oEvent.getSource().getSelectedItem();
 
 			if (oInput === "") {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
@@ -139,14 +138,12 @@ sap.ui.define([
 
 		onChangeComboBox: function (oEvent) {
 			var oInputControl = oEvent.getSource();
-			// var resp = this.getModel("addCIDView").getProperty("/response");
 			var key = oEvent.getSource().getSelectedItem();
 			var newval = oEvent.getParameter("newValue");
 
 			if (newval !== "" && key === null) {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-				// MessageBox.error("Please enter required field");
 
 			} else {
 				oInputControl.setValueState(sap.ui.core.ValueState.None);

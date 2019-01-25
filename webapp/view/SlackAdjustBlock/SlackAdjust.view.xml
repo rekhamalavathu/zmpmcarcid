@@ -12,11 +12,10 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.SAMonth}" />
-			<Input value="{addCIDView>/response/SaStampedMonth}" type="Number"/>
-			<Label text="{i18n>label.SARecondDate}" required="true"/>
+			<Input value="{addCIDView>/response/SaStampedMonth}" type="Number" change="onChangeMonth"/>
+			<Label text="{i18n>label.SARecondDate}"/>
 			<DatePicker id="idDatePickerSaReconditionDate" 
-			          value="{path: 'addCIDView>/response/SaReconditionDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}" 
-			          change="onChangeMandatory">
+			          value="{path: 'addCIDView>/response/SaReconditionDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}"> 
 			</DatePicker>
 			<Label text="{i18n>label.SAModelNo}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C907' }]}" 
@@ -37,7 +36,7 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.SAYear}"/>
-			<Input value="{addCIDView>/response/SaStampedYear}" type="Number"/>
+			<Input value="{addCIDView>/response/SaStampedYear}" type="Number" change="onChangeYear"/>
 			<Label text="{i18n>label.SAGroup}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C906' }]}" 
 			          selectedKey="{addCIDView>/response/SaAarGroup}" showSecondaryValues="true" change="onChangeMandatory">
