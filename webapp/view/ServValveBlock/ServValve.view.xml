@@ -20,7 +20,7 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
         	</DatePicker>
         	<!--Part Number-->
 			<Label text="{i18n>label.PartNo}" required="true"/>
-			<Input value="{addCIDView>/response/SvPartNo} " change="onChangeMandatoryInput" maxLength="12"/>
+			<Input value="{addCIDView>/response/SvPartNo}" change="onChangeMandatoryInput" maxLength="12"/>
 			<!--Valve Type-->
 			<Label text="{i18n>label.ValveType}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C807' }]}" 

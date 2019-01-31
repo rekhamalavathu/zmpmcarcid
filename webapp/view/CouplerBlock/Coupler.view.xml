@@ -28,10 +28,9 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 				</items>
 			</ComboBox>
 			<!--Coupler Classification Date-->
-			<Label text="{i18n>label.CouplerClassDate}" required="true"/>
+			<Label text="{i18n>label.CouplerClassDate}"/>
 			<DatePicker id="idDatePickerCouplerClassDate" 
-			          value="{path: 'addCIDView>/response/CouplerClassDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}" 
-			          change="onChangeMandatory">
+			          value="{path: 'addCIDView>/response/CouplerClassDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}">
 			</DatePicker>
 			
 			<!--Right-->

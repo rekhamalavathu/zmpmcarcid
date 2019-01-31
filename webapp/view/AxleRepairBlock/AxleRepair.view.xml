@@ -6,7 +6,6 @@
 			<core:Title text="{i18n>label.Left}"/>
 			<!--Applied Job Code-->
 			<Label text="{i18n>label.AJC}"/>
-			<!--<Input value="{addCIDView>/response/AxleAppliedJobCode}"/>-->
 			<Input id="idRepairAJC" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/AxleAppliedJobCode}" showValueHelp="true"
 				valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/AppliedJobCode}"
 				suggestionItemSelected="onSuggestionItemSelected">
@@ -27,7 +26,6 @@
 			<core:Title text="{i18n>label.Right}"/>
 			<!--Condition Code-->
 			<Label text="{i18n>label.CondCode}"/>
-			<!--<Input value="{addCIDView>/response/AxleConditionCode}" editable="{addCIDView>/editSetEnable}"/>-->
 			<ComboBox id="idRepairCondCode" selectedKey="{addCIDView>/response/AxleConditionCode}"
 				items="{path: 'RepairsModel>/comboBoxValues/ConditionCode', sorter: { path: 'key' } }" showSecondaryValues="true"
 				selectionChange="onChangeConditionCode">
@@ -38,7 +36,6 @@
 			
 			<!--Why Made Code-->
 			<Label text="{i18n>label.WhyMadeCode}"/>
-			<!--<Input value="{addCIDView>/response/AxleWhyMadeCode}"/>-->
 			<ComboBox id="idRepairWhyMadeCode" selectedKey="{addCIDView>/response/AxleWhyMadeCode}"
 				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCode', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>

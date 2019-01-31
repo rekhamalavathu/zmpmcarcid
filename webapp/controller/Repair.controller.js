@@ -42,7 +42,7 @@ sap.ui.define([
 				} else {
 					this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
 				}
-				// //Get property of the applied job code
+				//Get property of the applied job code
 				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
 					JobCode: appliedJobCode
 				});
@@ -70,7 +70,7 @@ sap.ui.define([
 				} else {
 					this.getView().byId("idRepairAJCLeft").setValueState(sap.ui.core.ValueState.None);
 				}
-				// //Get property of the applied job code
+				//Get property of the applied job code
 				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
 					JobCode: appliedJobCodeLeft
 				});
@@ -85,7 +85,6 @@ sap.ui.define([
 				this._determineWhyMadeCodeLeft();
 				// Check Removed Job Code
 				this._getRemovedJobCodeLeft();
-
 				break;
 			}
 
@@ -216,11 +215,9 @@ sap.ui.define([
 
 			switch (sInputId) {
 			case "idRepairAQ":
-				// case "idRepairAJCLeft":
 				appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 				break;
 			case "idRepairAQLeft":
-				// case "idRepairRJCLeft":
 				appliedJobCode = this.getView().byId("idRepairAJCLeft").getSelectedKey();
 				break;
 			}
@@ -256,8 +253,6 @@ sap.ui.define([
 				}
 				if (removedJobCode) {
 					this._getRemovedQualifier(removedJobCode, "idRepairRemovedQualifier");
-				} else {
-					// this.getModel("RepairsModel").setProperty("/comboBoxValues/ConditionCode", []);
 				}
 				this._determineWhyMadeCode();
 				break;
@@ -272,9 +267,7 @@ sap.ui.define([
 				}
 				if (removedJobCodeLeft) {
 					this._getRemovedQualifier(removedJobCodeLeft, "idRepairRemovedQualifierLeft");
-				} else {
-					// this.getModel("RepairsModel").setProperty("/comboBoxValues/ConditionCodeLeft", []);
-				}
+				} 
 				this._determineWhyMadeCodeLeft();
 				break;
 			}

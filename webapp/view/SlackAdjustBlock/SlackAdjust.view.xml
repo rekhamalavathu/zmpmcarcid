@@ -44,9 +44,9 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.SAManufacturer}" required="true"/>
+			<Label text="{i18n>label.SAManufacturer}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C908' }]}" 
-			          selectedKey="{addCIDView>/response/SaManufacturer}" showSecondaryValues="true" change="onChangeMandatory">
+			          selectedKey="{addCIDView>/response/SaManufacturer}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>

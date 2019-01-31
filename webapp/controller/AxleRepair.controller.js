@@ -22,7 +22,7 @@ sap.ui.define([
 		},
 
 		onChangeAppliedJobCode: function (oEvent) {
-			var sPath;
+			// var sPath;
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -160,13 +160,13 @@ sap.ui.define([
 				this.getView().byId("idRepairRJC").setValueState(sap.ui.core.ValueState.None);
 
 			}
-			//Determine Why Made C
+			//Determine Why Made Code
 			this._determineWhyMadeCode();
 		},
 
 		handleChangeRemovedJobCodeAJC: function () {
 
-			//Determine Why Made C
+			//Determine Why Made Code
 			this._determineWhyMadeCode();
 		},
 

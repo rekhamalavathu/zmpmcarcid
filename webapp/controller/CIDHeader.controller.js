@@ -1,10 +1,10 @@
 sap.ui.define([
 	"com/nscorp/car/common/controller/BaseController",
-	"com/nscorp/car/componentid/model/RepairLine",
+	// "com/nscorp/car/componentid/model/RepairLine",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/m/MessageToast"
-], function (BaseController, RepairLine, JSONModel, MessageBox, MessageToast) {
+], function (BaseController, JSONModel, MessageBox, MessageToast) {
 	"use strict";
 
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.CIDHeader", {
@@ -24,6 +24,7 @@ sap.ui.define([
 				this.getView().byId("idRepairRespCode").setEditable(false);
 				this.getView().byId("idComponentType").setEditable(false);
 				this.getView().byId("idLocation").setEditable(false);
+				this.getModel("addCIDView").setProperty("/componentTypeEnable", false);
 
 				var sPath = this.getModel().createKey("/ComponentSet", {
 					"ComponentId": cidHeader.cid,
@@ -105,6 +106,7 @@ sap.ui.define([
 			} else {
 				oInputControl.setValueState(sap.ui.core.ValueState.None);
 				this.getView().byId("idComponentType").setEditable(false);
+				this.getModel("addCIDView").setProperty("/componentTypeEnable", false);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
 				this.getModel("addCIDView").setProperty("/wheelSetVisible", false);
 				this.getModel("addCIDView").setProperty("/bolsterSetVisible", false);
