@@ -81,6 +81,7 @@ sap.ui.define([
 		onRegisterPress: function () {
 			var cidHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 			var oViewModel = this.getModel("addCIDView");
+			var sMessage;
 
 			if (cidHeader.cid === "" && cidHeader.location !== "" && cidHeader.responsibility !== "") {
 				oViewModel.setProperty("/componentTypeSetVisible", true);
@@ -91,8 +92,15 @@ sap.ui.define([
 				this.getView().byId("idLocation").setEditable(false);
 
 			} else {
-				sap.m.MessageBox.error("Please Enter Location and Responsibility");
+				if (cidHeader.cid !== "") {
+					sMessage = this.getView().getModel("i18n").getResourceBundle().getText("error.registerCid");
+					sap.m.MessageBox.error(sMessage);
+				} else {
+					sMessage = this.getView().getModel("i18n").getResourceBundle().getText("error.registerLocationResp");
+					sap.m.MessageBox.error(sMessage);
+				}
 			}
+
 		},
 
 		onComponentTypeChange: function (oEvent) {
