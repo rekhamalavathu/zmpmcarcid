@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessagePopover",
 	"sap/m/Link",
-	"sap/m/MessageBox"
-], function (BaseController, JSONModel, MessagePopover, Link, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/ui/model/Filter"
+], function (BaseController, JSONModel, MessagePopover, Link, MessageBox, Filter) {
 	"use strict";
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.WheelSet", {
 
@@ -49,7 +50,7 @@ sap.ui.define([
 			// Clear existing value for Material Quantity On Hand and Quantity Available
 			this.getView().byId("idQuantityOnHand").setValue("");
 			this.getView().byId("idQuantityAvailable").setValue("");
-			
+
 			if (appliedJobCode === "") {
 				this.getView().byId("idRepairAJC").setValue("");
 				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.Error);
@@ -76,13 +77,19 @@ sap.ui.define([
 		onValueHelp: function (oEvent) {
 			var sInputValue = oEvent.getSource().getSelectedKey();
 			var sTitle, sPath;
+			var bMaterial = false;
+			var oMaterial = this.getModel("RepairsModel").getProperty("/comboBoxValues/");
 
 			this._sInputId = oEvent.getSource().getId();
 
 			switch (this.getElementRealID(this._sInputId)) {
 			case "idRepairMaterial":
+				if (oMaterial.MaterialNumber === "" || oMaterial.MaterialNumber === undefined) {
+					this._getMaterialNumber("ZMPM_CDS_CAR_JOBCD_MAT", "/comboBoxValues/MaterialNumber");
+				}
 				sTitle = this.getResourceBundle().getText("materialDialog.Title");
 				sPath = "RepairsModel>/comboBoxValues/MaterialNumber";
+				bMaterial = true;
 				break;
 			case "idRepairAJC":
 				sTitle = this.getResourceBundle().getText("appliedJobCodeDialog.Title");
@@ -98,18 +105,85 @@ sap.ui.define([
 			}
 
 			if (!this._oValueHelpDialog) {
-				this._oValueHelpDialog = new sap.m.SelectDialog({
-					confirm: [this.onValueHelpConfirm, this],
-					cancel: [this.onValueHelpCancel, this],
-					search: [this.onValueHelpSearch, this]
-				});
+				if (bMaterial) {
+					this._oValueHelpDialog = new sap.m.TableSelectDialog({
+						confirm: [this.onValueHelpConfirm, this],
+						cancel: [this.onValueHelpCancel, this],
+						search: [this.onValueHelpSearch, this],
+						columns: [new sap.m.Column({
+								hAlign: "Begin",
+								width: "15%",
+								header: new sap.m.Label({
+									text: this.getResourceBundle().getText("materialDialog.Title")
+								})
+							}),
+							new sap.m.Column({
+								hAlign: "Begin",
+								popinDisplay: "Inline",
+								width: "45%",
+								header: new sap.m.Label({
+									text: this.getResourceBundle().getText("label.MaterialDescription")
+								}),
+								minScreenWidth: "Tablet",
+								demandPopin: true
+							}),
+							new sap.m.Column({
+								hAlign: "Center",
+								width: "20%",
+								header: new sap.m.Label({
+									text: this.getResourceBundle().getText("label.QuantityOnHand")
+								}),
+								minScreenWidth: "Tablet",
+								demandPopin: true
+							}),
+							new sap.m.Column({
+								hAlign: "Center",
+								width: "20%",
+								popinDisplay: "Inline",
+								header: new sap.m.Label({
+									text: this.getResourceBundle().getText("label.QuantityAvailable")
+								}),
+								minScreenWidth: "Tablet",
+								demandPopin: true
+							})
+						]
+					});
 
-				this.getView().addDependent(this._oValueHelpDialog);
+					this.getView().addDependent(this._oValueHelpDialog);
 
-				this._oTemplate = new sap.m.StandardListItem({
-					title: "{RepairsModel>key}",
-					description: "{RepairsModel>text}"
-				});
+					// create the template for the items binding
+					this._oTemplate = new sap.m.ColumnListItem({
+						type: "Active",
+						unread: false,
+						cells: [
+							new sap.m.Label({
+								text: "{RepairsModel>key}"
+							}),
+							new sap.m.Label({
+								text: "{RepairsModel>text}",
+								wrapping: true
+							}), new sap.m.Label({
+								text: "{RepairsModel>QuantityOnHand}"
+							}), new sap.m.Label({
+								text: "{RepairsModel>QuantityAvailable}"
+							})
+						]
+					});
+
+				} else {
+					this._oValueHelpDialog = new sap.m.SelectDialog({
+						confirm: [this.onValueHelpConfirm, this],
+						cancel: [this.onValueHelpCancel, this],
+						search: [this.onValueHelpSearch, this]
+					});
+
+					this.getView().addDependent(this._oValueHelpDialog);
+
+					this._oTemplate = new sap.m.StandardListItem({
+						title: "{RepairsModel>key}",
+						description: "{RepairsModel>text}"
+					});
+				}
 			}
 
 			this._oValueHelpDialog.setTitle(sTitle);
@@ -144,7 +218,12 @@ sap.ui.define([
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 
 			if (oSelectedItem) {
-				this.byId(this._sInputId).setSelectedKey(oSelectedItem.getTitle());
+				if (typeof (oSelectedItem.getTitle) === "function") {
+					this.byId(this._sInputId).setSelectedKey(oSelectedItem.getTitle());
+				} else {
+					var sSelectedKey = this.getModel("RepairsModel").getProperty(oSelectedItem.getBindingContextPath()).key;
+					this.byId(this._sInputId).setSelectedKey(sSelectedKey);
+				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
 
@@ -159,6 +238,7 @@ sap.ui.define([
 			case "idRepairRJC":
 				this.handleChangeRemovedJobCodeAJC();
 			}
+			this._oValueHelpDialog.destroy();
 			this._oValueHelpDialog = undefined;
 			this._sInputId = undefined;
 		},
@@ -203,8 +283,9 @@ sap.ui.define([
 			var oMaterial;
 			var aRule;
 			var bIsMismatch;
-			var sReplaceCondCode;
+			// var sReplaceCondCode;
 			var oContext = this.getModel("addCIDView").getProperty("/response");
+			var aAllowedConditionCode = [];
 
 			if (oContext.WsAppliedJobCode !== "" && oContext.Material !== "") {
 
@@ -223,37 +304,43 @@ sap.ui.define([
 
 			//Check against Rule in Material Condition Code
 			aRule = this.getModel("RepairConfig").getProperty("/MaterialConditionCode");
+			bIsMismatch = true;
 			for (var i = 0; i < aRule.length; i++) {
 				if (this._compareRule(oContext.Material, aRule[i].MaterialCodeCheck, parseInt(aRule[i].MaterialCode, 10))) {
-					if (oContext.WsConditionCode !== aRule[i].ConditionCode) {
-						sReplaceCondCode = aRule[i].ConditionCode;
-						bIsMismatch = true;
+					if (oContext.WsConditionCode === aRule[i].ConditionCode) {
+						bIsMismatch = false;
 					}
-					break;
+					aAllowedConditionCode.push(aRule[i].ConditionCode);
 				}
 			}
 
 			if (bIsMismatch) {
 				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
 				MessageBox.error(
-					this.getResourceBundle().getText("conditionCodeMismatch", [aRule[i].ConditionCode, oContext.WsConditionCode]), {
-						actions: [this.getResourceBundle().getText("overwriteConditionCode"), this.getResourceBundle().getText(
+					this.getResourceBundle().getText("conditionCodeMismatch", [oContext.Material[oContext.Material.length -
+							1],
+						aAllowedConditionCode.join(", ")
+					]), {
+						actions: [this.getResourceBundle().getText("reselectConditionCode"), this.getResourceBundle().getText(
 							"reselectMaterial")],
 						styleClass: bCompact ? "sapUiSizeCompact" : "",
 						onClose: function (sAction) {
-							if (sAction === this.getResourceBundle().getText("overwriteConditionCode")) {
-								oContext.WsConditionCode = sReplaceCondCode;
-								//Determine Material Quantity
-								if (oContext.WsConditionCode !== "" && oContext.Material !== "") {
-									this._determineMaterialResQuantity();
-								}
-							} else if (sAction === this.getResourceBundle().getText("reselectMaterial")) {
+							if (sAction === this.getResourceBundle().getText("reselectConditionCode")) {
+								oContext.WsConditionCode = "";
+								this.getView().byId("idRepairCondCode").setValue("");
+								this.getView().byId("idRepairCondCode").open();
+							} else if (sAction === this.getResourceBundle().getText(
+									"reselectMaterial")) {
 								oContext.Material = "";
 								this.getView().byId("idRepairMaterial").setValue("");
+								this.getView().byId("idRepairMaterial").fireValueHelpRequest();
+								this.getView().byId("idQuantityOnHand").setValue("");
+								this.getView().byId("idQuantityAvailable").setValue("");
 							}
 							this.getModel("addCIDView").updateBindings(true);
 						}.bind(this)
 					}
+
 				);
 			} else {
 				//Determine Material Quantity
@@ -273,14 +360,17 @@ sap.ui.define([
 		},
 
 		onChangeConditionCode: function (oEvent) {
-			var key = oEvent.getSource().getSelectedItem();
 			var materialNumber = this.getView().byId("idRepairMaterial").getValue();
+			var oContext = this.getModel("addCIDView").getProperty("/response");
 
 			//Check Why Made Code
 			this._determineWhyMadeCode();
 
+			//Determine Material Number
+			this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
+
 			//Determine Material Stock Quantity
-			if (key !== "" && materialNumber !== "") {
+			if (oContext.WsConditionCode !== "" && materialNumber !== "") {
 				this._determineMaterialResQuantity();
 			}
 
@@ -312,7 +402,7 @@ sap.ui.define([
 		_initScreenValues: function () {
 			// obtain initial value for AJC and Material Number
 			this._getAppliedJobCode();
-			this._getMaterialNumber("ZMPM_CDS_CAR_JOBCD_MAT", "/comboBoxValues/MaterialNumber");
+			// this._getMaterialNumber("ZMPM_CDS_CAR_JOBCD_MAT", "/comboBoxValues/MaterialNumber");
 		},
 
 		_getAppliedJobCode: function () {
@@ -490,41 +580,36 @@ sap.ui.define([
 		},
 
 		_determineMaterialResQuantity: function () {
-			var oContext = this.getModel("WOModel").getProperty("/"),
-				aRule = this.getModel("RepairConfig").getProperty("/MaterialReservation"),
-				oWheelSet = this.getModel("addCIDView").getProperty("/response"),
-				sPath;
+			var oRepairLine = this.getModel("WOModel").getProperty("/"),
+				oWheelSet = this.getModel("addCIDView").getProperty("/response");
 
 			//Determine Material Reservation
-			for (var i = 0; i < aRule.length; i++) {
-				if (this._compareRule(oWheelSet.WsConditionCode, aRule[i].ConditionCodeCheck, aRule[i].ConditionCode)) {
-					oContext.StorageLocation = this.getModel("WOModel").getProperty("/WheelsetsLocation");
-					oContext.SpecialStock = aRule[i].SpecialStock;
-					oContext.VendorNumber = aRule[i].Vendor;
-					break;
-				} else {
-					oContext.StorageLocation = this.getModel("WOModel").getProperty("/RepairsLocation");
-				}
-			}
+			var oContext = this._getMaterialReservationContext(oRepairLine);
+			oRepairLine.StorageLocation = oContext.StorageLocation;
+			oRepairLine.SpecialStock = oContext.SpecialStock;
+			oRepairLine.VendorNumber = oContext.VendorNumber;
 
 			//Read Material Quantity
-			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_MATSTOCK", {
+			var sPath = this.getModel().createKey("/ZMPM_CDS_CAR_MATSTOCK", {
 				Material: oWheelSet.Material,
-				StorageLocation: oContext.StorageLocation,
+				StorageLocation: oRepairLine.StorageLocation,
 				Plant: this.getModel("WOModel").getProperty("/Plant")
 			});
 
 			this.getModel().read(sPath, {
 				success: function (oData) {
 					// calculate Quantity On Hand & Quantity Available
-					oContext.QuantityOnHand = parseInt(oData.UnrestrictedUse, 10);
-					oContext.QuantityAvailable = oData.UnrestrictedUse - oData.Reserved;
-					this.getModel("WOModel").updateBindings(true);
+					oRepairLine.QuantityOnHand = parseInt(oData.UnrestrictedUse, 10);
+					oRepairLine.QuantityAvailable = oData.UnrestrictedUse - oData.Reserved;
+					oRepairLine.MaterialNotFound = false;
+					// this.getModel("WOModel").updateBindings(true);
 					var oViewModel = this.getModel("RepairsModel");
-					oViewModel.setProperty("/quantityOnHand", oContext.QuantityOnHand);
-					oViewModel.setProperty("/quantityAvailable", oContext.QuantityAvailable);
-
-				}.bind(this)
+					oViewModel.setProperty("/quantityOnHand", oRepairLine.QuantityOnHand);
+					oViewModel.setProperty("/quantityAvailable", oRepairLine.QuantityAvailable);
+				}.bind(this),
+				error: function () {
+					oRepairLine.MaterialNotFound = true;
+				}
 			});
 		},
 
@@ -636,9 +721,7 @@ sap.ui.define([
 		_determineMaterialNumber: function (sAppliedJobCode, sConditionCode) {
 			//Check against Rule in Description
 			var aRule = this.getModel("RepairConfig").getProperty("/MaterialNumber");
-			var aFilter;
 
-			this.getView().byId("idRepairMaterial").setValue("");
 			this.getView().byId("idRepairMaterial").setShowValueHelp(true);
 			for (var i = 0; i < aRule.length; i++) {
 				if (this._compareRule(sAppliedJobCode, aRule[i].AppliedJobCodeCheck, parseInt(aRule[i].AppliedJobCode, 10))) {
@@ -654,16 +737,13 @@ sap.ui.define([
 
 						if (aRule[i].SearchTable === "") {
 							this.getModel("RepairsModel").setProperty("/comboBoxValues/MaterialNumber", []);
+							this.getView().byId("idRepairMaterial").setSelectedKey("");
+							this.getView().byId("idRepairMaterial").setValue("");
+							this.getView().byId("idQuantityOnHand").setValue("");
+							this.getView().byId("idQuantityAvailable").setValue("");
+							this.getView().byId("idRepairMaterial").setValueState("None");
 						} else {
-							aFilter = [new sap.ui.model.Filter({
-								path: "jobcode",
-								operator: sap.ui.model.FilterOperator.EQ,
-								value1: sAppliedJobCode,
-								and: true
-							})];
-							this._getMaterialNumber(aRule[i].SearchTable, "/comboBoxValues/MaterialNumber", aFilter).then(function (aItems) {
-
-							}.bind(this));
+							this._getMaterialNumber(aRule[i].SearchTable, "/comboBoxValues/MaterialNumber", sAppliedJobCode);
 							break;
 						}
 					}
@@ -671,52 +751,170 @@ sap.ui.define([
 			}
 		},
 
+		/** 
+		 * Method to compare two values based on custom check (Left and Right hand values)
+		 * @constructor 
+		 * @param {String} sLeft - Left Hand value to be checked 
+		 * @param {String} sCheck - Check Comparator (EQ-Equals/NEQ-Not Equals/EW-Ends With/NEW-Not Ends With/SW-Starts With/NSW-Not Starts With)
+		 * @param {String} sRight - Right Hand value to be checked
+		 * @returns {Boolean} - Indicator whether the value of right and check compared pattern is matched(true/false)
+		 */
 		_compareRule: function (sLeft, sCheck, sRight) {
-			//ZCAR_REPAIR_RULE_CONDITION
+			var bMatch = false;
+
 			switch (sCheck) {
 			case "EQ":
 				return sLeft === sRight;
 			case "NEQ":
 				return sLeft !== sRight;
 			case "EW":
-				return sLeft.endsWith(sRight.toString());
+				if (sLeft.toString().indexOf(sRight.toString(), sLeft.length - sRight.toString().length) !== -1) {
+					bMatch = true;
+				}
+				return bMatch;
 			case "NEW":
-				return !sLeft.endsWith(sRight.toString());
+				if (sLeft.toString().indexOf(sRight.toString(), sLeft.length - sRight.toString().length) === -1) {
+					bMatch = true;
+				}
+				return bMatch;
 			case "SW":
-				return sLeft.startsWith(sRight.toString());
+				if (sLeft.lastIndexOf(sRight.toString(), 0) === 0) {
+					bMatch = true;
+				}
+				return bMatch;
 			case "NSW":
-				return !sLeft.startsWith(sRight.toString());
+				if (!sLeft.lastIndexOf(sRight.toString(), 0) === 0) {
+					bMatch = true;
+				}
+				return bMatch;
 			default:
 				return false;
 			}
 		},
 
-		_getMaterialNumber: function (sCDS, sProperty, aFilter) {
+		_getMaterialNumber: function (sCDS, sProperty, sAppliedJobCode) {
 			var sPath = "/" + sCDS;
 			var aComboBoxItem = [];
 			var oComboBoxItem;
+			var aMaterialAdded = [],
+				oContext = this.getModel("WOModel").getProperty("/"),
+				sStorageLocation = this._getMaterialReservationContext(oContext).StorageLocation,
+				oWheelSet = this.getModel("addCIDView").getProperty("/response");
+
+			if (sAppliedJobCode) {
+				var aFilter = [new sap.ui.model.Filter({
+					path: "jobcode",
+					operator: sap.ui.model.FilterOperator.EQ,
+					value1: sAppliedJobCode,
+					and: true
+				})];
+			}
+
+			if (sCDS === "ZMPM_CDS_CAR_MATERIALWITHSTOCK") {
+				var oUrlParameters = {};
+				aFilter = [new Filter({
+						path: "Plant",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: this.getModel("WOModel").getProperty("/Plant"),
+						and: true
+					}),
+					new Filter({
+						path: "StorageLocation",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: sStorageLocation,
+						and: true
+					})
+				];
+			} else {
+				oUrlParameters = {
+					"$expand": "to_MaterialStock"
+				};
+			}
 
 			return new Promise(function (resolve) {
 				this.getModel().read(sPath, {
 					filters: aFilter,
+					urlParameters: oUrlParameters,
+
 					success: function (oData) {
 						for (var i = 0; i < oData.results.length; i++) {
-							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].matnr;
-							oComboBoxItem.text = oData.results[i].maktx;
-							oComboBoxItem.jobcode = oData.results[i].jobcode;
-							oComboBoxItem.maktx = oData.results[i].maktx;
-							aComboBoxItem.push(oComboBoxItem);
+							if (aMaterialAdded.indexOf(oData.results[i].matnr) === -1) {
+								oComboBoxItem = {};
+								oComboBoxItem.key = oData.results[i].matnr;
+								oComboBoxItem.text = oData.results[i].maktx;
+								oComboBoxItem.jobcode = oData.results[i].jobcode;
+								oComboBoxItem.maktx = oData.results[i].maktx;
+
+								if (sCDS === "ZMPM_CDS_CAR_MATERIALWITHSTOCK") {
+									oComboBoxItem.QuantityOnHand = parseInt(oData.results[i].UnrestrictedUse, 10);
+									oComboBoxItem.QuantityAvailable = oData.results[i].UnrestrictedUse - oData.results[i].Reserved;
+								} else {
+									oComboBoxItem.QuantityOnHand = this.getResourceBundle().getText("notAvailable");
+									oComboBoxItem.QuantityAvailable = this.getResourceBundle().getText("notAvailable");
+
+									for (var x = 0; x < oData.results[i].to_MaterialStock.results.length; x++) {
+										if (oData.results[i].to_MaterialStock.results[x].StorageLocation === sStorageLocation &&
+											oData.results[i].to_MaterialStock.results[x].Plant === this.getModel("WOModel").getProperty("/Plant")) {
+											oComboBoxItem.QuantityOnHand = parseInt(oData.results[i].to_MaterialStock.results[x].UnrestrictedUse, 10);
+											oComboBoxItem.QuantityAvailable = oData.results[i].to_MaterialStock.results[x].UnrestrictedUse - oData.results[i].to_MaterialStock
+												.results[x].Reserved;
+											break;
+										}
+									}
+								}
+								aComboBoxItem.push(oComboBoxItem);
+							}
+
+							aMaterialAdded.push(oComboBoxItem.key);
 						}
 						this._sMaterialNumberSearch = sPath;
+
+						if (aMaterialAdded.indexOf(oWheelSet.Material) === -1) {
+							this.getView().byId("idRepairMaterial").setSelectedKey("");
+							this.getView().byId("idRepairMaterial").setValue("");
+							this.getView().byId("idQuantityOnHand").setValue("");
+							this.getView().byId("idQuantityAvailable").setValue("");
+							this.getView().byId("idRepairMaterial").setValueState("None");
+						} else {
+							this.handleChangeMaterialNumber();
+						}
+
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						this.getModel("WOModel").updateBindings(true);
+
 						resolve(aComboBoxItem);
+
 					}.bind(this),
 					error: function (sMsg) {
 
 					}.bind(this)
 				});
 			}.bind(this));
+		},
+
+		_getMaterialReservationContext: function (oRepairLine) {
+			var sBadOrderStatus = this.getModel("WOModel").getProperty("/WOHeader/BadOrderStatus"),
+				aRule = this.getModel("RepairConfig").getProperty("/MaterialReservation"),
+				oWheelSet = this.getModel("addCIDView").getProperty("/response"),
+				oContext = {};
+
+			// Determine Material Reservation
+			for (var i = 0; i < aRule.length; i++) {
+				if (this._compareRule(oWheelSet.WsConditionCode, aRule[i].ConditionCodeCheck, aRule[i].ConditionCode)) {
+					oContext.StorageLocation = this.getModel("WOModel").getProperty("/WheelsetsLocation");
+					oContext.SpecialStock = aRule[i].SpecialStock;
+					oContext.VendorNumber = aRule[i].Vendor;
+					break;
+				} else {
+					//If program order, use Program Location; otherwise Repair Location
+					if (sBadOrderStatus === "PR") {
+						oContext.StorageLocation = this.getModel("WOModel").getProperty("/ProgramLocation");
+					} else {
+						oContext.StorageLocation = this.getModel("WOModel").getProperty("/RepairsLocation");
+					}
+				}
+			}
+			return oContext;
 		}
 	});
 });

@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessagePopover",
 	"sap/m/Link",
-	"sap/m/MessageBox"
-], function (BaseController, JSONModel, MessagePopover, Link, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/m/MessageItem"
+], function (BaseController, JSONModel, MessagePopover, Link, MessageBox, MessageItem) {
 	"use strict";
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.OnChange", {
 
@@ -80,10 +81,23 @@ sap.ui.define([
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
 
-			if (oInput !== "") {
+			if (oInput === "") {
+				oInputControl.setValueState(sap.ui.core.ValueState.Error);
+				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
+				sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+					message: this.getView().getModel("i18n").getResourceBundle().getText("error.AppliedSideReading"),
+					persistent: true,
+					type: sap.ui.core.MessageType.Error
+				}));
+			} else {
 				if (oInput < 16 || oInput > 50) {
 					oInputControl.setValueState(sap.ui.core.ValueState.Error);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
+					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+						message: this.getView().getModel("i18n").getResourceBundle().getText("error.AppliedSideReading"),
+						persistent: true,
+						type: sap.ui.core.MessageType.Error
+					}));
 
 				} else {
 					oInputControl.setValueState(sap.ui.core.ValueState.None);
@@ -96,7 +110,7 @@ sap.ui.define([
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
 
-			if (oInput === "") {
+			if (oInput === "" || oInput === "00") {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
 
@@ -118,7 +132,7 @@ sap.ui.define([
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
 
-			if (oInput === "") {
+			if (oInput === "" || oInput === "00") {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
 
@@ -149,8 +163,39 @@ sap.ui.define([
 				oInputControl.setValueState(sap.ui.core.ValueState.None);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
 			}
-		}
+		},
 
+
+		onChangeRemScaleRead: function (oEvent) {
+			var oInput = oEvent.getParameter("value");
+			var oInputControl = oEvent.getSource();
+
+			if (oInput === "") {
+				oInputControl.setValueState(sap.ui.core.ValueState.Error);
+				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
+				sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+					message: this.getView().getModel("i18n").getResourceBundle().getText("error.RemovedSideReading"),
+					persistent: true,
+					type: sap.ui.core.MessageType.Error
+				}));
+
+			} else {
+				if (oInput !== "") {
+					if (oInput === "00" || (oInput >= 10 && oInput <= 50)) {
+						oInputControl.setValueState(sap.ui.core.ValueState.None);
+						this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
+					} else {
+						oInputControl.setValueState(sap.ui.core.ValueState.Error);
+						this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getView().getModel("i18n").getResourceBundle().getText("error.RemovedSideReading"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+				}
+			}
+		}
 
 	});
 });

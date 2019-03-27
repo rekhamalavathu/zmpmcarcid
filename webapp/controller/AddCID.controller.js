@@ -27,15 +27,18 @@ sap.ui.define([
 		onInit: function () {
 			// set view model
 			this.setModel(this._createViewModel(), "addCIDView");
+			this._onObjectMatched();
 			this.getView().addEventDelegate({
 				onAfterShow: function () {
 					var oComponentData = this.getOwnerComponent().getComponentData();
 
-					if (oComponentData && oComponentData.startupParameters.CarMark && oComponentData.startupParameters.Guid) {
+					if (oComponentData && oComponentData.startupParameters.CarMark && oComponentData.startupParameters.Guid && oComponentData.startupParameters
+						.OrderType) {
 						this.getModel("addCIDView").setProperty("/cidHeader/carMark", oComponentData.startupParameters.CarMark[0]);
 						this.getModel("addCIDView").setProperty("/response/CarMark", oComponentData.startupParameters.CarMark[0]);
 						this.getModel("addCIDView").setProperty("/cidHeader/guid", oComponentData.startupParameters.Guid[0]);
 						this.getModel("addCIDView").setProperty("/response/Guid", oComponentData.startupParameters.Guid[0]);
+						this.getModel("WOModel").setProperty("/WOHeader/BadOrderStatus", oComponentData.startupParameters.OrderType[0]);
 						this._onObjectMatched();
 					}
 				}.bind(this)
@@ -276,7 +279,8 @@ sap.ui.define([
 					responsibility: "",
 					compType: "",
 					carMark: "",
-					guid: ""
+					guid: "",
+					OrderType: ""
 				},
 
 				comboBoxValues: {
@@ -337,25 +341,25 @@ sap.ui.define([
 							})
 						];
 					}
-
 					this.getModel().read(sPath, {
 						urlParameters: {
 							"$expand": "to_StationsData,to_WcsLocData"
 						},
 						filters: aFilter,
 						success: function (oDataStation) {
-							this.getModel("WOModel").setProperty("/StationNumber", oDataStation.results[0].stationnum);
-							this.getModel("WOModel").setProperty("/StationName", oDataStation.results[0].stationname);
+							if (oDataStation.results.length === 0) {
+								this.noStationAssign();
+								return;
+							}
+							this.getModel("WOModel").setProperty("/StationNumber", oDataStation.results[0].to_StationsData.stationnum);
+							this.getModel("WOModel").setProperty("/StationName", oDataStation.results[0].to_StationsData.stationname);
 							this.getModel("WOModel").setProperty("/SPLC", oDataStation.results[0].to_StationsData.splccode);
 							this.getModel("WOModel").setProperty("/RepairsLocation", oDataStation.results[0].to_WcsLocData.repairsloc);
-							this.getModel("WOModel").setProperty("/WheelsetsLocation", oDataStation.results[0].to_WcsLocData.wheelsetsloc);
+							this.getModel("WOModel").setProperty("/WheelsetsLocation", oDataStation.results[0].to_WcsLocData.cnsgnmntsloc);
+							this.getModel("WOModel").setProperty("/ProgramLocation", oDataStation.results[0].to_WcsLocData.programsloc);
 							this.getModel("WOModel").setProperty("/Plant", oDataStation.results[0].to_WcsLocData.plant);
 							this.getModel("WOModel").setProperty("/MainWorkCenter", oDataStation.results[0].to_WcsLocData.mainworkcenter);
-
-						}.bind(this),
-						error: function (sMsg) {
-
-						}
+						}.bind(this)
 					});
 				}.bind(this),
 				error: function (oError) {
@@ -487,7 +491,25 @@ sap.ui.define([
 			// check WheelSet mandatory fields
 			if (oResponse.WheelSetFlag === true) {
 				if (oResponse.WsFacilityCode === "" || oResponse.WsFacilityCode === undefined || oResponse.AwSerialNoLeft === "" || oResponse.AwSerialNoLeft ===
-					undefined || oResponse.AwSerialNoRight === "" || oResponse.AwSerialNoRight === undefined) {
+					undefined || oResponse.AwSerialNoRight === "" || oResponse.AwSerialNoRight === undefined || oResponse.RwStampedMonthLeft === "" ||
+					oResponse.RwStampedMonthLeft ===
+					undefined || oResponse.RwStampedYearLeft === "" || oResponse.RwStampedYearLeft === undefined || oResponse.RwMfgLeft === "" ||
+					oResponse.RwMfgLeft ===
+					undefined || oResponse.RwScaleLeft === "" || oResponse.RwScaleLeft === undefined || oResponse.RwFingerLeft === "" || oResponse.RwFingerLeft ===
+					undefined || oResponse.RwStampedMonthRight === "" || oResponse.RwStampedMonthRight === undefined || oResponse.RwStampedYearRight ===
+					"" ||
+					oResponse.RwStampedYearRight === undefined || oResponse.RwMfgRight === "" || oResponse.RwMfgRight === undefined || oResponse.RwScaleRight ===
+					"" || oResponse.RwScaleRight ===
+					undefined || oResponse.RwFingerRight === "" || oResponse.RwFingerRight === undefined || oResponse.AwStampedMonthLeft === "" ||
+					oResponse.AwStampedMonthLeft ===
+					undefined || oResponse.AwStampedYearLeft === "" || oResponse.AwStampedYearLeft === undefined || oResponse.AwMfgLeft === "" ||
+					oResponse.AwMfgLeft ===
+					undefined || oResponse.AwScaleLeft === "" || oResponse.AwScaleLeft === undefined || oResponse.AwFingerLeft === "" || oResponse.AwFingerLeft ===
+					undefined || oResponse.AwStampedMonthRight === "" || oResponse.AwStampedMonthRight === undefined || oResponse.AwStampedYearRight ===
+					"" ||
+					oResponse.AwStampedYearRight === undefined || oResponse.AwMfgRight === "" || oResponse.AwMfgRight === undefined || oResponse.AwScaleRight ===
+					"" || oResponse.AwScaleRight ===
+					undefined || oResponse.AwFingerRight === "" || oResponse.AwFingerRight === undefined) {
 					this.getModel("addCIDView").setProperty("/hasError", true);
 
 					if (oResponse.WsFacilityCode === "" || oResponse.WsFacilityCode === undefined) {
@@ -517,6 +539,187 @@ sap.ui.define([
 							type: sap.ui.core.MessageType.Error
 						}));
 					}
+					if (oResponse.AwStampedMonthLeft === "" || oResponse.AwStampedMonthLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwStampedMonthLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwStampedYearLeft === "" || oResponse.AwStampedYearLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwStampedYearLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwMfgLeft === "" || oResponse.AwMfgLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwMfgLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwScaleLeft === "" || oResponse.AwScaleLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwScaleLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwFingerLeft === "" || oResponse.AwFingerLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwFingerLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwStampedMonthRight === "" || oResponse.AwStampedMonthRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwStampedMonthRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwStampedYearRight === "" || oResponse.AwStampedYearRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwStampedYearRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwMfgRight === "" || oResponse.AwMfgRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwMfgRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwScaleRight === "" || oResponse.AwScaleRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwScaleRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.AwFingerRight === "" || oResponse.AwFingerRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/AwFingerRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwStampedMonthLeft === "" || oResponse.RwStampedMonthLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwStampedMonthLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwStampedYearLeft === "" || oResponse.RwStampedYearLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwStampedYearLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwMfgLeft === "" || oResponse.RwMfgLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwMfgLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwScaleLeft === "" || oResponse.RwScaleLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwScaleLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwFingerLeft === "" || oResponse.RwFingerLeft === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwFingerLeft",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwStampedMonthRight === "" || oResponse.RwStampedMonthRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwStampedMonthRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwStampedYearRight === "" || oResponse.RwStampedYearRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwStampedYearRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwMfgRight === "" || oResponse.RwMfgRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwMfgRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwScaleRight === "" || oResponse.RwScaleRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwScaleRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.RwFingerRight === "" || oResponse.RwFingerRight === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/RwFingerRight",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+
 				}
 			}
 			// Check Bolster mandatory field
@@ -524,7 +727,7 @@ sap.ui.define([
 				if (oResponse.BolsterCastMonth === "" || oResponse.BolsterCastMonth === undefined || oResponse.BolsterAarDesignCode === "" ||
 					oResponse.BolsterAarDesignCode === undefined || oResponse.BolsterMfgPatternNo === "" || oResponse.BolsterMfgPatternNo ===
 					undefined || oResponse.BolsterWearPlate === "" || oResponse.BolsterWearPlate === undefined || oResponse.BolsterCastYear === "" ||
-					oResponse.BolsterCastYear === undefined ) {
+					oResponse.BolsterCastYear === undefined) {
 					this.getModel("addCIDView").setProperty("/hasError", true);
 
 					if (oResponse.BolsterCastMonth === "" || oResponse.BolsterCastMonth === undefined) {
@@ -576,8 +779,10 @@ sap.ui.define([
 			}
 			// Check Coupler mandatory field
 			if (oResponse.CouplerFlag === true) {
-				if (oResponse.CouplerCastMonth === "" || oResponse.CouplerCastMonth === undefined || oResponse.CouplerCastYear === "" || oResponse.CouplerCastYear === undefined ||
-					oResponse.CouplerCavityNo === "" || oResponse.CouplerCavityNo === undefined || oResponse.CouplerAarFacilityCode === "" || oResponse.CouplerAarFacilityCode === undefined) {
+				if (oResponse.CouplerCastMonth === "" || oResponse.CouplerCastMonth === undefined || oResponse.CouplerCastYear === "" || oResponse
+					.CouplerCastYear === undefined ||
+					oResponse.CouplerCavityNo === "" || oResponse.CouplerCavityNo === undefined || oResponse.CouplerAarFacilityCode === "" ||
+					oResponse.CouplerAarFacilityCode === undefined) {
 					this.getModel("addCIDView").setProperty("/hasError", true);
 
 					if (oResponse.CouplerCastMonth === "" || oResponse.CouplerCastMonth === undefined) {
@@ -798,7 +1003,8 @@ sap.ui.define([
 
 			// Check Slack Adjuster mandatory field
 			if (oResponse.SlakAdjustFlag === true) {
-				if (oResponse.SaConditionCode === "" || oResponse.SaConditionCode === undefined || oResponse.SaOemModelNo === "" || oResponse.SaOemModelNo === undefined) {
+				if (oResponse.SaConditionCode === "" || oResponse.SaConditionCode === undefined || oResponse.SaOemModelNo === "" || oResponse.SaOemModelNo ===
+					undefined) {
 					this.getModel("addCIDView").setProperty("/hasError", true);
 
 					if (oResponse.SaConditionCode === "" || oResponse.SaConditionCode === undefined) {

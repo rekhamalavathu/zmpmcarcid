@@ -36,8 +36,7 @@
 			<Label text="{i18n>label.RJC}"/>
 			<Input id="idRepairRJCLeft" type="Text" showSuggestion="true" maxSuggestionWidth="45%"
 				selectedKey="{addCIDView>/response/BrRemovedJobCodeLeft}" showValueHelp="true" valueHelpRequest="onValueHelp"
-				suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCodeLeft}" suggestionItemSelected="onSuggestionItemSelected"
-				editable="{addCIDView>/editSetEnable}">
+				suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCodeLeft}" suggestionItemSelected="onSuggestionItemSelected">
 				<suggestionItems>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</suggestionItems>
@@ -45,8 +44,7 @@
 			<!--Removed Qualifier left-->
 			<Label text="{i18n>label.RQ}"/>
 			<ComboBox id="idRepairRemovedQualifierLeft" selectedKey="{addCIDView>/response/BrRemovedQualifierLeft}"
-				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifierLeft', sorter: { path: 'key' } }" showSecondaryValues="true"
-				editable="{addCIDView>/editSetEnable}">
+				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifierLeft', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -93,8 +91,7 @@
 			<Label text="{i18n>label.RJC}"/>
 			<Input id="idRepairRJC" type="Text" showSuggestion="true" maxSuggestionWidth="45%"
 				selectedKey="{addCIDView>/response/BrRemovedJobCodeRight}" showValueHelp="true" valueHelpRequest="onValueHelp"
-				suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCode}" suggestionItemSelected="onSuggestionItemSelected"
-				editable="{addCIDView>/editSetEnable}">
+				suggestionItems="{RepairsModel>/comboBoxValues/RemovedJobCode}" suggestionItemSelected="onSuggestionItemSelected">
 				<suggestionItems>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</suggestionItems>
@@ -102,8 +99,7 @@
 			<!--Removed Qualifier Right-->
 			<Label text="{i18n>label.RQ}"/>
 			<ComboBox id="idRepairRemovedQualifier" selectedKey="{addCIDView>/response/BrRemovedQualifierRight}"
-				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifier', sorter: { path: 'key' } }" showSecondaryValues="true"
-				editable="{addCIDView>/editSetEnable}">
+				items="{path: 'RepairsModel>/comboBoxValues/RemovedQualifier', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>

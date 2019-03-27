@@ -8,11 +8,11 @@
 	xmlns:emervalve="com.nscorp.car.componentid.view.EmerValveBlock" xmlns:servvalve="com.nscorp.car.componentid.view.ServValveBlock"
 	xmlns:sideframe="com.nscorp.car.componentid.view.SideFrameBlock" xmlns:slackadjust="com.nscorp.car.componentid.view.SlackAdjustBlock"
 	controllerName="com.nscorp.car.componentid.controller.AddCID" busy="{addCIDView>/busy}" busyIndicatorDelay="{addCIDView>/busyDelay}">
-	<ObjectPageLayout id="idObjectPageLayout" flexEnabled="true" showTitleInHeaderContent="true"
-		showHeaderContent="true" showFooter="true"  busy="{addCIDView>/busy}" busyIndicatorDelay="{addCIDView>/busyDelay}">
+	<ObjectPageLayout id="idObjectPageLayout" flexEnabled="true" alwaysShowContentHeader="true" showFooter="true" busy="{addCIDView>/busy}"
+		busyIndicatorDelay="{addCIDView>/busyDelay}">
 		<headerTitle>
 			<ObjectPageHeader objectTitle="{addCIDView>/cidHeader/carMark}"
-				objectSubtitle="{ path: 'WOModel>/StationName', formatter: '.formatter.formatStationName'}" isObjectTitleAlwaysVisible="false"/>
+				objectSubtitle="{ path: 'WOModel>/StationName', formatter: '.formatter.formatStationName'}"/>
 		</headerTitle>
 		<sections>
 			<ObjectPageSection title="{i18n>section.cidInfo}">

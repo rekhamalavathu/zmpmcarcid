@@ -3,8 +3,9 @@
 	<VBox class="sapUiNoContentPadding">
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
-			<core:Title text="{i18n>label.Left}"/>
 			<!--Applied Job Code-->
+			<!--Left column-->
+			<core:Title text=" "/>
 			<Label text="{i18n>label.AJC}"/>
 			<Input id="idRepairAJC" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/AxleAppliedJobCode}" showValueHelp="true"
 				valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/AppliedJobCode}"
@@ -22,8 +23,9 @@
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</suggestionItems>
 			</Input>
-			
-			<core:Title text="{i18n>label.Right}"/>
+
+            <!--Right Column-->
+			<core:Title text=" "/>
 			<!--Condition Code-->
 			<Label text="{i18n>label.CondCode}"/>
 			<ComboBox id="idRepairCondCode" selectedKey="{addCIDView>/response/AxleConditionCode}"

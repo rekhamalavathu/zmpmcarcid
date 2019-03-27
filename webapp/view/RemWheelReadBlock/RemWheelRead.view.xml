@@ -1,65 +1,80 @@
-<mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m" 
-controllerName="com.nscorp.car.componentid.controller.OnChange">
+<mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
+	controllerName="com.nscorp.car.componentid.controller.OnChange">
 	<VBox class="sapUiNoContentPadding">
-		<forms:SimpleForm editable="{addCIDView>/editSetEnable}" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12"
-			labelSpanS="12" adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
+			<!--Left-->
 			<core:Title text="{i18n>label.Left}"/>
-			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/RwStampedMonthLeft}" editable="{addCIDView>/editSetEnable}" type="Number" change="onChangeMonth"/>
-			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/RwStampedYearLeft}" editable="{addCIDView>/editSetEnable}" type="Number" change="onChangeYear"/>
-			<Label text="{i18n>label.Mfg}"/>
+			<!--Stamped Month-->
+			<Label text="{i18n>label.MM}" required="true"/>
+			<Input value="{addCIDView>/response/RwStampedMonthLeft}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--Stamped Year-->
+			<Label text="{i18n>label.YY}" required="true"/>
+			<Input value="{addCIDView>/response/RwStampedYearLeft}" type="Number" change="onChangeMandatoryYear"/>
+			<!--Mfg Code-->
+			<Label text="{i18n>label.Mfg}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
-				selectedKey="{addCIDView>/response/RwMfgLeft}" showSecondaryValues="true" editable="{addCIDView>/editSetEnable}" change="onChangeComboBox">
+				selectedKey="{addCIDView>/response/RwMfgLeft}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
+			<!--Class-->
 			<Label text="{i18n>label.Class}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C108' }]}"
-				selectedKey="{addCIDView>/response/RwClassLeft}" showSecondaryValues="true" editable="{addCIDView>/editSetEnable}" change="onChangeComboBox">
+				selectedKey="{addCIDView>/response/RwClassLeft}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.Scale}"/>
-			<Input value="{addCIDView>/response/RwScaleLeft}" editable="{addCIDView>/editSetEnable}"/>
-			<Label text="{i18n>label.Finger}"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C110' }]}"
-				selectedKey="{addCIDView>/response/RwFingerLeft}" showSecondaryValues="true" editable="{addCIDView>/editSetEnable}" change="onChangeComboBox">
+			<!--Scale-->
+			<Label text="{i18n>label.Scale}" required="true"/>
+			<Input value="{addCIDView>/response/RwScaleLeft}" type="Number" change="onChangeRemScaleRead"/>
+			<!--Finger-->
+			<Label text="{i18n>label.Finger}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C120' }]}"
+				selectedKey="{addCIDView>/response/RwFingerLeft}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value}"/>
 				</items>
 			</ComboBox>
-			
+	
+	        <!--Right -->
 			<core:Title text="{i18n>label.Right}"/>
-			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/RwStampedMonthRight}" editable="{addCIDView>/editSetEnable}" type="Number" change="onChangeMonth"/>
-			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/RwStampedYearRight}" editable="{addCIDView>/editSetEnable}" type="Number" change="onChangeYear"/>
-			<Label text="{i18n>label.Mfg}"/>
+			<!--stamped Month-->
+			<Label text="{i18n>label.MM}" required="true"/>
+			<Input value="{addCIDView>/response/RwStampedMonthRight}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--STamped Year-->
+			<Label text="{i18n>label.YY}" required="true"/>
+			<Input value="{addCIDView>/response/RwStampedYearRight}" type="Number" change="onChangeMandatoryYear"/>
+			<!--Mfg Code-->
+			<Label text="{i18n>label.Mfg}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
-				selectedKey="{addCIDView>/response/RwMfgRight}" showSecondaryValues="true" editable="{addCIDView>/editSetEnable}" change="onChangeComboBox">
+				selectedKey="{addCIDView>/response/RwMfgRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
+			<!--Class-->
 			<Label text="{i18n>label.Class}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C108' }]}"
-				selectedKey="{addCIDView>/response/RwClassRight}" showSecondaryValues="true" editable="{addCIDView>/editSetEnable}" change="onChangeComboBox">
+				selectedKey="{addCIDView>/response/RwClassRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.Scale}"/>
-			<Input value="{addCIDView>/response/RwScaleRight}" editable="{addCIDView>/editSetEnable}"/>
-			<Label text="{i18n>label.Finger}"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C110' }]}"
-				selectedKey="{addCIDView>/response/RwFingerRight}" showSecondaryValues="true" editable="{addCIDView>/editSetEnable}">
+			<!--Scale-->
+			<Label text="{i18n>label.Scale}" required="true"/>
+			<Input value="{addCIDView>/response/RwScaleRight}" type="Number" change="onChangeRemScaleRead"/>
+			<!--Finger-->
+			<Label text="{i18n>label.Finger}" required="true"/>
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C120' }]}"
+				selectedKey="{addCIDView>/response/RwFingerRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value}"/>
 				</items>
 			</ComboBox>
+
 		</forms:SimpleForm>
 	</VBox>
 </mvc:View>

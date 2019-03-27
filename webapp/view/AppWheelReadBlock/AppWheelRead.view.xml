@@ -5,17 +5,21 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
 			<!--Left-->
 			<core:Title text="{i18n>label.Left}"/>
-			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/AwStampedMonthLeft}" type="Number" change="onChangeMonth"/>
-			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/AwStampedYearLeft}" type="Number" change="onChangeYear"/>
-			<Label text="{i18n>label.Mfg}"/>
+			<!--Stamped Month-->
+			<Label text="{i18n>label.MM}" required="true"/>
+			<Input value="{addCIDView>/response/AwStampedMonthLeft}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--Stamped Year-->
+			<Label text="{i18n>label.YY}" required="true"/>
+			<Input value="{addCIDView>/response/AwStampedYearLeft}" type="Number" change="onChangeMandatoryYear"/>
+			<!--Manufacturer Code-->
+			<Label text="{i18n>label.Mfg}" required="true"/>
 			<ComboBox id="idAwMfgLeft" items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
 				selectedKey="{addCIDView>/response/AwMfgLeft}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
+			<!--Class-->
 			<Label text="{i18n>label.Class}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C108' }]}"
 				selectedKey="{addCIDView>/response/AwClassLeft}" showSecondaryValues="true" change="onChangeComboBox">
@@ -23,9 +27,11 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.Scale}"/>
+			<!--Scale-->
+			<Label text="{i18n>label.Scale}" required="true"/>
 			<Input value="{addCIDView>/response/AwScaleLeft}" type="Number" change="onChangeScale"/>
-			<Label text="{i18n>label.Finger}"/>
+			<!--Finger-->
+			<Label text="{i18n>label.Finger}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C110' }]}"
 				selectedKey="{addCIDView>/response/AwFingerLeft}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
@@ -38,17 +44,21 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			
 			<!--Right-->
 			<core:Title text="{i18n>label.Right}"/>
-			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/AwStampedMonthRight}" type="Number" change="onChangeMonth"/>
-			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/AwStampedYearRight}" type="Number" change="onChangeYear"/>
-			<Label text="{i18n>label.Mfg}"/>
+			<!--Stamped Month-->
+			<Label text="{i18n>label.MM}" required="true"/>
+			<Input value="{addCIDView>/response/AwStampedMonthRight}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--Stamped Year-->
+			<Label text="{i18n>label.YY}" required="true"/>
+			<Input value="{addCIDView>/response/AwStampedYearRight}" type="Number" change="onChangeMandatoryYear"/>
+			<!--Manufacturer Code-->
+			<Label text="{i18n>label.Mfg}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
 				selectedKey="{addCIDView>/response/AwMfgRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
+			<!--Class-->
 			<Label text="{i18n>label.Class}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C108' }]}"
 				selectedKey="{addCIDView>/response/AwClassRight}" showSecondaryValues="true" change="onChangeComboBox">
@@ -56,9 +66,11 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.Scale}"/>
+			<!--Scale-->
+			<Label text="{i18n>label.Scale}" required="true"/>
 			<Input value="{addCIDView>/response/AwScaleRight}" type="Number" change="onChangeScale"/>
-			<Label text="{i18n>label.Finger}"/>
+			<!--Finger-->
+			<Label text="{i18n>label.Finger}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C110' }]}"
 				selectedKey="{addCIDView>/response/AwFingerRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>

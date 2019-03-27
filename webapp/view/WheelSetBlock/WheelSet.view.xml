@@ -36,7 +36,7 @@
 			<Input id="idQuantityOnHand" value="{RepairsModel>/quantityOnHand}" type="Number" editable="false"/>
 			<!--Quantity Available-->
 			<Label text="{i18n>label.QuantityAvailable}"/>
-				<Input id="idQuantityAvailable" value="{RepairsModel>/quantityAvailable}" type="Number" editable="editable="/>
+			<Input id="idQuantityAvailable" value="{RepairsModel>/quantityAvailable}" type="Number" editable="editable="/>
 			<!--Right-->
 			<core:Title text=" "/>
 			<!--Condition Code-->
@@ -58,7 +58,6 @@
 			</ComboBox>
 			<!--Component AAR Facility Code-->
 			<Label text="{i18n>label.FacilityCode}" required="true"/>
-			<!--<Input value="" maxLength="4" /> -->
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_FACILITY_CODE', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C003' }]}"
 				selectedKey="{addCIDView>/response/WsFacilityCode}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>
