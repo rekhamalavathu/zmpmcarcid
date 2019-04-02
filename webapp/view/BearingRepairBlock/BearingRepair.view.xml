@@ -26,8 +26,7 @@
 			<!--Applied Qualifier Left-->
 			<Label text="{i18n>label.AQ}"/>
 			<ComboBox id="idRepairAQLeft" selectedKey="{addCIDView>/response/BrAppQualifierLeft}"
-				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifierLeft', sorter: { path: 'key' } }" selectionChange="onChangeAppliedQualifier"
-				showSecondaryValues="true">
+				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifierLeft', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -81,8 +80,7 @@
 			<!--Applied Qualifier Right-->
 			<Label text="{i18n>label.AQ}"/>
 			<ComboBox id="idRepairAQ" selectedKey="{addCIDView>/response/BrAppQualifierRight}"
-				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifier', sorter: { path: 'key' } }" selectionChange="onChangeAppliedQualifier"
-				showSecondaryValues="true">
+				items="{path: 'RepairsModel>/comboBoxValues/AppliedQualifier', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>

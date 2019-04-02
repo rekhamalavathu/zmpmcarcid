@@ -7,8 +7,15 @@ sap.ui.define([
 ], function (BaseController, JSONModel, MessagePopover, Link, MessageBox) {
 	"use strict";
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.AxleRepair", {
+		/* =========================================================== */
+		/* lifecycle methods                                           */
+		/* =========================================================== */
 
-		onInit: function (oEvent) {
+		/**
+		 * Called when the controller is instantiated.
+		 * @public
+		 */
+		onInit: function () {
 			this.setModel(this._createViewModel(), "RepairsModel");
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
@@ -18,11 +25,13 @@ sap.ui.define([
 
 		onExit: function () {
 			sap.ui.getCore().getEventBus().unsubscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
-
 		},
 
-		onChangeAppliedJobCode: function (oEvent) {
-			// var sPath;
+		/**
+		 * to handle change of Applied Job Code
+		 * @public
+		 */
+		onChangeAppliedJobCode: function () {
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -31,6 +40,8 @@ sap.ui.define([
 				return;
 			} else {
 				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
+				this.byId("idRepairRJC").setSelectedKey("");
+				this.byId("idRepairRJC").setValue("");
 			}
 
 			//Check Condition Code
@@ -44,6 +55,11 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * to handle value help for combo box
+		 * @public
+		 * @param {sap.ui.base.Event} oEvent - Event object from value help
+		 */
 		onValueHelp: function (oEvent) {
 			var sInputValue = oEvent.getSource().getSelectedKey();
 			var sTitle, sPath;
@@ -95,6 +111,11 @@ sap.ui.define([
 			this._oValueHelpDialog.open(sInputValue);
 		},
 
+		/**
+		 * to handle search function in value help
+		 * @public
+		 * @param {sap.ui.base.Event} oEvent - Event object from value help search field
+		 */
 		onValueHelpSearch: function (oEvent) {
 			var sValue = oEvent.getParameter("value");
 			oEvent.getSource().getBinding("items").filter(new sap.ui.model.Filter({
@@ -106,6 +127,11 @@ sap.ui.define([
 			}));
 		},
 
+		/**
+		 * to handle selected item in value help
+		 * @public
+		 * @param {sap.ui.base.Event} oEvent - Event object from value help for selected item
+		 */
 		onValueHelpConfirm: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 
@@ -124,11 +150,21 @@ sap.ui.define([
 			this._sInputId = undefined;
 		},
 
+		/**
+		 * to handle cancel action in value help
+		 * @public
+		 * @param {sap.ui.base.Event} oEvent - Event object from value help cancel action
+		 */
 		onValueHelpCancel: function (oEvent) {
 			this._oValueHelpDialog = undefined;
 			this._sInputId = undefined;
 		},
 
+		/**
+		 * to provide possible drop down list entries for value help
+		 * @public
+		 * @param {sap.ui.base.Event} oEvent - Event object from value help search field
+		 */
 		onSuggestionItemSelected: function (oEvent) {
 			var sInputId = this.getElementRealID(oEvent.getSource().getId());
 
@@ -142,13 +178,10 @@ sap.ui.define([
 			}
 		},
 
-		onSelectRJC: function () {
-			var removedJobCode = this.getView().byId("idRepairRJC").getSelectedKey();
-			if (removedJobCode === "") {
-				this._getRemovedJobCode();
-			}
-		},
-
+		/**
+		 * to handle on change of Removed Job Code
+		 * @public
+		 */
 		onChangedRemovedJobCode: function () {
 			var removedJobCode = this.getView().byId("idRepairRJC").getSelectedKey();
 
@@ -164,28 +197,45 @@ sap.ui.define([
 			this._determineWhyMadeCode();
 		},
 
+		/**
+		 * to handle change of Removed Job Code event
+		 * @public
+		 */
 		handleChangeRemovedJobCodeAJC: function () {
-
 			//Determine Why Made Code
 			this._determineWhyMadeCode();
 		},
 
+		/**
+		 * to handle change of Removed Job Code event
+		 * @public
+		 * @param {string} sSourceID - UI element ID
+		 * @return {string} sSourceID - view element ID
+		 */
 		getElementRealID: function (sSourceID) {
 			return sSourceID.split("--")[1];
 		},
 
-		onChangeConditionCode: function (oEvent) {
+		/**
+		 * to handle change of Condition Code event
+		 * @public
+		 */
+		onChangeConditionCode: function () {
 			// get Condition Code
 			this._getConditionCode();
 
 			//Check Why Made Code
 			this._determineWhyMadeCode();
-
 		},
-		// }
+		
 		/* =========================================================== */
 		/* begin: internal methods                                     */
 		/* =========================================================== */
+		/**
+		 * Creates the model for the view
+		 * @private
+		 * @return {sap.ui.model.json.JSONModel} JSON Model
+		 */
 		_createViewModel: function () {
 			return new JSONModel({
 				comboBoxValues: {
@@ -202,11 +252,18 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * to get screen values during initial load
+		 * @private
+		 */
 		_initScreenValues: function () {
-
 			this._getAppliedJobCode();
 		},
 
+		/**
+		 * to get Applied Job Code value
+		 * @private
+		 */
 		_getAppliedJobCode: function () {
 			var dateTime = new Date();
 			var aFilter = [new sap.ui.model.Filter({
@@ -234,6 +291,13 @@ sap.ui.define([
 			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode");
 		},
 
+		/**
+		 * to get Applied Job Code value and bind data to corresponding combo box
+		 * @private
+		 * @param {array} aFilter - array that contains filter condition to query CDS
+		 * @param {string} sProperty - combo box name
+	     * @return {object} Promise - return Job Code context
+		 */
 		_getJobCode: function (aFilter, sProperty) {
 			var sPath = "/ZMPM_CDS_CAR_REPAIR_JOBCODE";
 			var aComboBoxItem = [];
@@ -261,9 +325,12 @@ sap.ui.define([
 			}.bind(this));
 		},
 
+		/**
+		 * to get Condition Code value
+		 * @private
+		 */
 		_determineConditionCode: function () {
 			var aFilter;
-
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 
 			if (appliedJobCode === "") {
@@ -281,6 +348,13 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * to get Condition Code value and bind data to corresponding combo box
+		 * @private
+		 * @param {string} sPath - CDS path
+		 * @param {string} sProperty - combo box name
+		 * @param {array} aFilter - array that contains filter condition to query CDS
+		 */
 		_getConditionCode: function (sPath, sProperty, aFilter) {
 			var aComboBoxItem = [];
 			var oComboBoxItem;
@@ -305,11 +379,14 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * to get Why Made Code value
+		 * @private
+		 */
 		_determineWhyMadeCode: function () {
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
 			var oAppliedJobCode;
-
 			var aFilter;
 			var sPath;
 
@@ -361,22 +438,26 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * to get Removed Job Code value
+		 * @private
+		 */
 		_getRemovedJobCode: function () {
 			var aFilter;
 			var sPath;
 			var oAppliedJobCode;
-			var AxleAppJobCode = this.getModel("addCIDView").getProperty("/response/AxleAppliedJobCode"),
+			var oContext = this.getModel("addCIDView").getProperty("/response");
 
-				//Get Applied Job Code context
-				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-					JobCode: AxleAppJobCode
-				});
+			//Get Applied Job Code context
+			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
+				JobCode: oContext.AxleAppliedJobCode
+			});
 			oAppliedJobCode = this.getModel().getProperty(sPath);
 
 			aFilter = [new sap.ui.model.Filter({
 					path: "JobCode",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: AxleAppJobCode,
+					value1: oContext.AxleAppliedJobCode,
 					and: true
 				}),
 				new sap.ui.model.Filter({
@@ -397,6 +478,14 @@ sap.ui.define([
 			}.bind(this));
 		},
 
+		/**
+		 * to get Job Code couplet value and bind data to corresponding combo box
+		 * @private
+		 * @param {Array} aFilter - array that contains filter condition to query CDS
+		 * @param {String} sProperty - combo box name
+		 * @param {Boolean} bAppliedJobCode - Flag for Applied Job Code
+		 * @return {object} Promise - return Job Code Couplet context
+		 */
 		_getJobCodeCouplet: function (aFilter, sProperty, bAppliedJobCode) {
 			var sPath = "/ZMPM_CDS_CAR_JOBCDCOUPLET";
 			var aComboBoxItem = [];
@@ -426,6 +515,15 @@ sap.ui.define([
 			}.bind(this));
 		},
 
+		/**
+		 * to get Job Code Price data
+		 * @private
+		 * @param {Array} aFilter - array that contains filter condition to query CDS
+		 * @param {String} sProperty - combo box name
+		 * @param {Boolean} bWhyMadeCode - Boolean for Why Made Code
+		 * @param {Boolean} bConditionCode - Boolean for Condition Code
+		 * @return {object} Promise - return Job Code Price context
+		 */
 		_getJobCodePrice: function (aFilter, sProperty, bWhyMadeCode, bConditionCode) {
 			var sPath = "/ZMPM_CDS_CAR_JOBCODEPRICE";
 			var aComboBoxItem = [];
@@ -464,26 +562,6 @@ sap.ui.define([
 					error: function (sMsg) {}.bind(this)
 				});
 			}.bind(this));
-		},
-
-		_compareRule: function (sLeft, sCheck, sRight) {
-			//ZCAR_REPAIR_RULE_CONDITION
-			switch (sCheck) {
-			case "EQ":
-				return sLeft === sRight;
-			case "NEQ":
-				return sLeft !== sRight;
-			case "EW":
-				return sLeft.endsWith(sRight.toString());
-			case "NEW":
-				return !sLeft.endsWith(sRight.toString());
-			case "SW":
-				return sLeft.startsWith(sRight.toString());
-			case "NSW":
-				return !sLeft.startsWith(sRight.toString());
-			default:
-				return false;
-			}
 		}
 
 	});

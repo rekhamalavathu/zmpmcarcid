@@ -9,6 +9,11 @@ sap.ui.define([
 	"use strict";
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.OnChange", {
 
+		/**
+		 * perform validation check upon a mandatory combo box field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from mandatory field
+		 */
 		onChangeMandatory: function (oEvent) {
 			var oInput = oEvent.getParameter("newValue");
 			var oInputControl = oEvent.getSource();
@@ -30,6 +35,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * perform validation check upon a mandatory input field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from mandatory fieldd
+		 */
 		onChangeMandatoryInput: function (oEvent) {
 			var oInput = oEvent.getParameter("newValue");
 			var oInputControl = oEvent.getSource();
@@ -44,6 +54,11 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * perform validation check upon Month input field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from Month Input Field
+		 */
 		onChangeMonth: function (oEvent) {
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
@@ -58,9 +73,13 @@ sap.ui.define([
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
 				}
 			}
-
 		},
 
+		/**
+		 * perform validation check upon Year input field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from Year Input field
+		 */
 		onChangeYear: function (oEvent) {
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
@@ -77,6 +96,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * perform validation check upon Scale input field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from Scale Input field
+		 */
 		onChangeScale: function (oEvent) {
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
@@ -106,6 +130,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * perform validation check upon mandatory Month input field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from Month Input Field
+		 */
 		onChangeMandatoryMonth: function (oEvent) {
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
@@ -128,6 +157,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * perform validation check upon mandatory Year input field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from Month Input Field
+		 */
 		onChangeMandatoryYear: function (oEvent) {
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
@@ -150,6 +184,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * perform validation check upon combo box field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from combo box
+		 */
 		onChangeComboBox: function (oEvent) {
 			var oInputControl = oEvent.getSource();
 			var key = oEvent.getSource().getSelectedItem();
@@ -165,7 +204,11 @@ sap.ui.define([
 			}
 		},
 
-
+		/**
+		 * perform validation check upon Scale from Removed Wheel Reading input field is changed
+		 * @public
+		 * @param {Object} oEvent - Event object from Scale Input field
+		 */
 		onChangeRemScaleRead: function (oEvent) {
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();

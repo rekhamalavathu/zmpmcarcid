@@ -9,7 +9,11 @@ sap.ui.define([
 
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.CIDHeader", {
 
-		onRetrievePress: function (oEvent) {
+		/**
+		 * perform Component Lookup web service call when Retrieve Button is clicked
+		 * @public
+		 */
+		onRetrievePress: function () {
 			this.getModel("addCIDView").setProperty("/busy", true);
 
 			var oModel = this.getView().getModel();
@@ -73,11 +77,13 @@ sap.ui.define([
 
 					}.bind(this)
 				});
-
 			}
-
 		},
 
+		/**
+		 * perform validation check when Register Button is clicked
+		 * @public
+		 */
 		onRegisterPress: function () {
 			var cidHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 			var oViewModel = this.getModel("addCIDView");
@@ -100,9 +106,13 @@ sap.ui.define([
 					sap.m.MessageBox.error(sMessage);
 				}
 			}
-
 		},
 
+		/**
+		 * set the component type flag for corresponding component sections upon the change of Component Type
+		 * @public
+		 * @param {Object} oEvent - Event object from Component Type drop down
+		 */
 		onComponentTypeChange: function (oEvent) {
 			var oInputControl = oEvent.getSource();
 			var resp = this.getModel("addCIDView").getProperty("/response");
@@ -154,6 +164,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * perform validation check when Responsibility Code is change
+		 * @public
+		 * @param {Object} oEvent - Event object from Responsibility Code drop down
+		 */
 		onChangeResponsibilityCode: function (oEvent) {
 			var oInputControl = oEvent.getSource();
 			var header = this.getModel("addCIDView").getProperty("/cidHeader");
@@ -166,6 +181,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * perform validation check when Location Code is change
+		 * @public
+		 * @param {Object} oEvent - Event object from Location Code drop down
+		 */
 		onChangeLocation: function (oEvent) {
 			var oInputControl = oEvent.getSource();
 			var header = this.getModel("addCIDView").getProperty("/cidHeader");
@@ -181,7 +201,6 @@ sap.ui.define([
 		/* =========================================================== */
 		/* begin: internal methods                                     */
 		/* =========================================================== */
-
 		/**
 		 * Creates the model for the view
 		 * @private

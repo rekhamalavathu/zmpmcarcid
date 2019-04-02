@@ -27,11 +27,10 @@ sap.ui.define([
 		onInit: function () {
 			// set view model
 			this.setModel(this._createViewModel(), "addCIDView");
-			this._onObjectMatched();
+			// fetch Car Mark, GUID and Bad Order Status from Repair screen
 			this.getView().addEventDelegate({
 				onAfterShow: function () {
 					var oComponentData = this.getOwnerComponent().getComponentData();
-
 					if (oComponentData && oComponentData.startupParameters.CarMark && oComponentData.startupParameters.Guid && oComponentData.startupParameters
 						.OrderType) {
 						this.getModel("addCIDView").setProperty("/cidHeader/carMark", oComponentData.startupParameters.CarMark[0]);
@@ -69,14 +68,12 @@ sap.ui.define([
 		/* =========================================================== */
 		/* event handlers                                              */
 		/* =========================================================== */
-
 		/**
-		 * Event handler for navigating back.
-		 * It there is a history entry or an previous app-to-app navigation we go one step back in the browser history
+		 * Handle when Save Button is clicked
 		 * @public
 		 */
 		onSavePress: function () {
-
+			// Perform Field Registration Web Service call
 			this.getModel("addCIDView").setProperty("/busy", true);
 			var oModel = this.getView().getModel();
 			var oResponse = this.getModel("addCIDView").getProperty("/response");
@@ -110,13 +107,13 @@ sap.ui.define([
 			var updateFlag = this.getModel("addCIDView").getProperty("/response/UpdateFlag");
 
 			oResponse.to_Message = [];
-
+			//perform Component Field Registration
 			oModel.create("/ComponentSet", oResponse, {
 				method: "POST",
 				success: function (oData, resp) {
 					var oViewModel = this.getModel("addCIDView");
 					var sMessageLength = oData.to_Message.results.length;
-
+					// fetch registration result
 					if (sMessageLength === 0) {
 						if (updateFlag === true) {
 							oViewModel.setProperty("/response", oData);
@@ -128,6 +125,7 @@ sap.ui.define([
 							sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.componentSaved");
 							this.getModel("addCIDView").setProperty("/busy", false);
 						}
+						//show a message toast if the registration is successful
 						MessageToast.show(sMessage, {
 							duration: 1500,
 							onClose: function () {
@@ -135,6 +133,7 @@ sap.ui.define([
 							}.bind(this)
 						});
 					} else {
+						//fetch error message and register to message manager
 						for (var i = 0; i < oData.to_Message.results.length; i++) {
 							sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 								message: oData.to_Message.results[i].ResponseMessage,
@@ -146,6 +145,7 @@ sap.ui.define([
 					}
 
 				}.bind(this),
+				//fetch error message and register to message manager
 				error: function (oError) {
 					this.getModel("addCIDView").setProperty("/busy", false);
 					var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData(),
@@ -156,6 +156,11 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * Handle when message indicator is clicked
+		 * @public
+		 * @param {sap.ui.base.Event} oEvent - Event object from message indicator
+		 */
 		onMsgIndPress: function (oEvent) {
 			if (!this._oMessagePopover) {
 				this._oMessagePopover = sap.ui.xmlfragment(this.getView().getId(), "com.nscorp.car.componentid.view.fragment.MessagePopOver",
@@ -165,6 +170,11 @@ sap.ui.define([
 			this._oMessagePopover.openBy(oEvent.getSource());
 		},
 
+		/** 
+		 * Method to get new Material configuration details for Repair
+		 * @public
+		 * @return {Array} - Array for Material configuration data
+		 */
 		getNewRepairConfigMatNumber: function () {
 			return {
 				AppliedJobCodeCheck: "",
@@ -177,6 +187,11 @@ sap.ui.define([
 			};
 		},
 
+		/**
+		 * Method to get new Material condition details for Repair
+		 * @public
+		 * @return {Array} - Array for Material Condition data
+		 */
 		getNewRepairConfigMatCond: function () {
 			return {
 				MaterialCodeCheck: "",
@@ -185,6 +200,11 @@ sap.ui.define([
 			};
 		},
 
+		/**
+		 * Method get new configuration details for Repair Material cost
+		 * @public
+		 * @return {Array} - Array for Material Cost data
+		 */
 		getNewRepairConfigMatCost: function () {
 			return {
 				AppliedJobCodeCheck: "",
@@ -193,6 +213,11 @@ sap.ui.define([
 			};
 		},
 
+		/**
+		 * Method get new configuration details for Applied Qualifier
+		 * @public
+		 * @return {Array} - Array for Applied Qualifier configuration data
+		 */
 		getNewRepairConfigApplQual: function () {
 			return {
 				JobCodeOpTypeIDCheck: "",
@@ -202,6 +227,11 @@ sap.ui.define([
 			};
 		},
 
+		/**
+		 * Method get new configuration details for Repair Material Reservation details
+		 * @public
+		 * @return {Array} - Array for Material reservation data
+		 */
 		getNewRepairConfigMatReservation: function () {
 			return {
 				ConditionCodeCheck: "",
@@ -212,6 +242,14 @@ sap.ui.define([
 			};
 		},
 
+		/**
+		 * add object to model.
+		 * @public
+		 * @param {object} oModel - Model Name
+		 * @param {string} sProperty - Property Name
+		 * @param {object} oObject - Object
+		 * @return {string} aItems - return latest item index 
+		 */
 		addObjectToModel: function (oModel, sProperty, oObject) {
 			var aItems = oModel.getProperty(sProperty);
 			aItems.push(oObject);
@@ -221,29 +259,16 @@ sap.ui.define([
 			return aItems.length - 1;
 		},
 
+		/**
+		 * Event handler for navigating back.
+		 * It there is a history entry or an previous app-to-app navigation we go one step back in the browser history
+		 * @public
+		 */
 		onNavBack: function () {
 			// navigate to previous screen
 			sap.ui.getCore().byId("backBtn").firePress();
 
 		},
-		/*
-		/**
-		 * Handle when icon tab bar is selected
-		 * @public
-		 * @param {sap.ui.base.Event} oEvent - Event object from Icon Tab Bar select
-	   */
-
-		/**
-		 * Handle when track item table update finished
-		 * @public
-		 * @param {sap.ui.base.Event} oEvent - Event object from Track Item Table update finished
-		 */
-
-		/**
-		 * Handle on search field live change
-		 * @public
-		 * @param {sap.ui.base.Event} oEvent - Event object from Search Field
-		 */
 
 		/* =========================================================== */
 		/* begin: internal methods                                     */
@@ -302,12 +327,18 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * Handle Object Matched event
+		 * @private
+		 * @param {sap.ui.base.Event} oEvent - Event object from previous page
+		 */
 		_onObjectMatched: function (oEvent) {
 			var sPath,
 				oObject,
 				aFilter,
 				oComponentData = this.getOwnerComponent().getComponentData();
 
+			//get User Station
 			this.getModel().callFunction("/GetCurrentUser", {
 				method: "GET",
 				success: function (oData, response) {
@@ -461,6 +492,11 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * to set Component type flag
+		 * @private
+		 * @param {object} oResponse - Component details
+		 */
 		_setComponentFlag: function (oResponse) {
 			switch (oResponse.ComponentType) {
 			case "WHEELSET":
@@ -487,6 +523,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * to check mandatory fields for all component type during Field Registration
+		 * @private
+		 * @param {object} oResponse - component detai;s
+		 */
 		_checkMandatoryField: function (oResponse) {
 			// check WheelSet mandatory fields
 			if (oResponse.WheelSetFlag === true) {
