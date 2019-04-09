@@ -56,6 +56,7 @@ sap.ui.define([
 						oViewModel.setProperty("/buttonSetEnable", true);
 						oViewModel.setProperty("/response", oData);
 						oViewModel.setProperty("/response/Guid", cidHeader.guid);
+						// this.getModel("WOModel").setProperty("/Response", oData);
 						// Initial load for RJC for Wheel Set Component type
 						if (oData.ComponentType === "WHEELSET") {
 							sap.ui.getCore().getEventBus().publish("onLoadRemovedJobCode");

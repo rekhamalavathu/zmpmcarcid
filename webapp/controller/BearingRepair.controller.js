@@ -678,16 +678,20 @@ sap.ui.define([
 					and: true
 				})
 			];
-			this.getView().byId("idRepairRJC").setSelectedKey("");
+
 			this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCode", false).then(function (aItems) {
 				if (aItems.length === 1) {
 					//If only 1 Item, set default
 					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
-					this._determineWhyMadeCode();
-					this._getRemovedQualifier(aItems[0].key, "idRepairRemovedQualifier");
+					// this._determineWhyMadeCode();
+					// this._getRemovedQualifier(aItems[0].key, "idRepairRemovedQualifier");
+					this.getModel("addCIDView").updateBindings(true);
 				}
 				this._determineConditionCode();
 				this._determineAppliedQualifier(oContext.BrAppliedJobCodeRight, oAppliedJobCode.JobCodeOperationTypeID);
+				this._getRemovedQualifier(oContext.BrRemovedJobCodeRight, "idRepairRemovedQualifier");
+				this._determineWhyMadeCode();
+				this.getModel("addCIDView").updateBindings(true);
 			}.bind(this));
 		},
 
@@ -720,16 +724,19 @@ sap.ui.define([
 					and: true
 				})
 			];
-			this.getView().byId("idRepairRJCLeft").setSelectedKey("");
+			// this.getView().byId("idRepairRJCLeft").setSelectedKey("");
 			this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCodeLeft", false).then(function (aItems) {
 				if (aItems.length === 1) {
 					//If only 1 Item, set default
 					this.getView().byId("idRepairRJCLeft").setSelectedKey(aItems[0].key);
-					this._determineWhyMadeCodeLeft();
-					this._getRemovedQualifier(aItems[0].key, "idRepairRemovedQualifierLeft");
+					// this._determineWhyMadeCodeLeft();
+					// this._getRemovedQualifier(aItems[0].key, "idRepairRemovedQualifierLeft");
 				}
 				this._determineConditionCodeLeft();
 				this._determineAppliedQualifierLeft(oContext.BrAppliedJobCodeLeft, oAppliedJobCode.JobCodeOperationTypeID);
+				this._getRemovedQualifier(oContext.BrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
+				this._determineWhyMadeCodeLeft();
+				this.getModel("addCIDView").updateBindings(true);
 			}.bind(this));
 		},
 
@@ -763,6 +770,7 @@ sap.ui.define([
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						resolve(aComboBoxItem);
+						this.getModel("addCIDView").updateBindings(true);
 					}.bind(this),
 					error: function (sMsg) {}.bind(this)
 				});

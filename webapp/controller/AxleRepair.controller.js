@@ -20,7 +20,6 @@ sap.ui.define([
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
-
 		},
 
 		onExit: function () {
@@ -227,7 +226,7 @@ sap.ui.define([
 			//Check Why Made Code
 			this._determineWhyMadeCode();
 		},
-		
+
 		/* =========================================================== */
 		/* begin: internal methods                                     */
 		/* =========================================================== */
@@ -258,6 +257,7 @@ sap.ui.define([
 		 */
 		_initScreenValues: function () {
 			this._getAppliedJobCode();
+
 		},
 
 		/**
@@ -296,7 +296,7 @@ sap.ui.define([
 		 * @private
 		 * @param {array} aFilter - array that contains filter condition to query CDS
 		 * @param {string} sProperty - combo box name
-	     * @return {object} Promise - return Job Code context
+		 * @return {object} Promise - return Job Code context
 		 */
 		_getJobCode: function (aFilter, sProperty) {
 			var sPath = "/ZMPM_CDS_CAR_REPAIR_JOBCODE";
@@ -446,7 +446,9 @@ sap.ui.define([
 			var aFilter;
 			var sPath;
 			var oAppliedJobCode;
-			var oContext = this.getModel("addCIDView").getProperty("/response");
+			var oContext;
+
+			oContext = this.getModel("addCIDView").getProperty("/response");
 
 			//Get Applied Job Code context
 			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
@@ -467,15 +469,16 @@ sap.ui.define([
 					and: true
 				})
 			];
-			this.getView().byId("idRepairRJC").setSelectedKey("");
 			this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCode", false).then(function (aItems) {
 				if (aItems.length === 1) {
 					//If only 1 Item, set default
 					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
-					this._determineWhyMadeCode();
+					// this._determineWhyMadeCode();
 				}
 				this._determineConditionCode();
+				this._determineWhyMadeCode();
 			}.bind(this));
+
 		},
 
 		/**
@@ -509,6 +512,7 @@ sap.ui.define([
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						resolve(aComboBoxItem);
+						this.getModel("addCIDView").updateBindings(true);
 					}.bind(this),
 					error: function (sMsg) {}.bind(this)
 				});

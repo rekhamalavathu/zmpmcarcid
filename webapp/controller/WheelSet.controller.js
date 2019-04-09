@@ -720,14 +720,15 @@ sap.ui.define([
 					and: true
 				})
 			];
-			this.getView().byId("idRepairRJC").setSelectedKey("");
+
 			this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCode", false).then(function (aItems) {
 				if (aItems.length === 1) {
 					//If only 1 Item, set default
 					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
-					this._determineWhyMadeCode();
+					// this._determineWhyMadeCode();
 				}
 				this._determineConditionCode();
+				this._determineWhyMadeCode();
 				this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
 			}.bind(this));
 
@@ -764,6 +765,7 @@ sap.ui.define([
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						resolve(aComboBoxItem);
+						this.getModel("addCIDView").updateBindings(true);
 					}.bind(this),
 					error: function (sMsg) {}.bind(this)
 				});
