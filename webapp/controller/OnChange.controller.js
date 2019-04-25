@@ -31,7 +31,6 @@ sap.ui.define([
 					oInputControl.setValueState(sap.ui.core.ValueState.None);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
 				}
-
 			}
 		},
 

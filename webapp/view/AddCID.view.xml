@@ -7,7 +7,7 @@
 	xmlns:bolster="com.nscorp.car.componentid.view.BolsterBlock" xmlns:coupler="com.nscorp.car.componentid.view.CouplerBlock"
 	xmlns:emervalve="com.nscorp.car.componentid.view.EmerValveBlock" xmlns:servvalve="com.nscorp.car.componentid.view.ServValveBlock"
 	xmlns:sideframe="com.nscorp.car.componentid.view.SideFrameBlock" xmlns:slackadjust="com.nscorp.car.componentid.view.SlackAdjustBlock"
-	controllerName="com.nscorp.car.componentid.controller.AddCID" busy="{addCIDView>/busy}" busyIndicatorDelay="{addCIDView>/busyDelay}">
+	controllerName="com.nscorp.car.componentid.controller.AddCID" busyIndicatorDelay="{addCIDView>/busyDelay}" busy="{addCIDView>/busy}">
 	<ObjectPageLayout id="idObjectPageLayout" flexEnabled="true" alwaysShowContentHeader="true" showFooter="true" busy="{addCIDView>/busy}"
 		busyIndicatorDelay="{addCIDView>/busyDelay}">
 		<headerTitle>

@@ -57,7 +57,7 @@
 				</items>
 			</ComboBox>
 			<!--Component AAR Facility Code-->
-			<Label text="{i18n>label.FacilityCode}" required="true"/>
+			<Label text="{i18n>label.FacilityCode}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_FACILITY_CODE', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C003' }]}"
 				selectedKey="{addCIDView>/response/WsFacilityCode}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>

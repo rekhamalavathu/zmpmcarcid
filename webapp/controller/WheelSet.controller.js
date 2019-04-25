@@ -4,8 +4,9 @@ sap.ui.define([
 	"sap/m/MessagePopover",
 	"sap/m/Link",
 	"sap/m/MessageBox",
-	"sap/ui/model/Filter"
-], function (BaseController, JSONModel, MessagePopover, Link, MessageBox, Filter) {
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseController, JSONModel, MessagePopover, Link, MessageBox, Filter, FilterOperator) {
 	"use strict";
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.WheelSet", {
 		/* =========================================================== */
@@ -58,35 +59,36 @@ sap.ui.define([
 		 */
 		onChangeAppliedJobCode: function () {
 			var oContext = this.getModel("addCIDView").getProperty("/response");
-			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
+			// var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
+			// var oJobCode = {};
 
 			// Clear existing value for Material Quantity On Hand and Quantity Available
 			this.getView().byId("idQuantityOnHand").setValue("");
 			this.getView().byId("idQuantityAvailable").setValue("");
 
-			if (appliedJobCode === "") {
+			if (oContext.WsAppliedJobCode === "") {
 				this.getView().byId("idRepairAJC").setValue("");
 				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.Error);
-
 				return;
 			} else {
 				this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
 				this.byId("idRepairRJC").setSelectedKey("");
 				this.byId("idRepairRJC").setValue("");
 			}
+			if (oContext.WsAppliedJobCode && oContext.WsAppliedJobCode !== "0000") {
 
-			//Check Condition Code
-			this._determineConditionCode();
+				//Check Condition Code
+				this._determineConditionCode();
 
-			//Check Why Made Code
-			this._determineWhyMadeCode();
+				//Check Why Made Code
+				this._determineWhyMadeCode();
 
-			// //Determine Removed Job Code
-			this._getRemovedJobCode();
+				// //Determine Removed Job Code
+				this._getRemovedJobCode();
 
-			//Check Material Number Rule
-			this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
-
+				//Check Material Number Rule
+				this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
+			}
 		},
 
 		/**
@@ -389,7 +391,6 @@ sap.ui.define([
 							this.getModel("addCIDView").updateBindings(true);
 						}.bind(this)
 					}
-
 				);
 			} else {
 				//Determine Material Quantity
@@ -409,7 +410,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * to handle change of Removed Job Code event
+		 * to get View Element ID
 		 * @public
 		 * @param {string} sSourceID - UI element ID
 		 * @return {string} sSourceID - view element ID
@@ -475,64 +476,69 @@ sap.ui.define([
 			this._getAppliedJobCode();
 		},
 
-		/**
-		 * to get Applied Job Code value
+		/** 
+		 * Method to get Applied Job Code
 		 * @private
+		 * @returns {Promise} - Promise objects with the items retrieved
 		 */
 		_getAppliedJobCode: function () {
-			var dateTime = new Date();
-			var aFilter = [new sap.ui.model.Filter({
-					path: "EffectiveDate",
-					operator: sap.ui.model.FilterOperator.LE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "ExpirationDate",
-					operator: sap.ui.model.FilterOperator.GE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "AppliedRemovedIndicator",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: "B",
-					and: true
-				})
-			];
-
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode").then(function (sStatus) {
-
+			return new Promise(function (resolve) {
+				this._getJobCode([], "/comboBoxValues/AppliedJobCode").then(function (aItems) {
+					resolve(aItems);
+				}.bind(this));
 			}.bind(this));
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode");
+
 		},
 
-		/**
-		 * to get Applied Job Code value and bind data to corresponding combo box
-		 * @private
-		 * @param {array} aFilter - array that contains filter condition to query CDS
-		 * @param {string} sProperty - combo box name
-		 * @return {object} Promise - return Job Code context
+		/** 
+		 * Method to get Job Code
+		 * @constructor 
+		 * @param {Object} aFilter - The filter criteia
+		 * @param {String} sProperty - The property to be binded in the model
+		 * @returns {Promise} - Array of items retrieved/Error
 		 */
 		_getJobCode: function (aFilter, sProperty) {
-			var sPath = "/ZMPM_CDS_CAR_REPAIR_JOBCODE";
+			var sPath = (sProperty === "/comboBoxValues/AppliedJobCode" ? "/ZMPM_CDS_CAR_APPLIEDJOBCODE" : "/ZMPM_CDS_CAR_REMOVEDJOBCODE");
 			var aComboBoxItem = [];
 			var oComboBoxItem;
+			// var aJobCodes = [];
+			// var sPriceMasterID = this.getModel("WOModel").getProperty("/WOHeader/PriceMasterID");
 
 			return new Promise(function (resolve) {
 				this.getModel().read(sPath, {
+					urlParameters: {
+						"$orderby": "JobCode"
+					},
 					filters: aFilter,
 					success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
+						var sAppliedRemovedIndicator = (sProperty === "/comboBoxValues/AppliedJobCode" ? "B" : "N");
+						var sPriceMasterID = this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId");
+						//Function to add items
+						function addItem(oItem) {
 							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].JobCode;
-							oComboBoxItem.text = oData.results[i].JobCodeDescription;
+							oComboBoxItem.key = oItem.JobCode;
+							oComboBoxItem.text = oItem.JobCodeDescription;
 							aComboBoxItem.push(oComboBoxItem);
+							// aJobCodes.push(oItem.JobCode);
 						}
-						this._aAppliedJobCodeResults = oData.results;
+
+						for (var i = 0; i < oData.results.length; i++) {
+							if (oData.results[i].EffectiveDate === null && oData.results[i].ExpirationDate === null && oData.results[i].PriceMasterID ===
+								"00000000000000000000000000000000000000") {
+								addItem(oData.results[i]);
+							} else {
+								if (sProperty === "/comboBoxValues/AppliedJobCode" && oData.results[i].AppliedRemovedIndicator ===
+									sAppliedRemovedIndicator && oData.results[i].PriceMasterID === sPriceMasterID) {
+									addItem(oData.results[i]);
+								} else if (sProperty === "/comboBoxValues/RemovedJobCode" && oData.results[i].AppliedRemovedIndicator !==
+									sAppliedRemovedIndicator && oData.results[i].PriceMasterID === sPriceMasterID) {
+									addItem(oData.results[i]);
+								}
+							}
+						}
 						this._aAppliedJobCode = aComboBoxItem;
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						resolve("Completed");
+						resolve(aComboBoxItem);
 					}.bind(this),
 					error: function (sMsg) {
 						resolve("Error");
@@ -547,29 +553,34 @@ sap.ui.define([
 		 */
 		_determineConditionCode: function () {
 			var aFilter;
-			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
+			// var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
+			var oContext = this.getModel("addCIDView").getProperty("/response");
 
-			if (appliedJobCode === "") {
+			if (oContext.WsAppliedJobCode === "") {
 				return;
 			}
+		
+			if (this._compareRule(oContext.WsAppliedJobCode, "NEW", "99")) {
+				aFilter = [new Filter({
+					path: "JobCode",
+					operator: FilterOperator.EQ,
+					value1: oContext.WsAppliedJobCode,
+					and: true
+				})];
 
-			aFilter = [new sap.ui.model.Filter({
-				path: "JobCode",
-				operator: sap.ui.model.FilterOperator.EQ,
-				value1: appliedJobCode,
-				and: true
-			})];
-
-			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter);
-
+				this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter);
+			} else {
+				this._getConditionCode("/ZMPM_CDS_CAR_CONDITIONCODE", "/comboBoxValues/ConditionCode", []);
+			}
+			// }
 		},
 
-		/**
-		 * to get Condition Code value and bind data to corresponding combo box
-		 * @private
-		 * @param {string} sPath - CDS path
-		 * @param {string} sProperty - combo box name
-		 * @param {array} aFilter - array that contains filter condition to query CDS
+		/** 
+		 * Method to get Condition Code
+		 * @constructor 
+		 * @param {String} sPath - The path(CDS) to be read
+		 * @param {String} sProperty - The property to be binded in the model
+		 * @param {Array} aFilter - The array of filter criterias
 		 */
 		_getConditionCode: function (sPath, sProperty, aFilter) {
 			var aComboBoxItem = [];
@@ -588,9 +599,7 @@ sap.ui.define([
 					if (aComboBoxItem.length === 1) {
 						this.getView().byId("idRepairCondCode").setSelectedKey(aComboBoxItem[0].key);
 					}
-
-				}.bind(this),
-				error: function (sMsg) {}.bind(this)
+				}.bind(this)
 			});
 		},
 
@@ -601,56 +610,64 @@ sap.ui.define([
 		_determineWhyMadeCode: function () {
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
-			var oAppliedJobCode;
+			// var oAppliedJobCode;
 			var aFilter;
-			var sPath;
+			// var sPath;
+
+			// oAppliedJobCode = this._getRepairJobCode(oContext.WsAppliedJobCode, "AJC");
+
+			// if (oContext.AppliedJobCode < 1000) {
+			// 	aFilter = [new Filter({
+			// 		path: "AppliedJobCode",
+			// 		operator: FilterOperator.EQ,
+			// 		value1: oContext.WsAppliedJobCode,
+			// 		and: true
+			// 	})];
+			// } else {
 
 			//All must filled
 			if (oContext.WsAppliedJobCode === undefined || oContext.WsRemovedJobCode === undefined || responsibilityCode === undefined ||
-				oContext.WsAppliedJobCode === "" ||
-				oContext.WsRemovedJobCode === "" || responsibilityCode === "" || oContext.WsConditionCode === undefined ||
-				oContext.WsConditionCode === "") {
+				oContext.WsAppliedJobCode === "" || oContext.WsRemovedJobCode === "" || responsibilityCode === "") {
 				return;
 			}
 
-			//Get Applied Job Code context
-			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.WsAppliedJobCode
-			});
-			oAppliedJobCode = this.getModel().getProperty(sPath);
-
-			aFilter = [new sap.ui.model.Filter({
-					path: "AppliedJobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WsAppliedJobCode,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "RemovedJobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.WsRemovedJobCode,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "ResponsibilityCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: responsibilityCode,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "PriceMasterID",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oAppliedJobCode.PriceMasterID,
-					and: true
-				})
-			];
-
+			if (this._compareRule(oContext.WsAppliedJobCode, "NEW", "99")) {
+				aFilter = [new Filter({
+						path: "AppliedJobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.WsAppliedJobCode,
+						and: true
+					}),
+					new Filter({
+						path: "RemovedJobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.WsRemovedJobCode,
+						and: true
+					}),
+					new Filter({
+						path: "ResponsibilityCode",
+						operator: FilterOperator.EQ,
+						value1: responsibilityCode,
+						and: true
+					}),
+					new Filter({
+						path: "PriceMasterID",
+						operator: FilterOperator.EQ,
+						value1: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId"),
+						and: true
+					})
+				];
+			} else {
+				aFilter = [];
+			}
+		
 			this._getJobCodePrice(aFilter, "/comboBoxValues/WhyMadeCode", true, null).then(function (aItems) {
 				if (aItems.length === 1) {
 					this.getView().byId("idRepairWhyMadeCode").setSelectedKey(aItems[0].key);
+					// this._oController.getModel("WOModel").updateBindings(true);
 				}
 			}.bind(this));
-
+			// }
 		},
 
 		/**
@@ -696,89 +713,107 @@ sap.ui.define([
 		 */
 		_getRemovedJobCode: function () {
 			var aFilter;
-			var sPath;
-			var oAppliedJobCode;
-			var AppJobCode = this.getModel("addCIDView").getProperty("/response/WsAppliedJobCode");
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 
-			//Get Applied Job Code context
-			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: AppJobCode
-			});
-			oAppliedJobCode = this.getModel().getProperty(sPath);
+			//Check AJC whether it is end with 99
+			if (this._compareRule(oContext.WsAppliedJobCode, "NEW", "99")) {
+				aFilter = [new Filter({
+						path: "JobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.WsAppliedJobCode,
+						and: true
+					}),
+					new Filter({
+						path: "PriceMasterID",
+						operator: FilterOperator.EQ,
+						value1: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId"),
+						and: true
+					})
+				];
 
-			aFilter = [new sap.ui.model.Filter({
-					path: "JobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: AppJobCode,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "PriceMasterID",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oAppliedJobCode.PriceMasterID,
-					and: true
-				})
-			];
+				this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCode", false).then(function (aItems) {
+					if (aItems.length === 1) {
+						//If only 1 Item, set default
+						this.getView().byId("idRepairRJC").setSelectedKey(aItems[0]);
+					}
+					this._determineConditionCode();
+					this._determineWhyMadeCode();
+					this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
+					// this.handleChangeRemovedJobCodeAJC();
+					// this._oController.getModel("WOModel").updateBindings(true);
+				}.bind(this));
+			} else {
+				// //Removed Job Code must equal AJC that ends with 99
+				// aFilter = [new Filter({
+				// 	path: "JobCode",
+				// 	operator: FilterOperator.EQ,
+				// 	value1: oContext.WsAppliedJobCode,
+				// 	and: true
+				// })];
 
-			this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCode", false).then(function (aItems) {
-				if (aItems.length === 1) {
-					//If only 1 Item, set default
-					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
-					// this._determineWhyMadeCode();
-				}
-				this._determineConditionCode();
-				this._determineWhyMadeCode();
-				this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
-			}.bind(this));
-
+				this._getJobCode(aFilter, "/comboBoxValues/RemovedJobCode").then(function (aItems) {
+					if (aItems.length === 1) {
+						//If only 1 Item, set default
+						this.byId("idRepairRJC").setSelectedKey(aItems[0].key);
+					}
+					this._determineConditionCode();
+					this._determineWhyMadeCode();
+					this._determineMaterialNumber(oContext.WsAppliedJobCode, oContext.WsConditionCode);
+				}.bind(this));
+			}
+			// }
 		},
 
-		/**
-		 * to get Job Code couplet value and bind data to corresponding combo box
-		 * @private
-		 * @param {Array} aFilter - array that contains filter condition to query CDS
-		 * @param {String} sProperty - combo box name
-		 * @param {Boolean} bAppliedJobCode - Flag for Applied Job Code
-		 * @return {object} Promise - return Job Code Couplet context
+		/** 
+		 * Method to get Job Code from Couplet 
+		 * @constructor 
+		 * @param {Array} aFilter - Array of filter criterias
+		 * @param {String} sProperty - Property to be binded in the model
+		 * @param {Boolean} bAppliedJobCode - Indicator whether it is for Applied Job Code (true/false)
+		 * @returns {Promise} - Values added in the combobox
 		 */
 		_getJobCodeCouplet: function (aFilter, sProperty, bAppliedJobCode) {
 			var sPath = "/ZMPM_CDS_CAR_JOBCDCOUPLET";
 			var aComboBoxItem = [];
 			var oComboBoxItem;
+			var aKeyAdded = [];
 
 			return new Promise(function (resolve) {
 				this.getModel().read(sPath, {
 					filters: aFilter,
+					urlParameters: {
+						"$orderby": (bAppliedJobCode ? "JobCode" : "RemovedJobCode")
+					},
 					success: function (oData) {
 						for (var i = 0; i < oData.results.length; i++) {
 							oComboBoxItem = {};
-							if (bAppliedJobCode) {
+							if (bAppliedJobCode && aKeyAdded.indexOf(oData.results[i].JobCode) === -1) {
 								oComboBoxItem.key = oData.results[i].JobCode;
-								oComboBoxItem.text = oData.results[i].JobCodeDesc;
-							} else {
+								oComboBoxItem.text = oData.results[i].JobCodeDescription;
+								aComboBoxItem.push(oComboBoxItem);
+								aKeyAdded.push(oData.results[i].JobCode);
+							} else if (!bAppliedJobCode && aKeyAdded.indexOf(oData.results[i].RemovedJobCode) === -1) {
 								oComboBoxItem.key = oData.results[i].RemovedJobCode;
-								oComboBoxItem.text = oData.results[i].RemovedJobCodeDesc;
+								oComboBoxItem.text = oData.results[i].RemovedJobCodeDescription;
+								aComboBoxItem.push(oComboBoxItem);
+								aKeyAdded.push(oData.results[i].RemovedJobCode);
 							}
-
-							aComboBoxItem.push(oComboBoxItem);
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						resolve(aComboBoxItem);
-						this.getModel("addCIDView").updateBindings(true);
-					}.bind(this),
-					error: function (sMsg) {}.bind(this)
+						resolve(aKeyAdded);
+						// this.getModel("addCIDView").updateBindings(true);
+					}.bind(this)
 				});
 			}.bind(this));
 		},
 
 		/**
-		 * to get Job Code Price data
+		 * Method to get Job Code from Price Master for Why Made Code/Condition Code
 		 * @private
-		 * @param {Array} aFilter - array that contains filter condition to query CDS
-		 * @param {String} sProperty - combo box name
-		 * @param {Boolean} bWhyMadeCode - Boolean for Why Made Code
-		 * @param {Boolean} bConditionCode - Boolean for Condition Code
+		 * @param {String} aFilter- Array of filter criterias
+		 * @param {String} sProperty - Property to be binded in the model
+		 * @param {Boolean} bWhyMadeCode - Indicator whether it is for Why Made Code
+		 * @param {Boolean} bConditionCode - Indicator whether it is for Condition Code
 		 * @return {object} Promise - return Job Code Price context
 		 */
 		_getJobCodePrice: function (aFilter, sProperty, bWhyMadeCode, bConditionCode) {
@@ -791,29 +826,29 @@ sap.ui.define([
 				this.getModel().read(sPath, {
 					filters: aFilter,
 					success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
-							oComboBoxItem = {};
+							for (var i = 0; i < oData.results.length; i++) {
+								oComboBoxItem = {};
 
-							if (bWhyMadeCode) {
-								if (aWhyMadeCodeAdded.includes(oData.results[i].WhyMadeCode)) {
-									continue;
+								if (bWhyMadeCode) {
+									if (aWhyMadeCodeAdded.indexOf(oData.results[i].WhyMadeCode) !== -1) {
+										continue;
+									}
+									oComboBoxItem.key = oData.results[i].WhyMadeCode;
+									oComboBoxItem.text = oData.results[i].WhyMadeCodeDescription;
+									aComboBoxItem.push(oComboBoxItem);
+									aWhyMadeCodeAdded.push(oData.results[i].WhyMadeCode);
 								}
-								oComboBoxItem.key = oData.results[i].WhyMadeCode;
-								oComboBoxItem.text = oData.results[i].WhyMadeCodeDescription;
-								aComboBoxItem.push(oComboBoxItem);
-								aWhyMadeCodeAdded.push(oData.results[i].WhyMadeCode);
-							}
 
-							if (bConditionCode) {
-								oComboBoxItem.key = oData.results[i].ConditionCode;
-								oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
-								aComboBoxItem.push(oComboBoxItem);
+								if (bConditionCode) {
+									oComboBoxItem.key = oData.results[i].ConditionCode;
+									oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
+									aComboBoxItem.push(oComboBoxItem);
+								}
 							}
-						}
-						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						resolve(aComboBoxItem);
-					}.bind(this),
-					error: function (sMsg) {}.bind(this)
+							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+							resolve(aComboBoxItem);
+						}.bind(this)
+						// error: function (sMsg) {}.bind(this)
 				});
 			}.bind(this));
 		},
@@ -827,6 +862,10 @@ sap.ui.define([
 		_determineMaterialNumber: function (sAppliedJobCode, sConditionCode) {
 			//Check against Rule in Description
 			var aRule = this.getModel("RepairConfig").getProperty("/MaterialNumber");
+
+			if (sAppliedJobCode === "" || sConditionCode === "") {
+				return;
+			}
 
 			this.getView().byId("idRepairMaterial").setShowValueHelp(true);
 			for (var i = 0; i < aRule.length; i++) {
@@ -981,7 +1020,7 @@ sap.ui.define([
 							aMaterialAdded.push(oComboBoxItem.key);
 						}
 						this._sMaterialNumberSearch = sPath;
-                        //clear value if not material number found
+						//clear value if not material number found
 						if (aMaterialAdded.indexOf(oWheelSet.Material) === -1) {
 							this.getView().byId("idRepairMaterial").setSelectedKey("");
 							this.getView().byId("idRepairMaterial").setValue("");
@@ -994,9 +1033,7 @@ sap.ui.define([
 
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						this.getModel("WOModel").updateBindings(true);
-
 						resolve(aComboBoxItem);
-
 					}.bind(this),
 					error: function (sMsg) {
 
@@ -1034,6 +1071,105 @@ sap.ui.define([
 				}
 			}
 			return oContext;
+		},
+
+		/** 
+		 * Read JobCode from model
+		 * @constructor 
+		 * @param {String} sJobCode - The job code to read
+		 * @param {String} sJobCodeType - Job Code Type (AJC/RJC/JCP)
+		 * @returns {Object} oJobCode - The job code data from model
+		 */
+		_getRepairJobCode: function (sJobCode, sJobCodeType) {
+			switch (sJobCodeType) {
+			case "AJC":
+				var sCDS = "/ZMPM_CDS_CAR_APPLIEDJOBCODE";
+				break;
+			case "RJC":
+				sCDS = "/ZMPM_CDS_CAR_REMOVEDJOBCODE";
+				break;
+			case "JCP":
+				sCDS = "/ZMPM_CDS_CAR_JOBCDCOUPLET";
+				break;
+			default:
+				sCDS = "/ZMPM_CDS_CAR_APPLIEDJOBCODE";
+			}
+
+			if (sJobCodeType === "JCP") {
+				if (this._sRepairType === "AJC") {
+					var oJobCode = this._getRepairJobCodeCoupletAJC(sJobCode, sCDS);
+				} else if (this._sRepairType === "RJC") {
+					oJobCode = this._getRepairJobCodeCoupletRJC(sJobCode, sCDS);
+				} else if (this._sRepairType === "MAT") {
+					oJobCode = this._getRepairJobCodeCoupletMAT(sJobCode, sCDS);
+				}
+			} else {
+				oJobCode = this._getRepairJobCodeNonCouplet(sJobCode, sCDS);
+			}
+
+			return oJobCode;
+		},
+
+		/** 
+		 * Get Repair Job Code Couplet of Non Couplet scenario
+		 * @constructor 
+		 * @param {String} sJobCode - Job Code
+		 * @param {String} sCDS - The CDS
+		 * @returns {Object} - The Job Code object
+		 */
+		_getRepairJobCodeNonCouplet: function (sJobCode, sCDS) {
+			//Read the job code
+			var sPath = this.getModel().createKey(sCDS, {
+				JobCode: sJobCode,
+				PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
+			});
+
+			var oJobCode = this.getModel().getProperty(sPath);
+
+			//If job code is undefined, read with price master ID 0
+			if (oJobCode === undefined) {
+				sPath = this.getModel().createKey(sCDS, {
+					JobCode: sJobCode,
+					PriceMasterID: "00000000000000000000000000000000000000"
+				});
+				oJobCode = this.getModel().getProperty(sPath);
+			}
+
+			return oJobCode;
+		},
+
+		/** 
+		 * Get Why Made Code
+		 * @constructor 
+		 * @param {String} sProperty - The property of the model to set 
+		 * @param {Array} aFilter - The filter object
+		 * @returns {Promise} - The list of Why Made Codes added
+		 */
+		_getWhyMadeCode: function (sProperty, aFilter) {
+			var sPath = "/ZMPM_CDS_CAR_WHYMADECODE",
+				aComboBoxItem = [],
+				aWhyMadeCodeAdded = [],
+				oComboBoxItem;
+
+			return new Promise(function (resolve) {
+				this.getModel().read(sPath, {
+					filters: aFilter,
+					success: function (oData) {
+						for (var i = 0; i < oData.results.length; i++) {
+							oComboBoxItem = {};
+							oComboBoxItem.key = oData.results[i].whymadecode;
+							oComboBoxItem.text = oData.results[i].whymadecodedesc;
+							aComboBoxItem.push(oComboBoxItem);
+							aWhyMadeCodeAdded.push(oData.results[i].WhyMadeCode);
+						}
+						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						resolve(aComboBoxItem);
+					}.bind(this),
+					error: function () {
+						// this.getView().byId("idRepairWhyMadeCode").setBusy(false);
+					}.bind(this)
+				});
+			}.bind(this));
 		}
 	});
 });

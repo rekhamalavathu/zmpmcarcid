@@ -3,14 +3,15 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessagePopover",
 	"sap/m/Link",
-	"sap/m/MessageBox"
-], function (BaseController, JSONModel, MessagePopover, Link, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseController, JSONModel, MessagePopover, Link, MessageBox, Filter, FilterOperator) {
 	"use strict";
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.BearingRepair", {
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
-
 		/**
 		 * Called when the controller is instantiated.
 		 * @public
@@ -19,16 +20,13 @@ sap.ui.define([
 			this.setModel(this._createViewModel(), "RepairsModel");
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
-
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCodeLeft", this._getRemovedJobCodeLeft, this);
 		},
-
 		onExit: function () {
 			sap.ui.getCore().getEventBus().unsubscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 			sap.ui.getCore().getEventBus().unsubscribe("onLoadRemovedJobCodeLeft", this._getRemovedJobCodeLeft, this);
 		},
-
 		/**
 		 * to handle change of Applied Job Code
 		 * @public
@@ -39,70 +37,54 @@ sap.ui.define([
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 			var appliedJobCodeLeft = this.getView().byId("idRepairAJCLeft").getSelectedKey();
 			var oJobCode = {};
-
 			//Determine Removed Job Code
 			switch (sInputId) {
 				// Right Wheel
 			case "idRepairAJC":
-				if (appliedJobCode === "") {
-					this.getView().byId("idRepairAJC").setValue("");
-					this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.Error);
-					return;
-				} else {
-					this.getView().byId("idRepairAJC").setValueState(sap.ui.core.ValueState.None);
-					this.byId("idRepairRJC").setSelectedKey("");
-					this.byId("idRepairRJC").setValue("");
-				}
 				//Get property of the applied job code
-				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-					JobCode: appliedJobCode
-				});
-
-				oJobCode = this.getModel().getProperty(sPath);
-
-				//Check Applied Qualifier Rule
-				this.getView().byId("idRepairAQ").setSelectedKey("");
-				this._determineAppliedQualifier(appliedJobCode, oJobCode.JobCodeOperationTypeID);
-				//Check Condition Code
-				this._determineConditionCode();
-				//Check Why Made Code
-				this._determineWhyMadeCode();
-				// Check Removed Job Code
-				this._getRemovedJobCode();
+				if (appliedJobCode && appliedJobCode !== "0000") {
+					sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
+						JobCode: appliedJobCode,
+						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
+					});
+					oJobCode = this.getModel().getProperty(sPath);
+					//Check Applied Qualifier Rule
+					this.getView().byId("idRepairAQ").setSelectedKey("");
+					if (oJobCode && oJobCode !== undefined) {
+						this._determineAppliedQualifier(appliedJobCode, oJobCode);
+					}
+					//Check Condition Code
+					this._determineConditionCode("idRepairAJC");
+					//Check Why Made Code
+					this._determineWhyMadeCode();
+					// Check Removed Job Code
+					this._getRemovedJobCode();
+				}
 				break;
-
 				// Left Wheel
 			case "idRepairAJCLeft":
-				if (appliedJobCodeLeft === "") {
-					this.getView().byId("idRepairAJCLeft").setValue("");
-					this.getView().byId("idRepairAJCLeft").setValueState(sap.ui.core.ValueState.Error);
-
-					return;
-				} else {
-					this.getView().byId("idRepairAJCLeft").setValueState(sap.ui.core.ValueState.None);
-					this.byId("idRepairRJCLeft").setSelectedKey("");
-					this.byId("idRepairRJCLeft").setValue("");
-				}
 				// //Get property of the applied job code
-				sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-					JobCode: appliedJobCodeLeft
-				});
-
-				oJobCode = this.getModel().getProperty(sPath);
-				//Check Applied Qualifier Rule
-				this.getView().byId("idRepairAQLeft").setSelectedKey("");
-				this._determineAppliedQualifierLeft(appliedJobCodeLeft, oJobCode.JobCodeOperationTypeID);
-				//Check Condition Code
-				this._determineConditionCodeLeft();
-				//Check Why Made Code
-				this._determineWhyMadeCodeLeft();
-				// Check Removed Job Code
-				this._getRemovedJobCodeLeft();
-
+				if (appliedJobCodeLeft && appliedJobCodeLeft !== "0000") {
+					sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
+						JobCode: appliedJobCodeLeft,
+						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
+					});
+					oJobCode = this.getModel().getProperty(sPath);
+					//Check Applied Qualifier Rule
+					this.getView().byId("idRepairAQLeft").setSelectedKey("");
+					if (oJobCode && oJobCode !== undefined) {
+						this._determineAppliedQualifierLeft(appliedJobCodeLeft, oJobCode);
+					}
+					//Check Condition Code
+					this._determineConditionCodeLeft("idRepairAJCLeft");
+					//Check Why Made Code
+					this._determineWhyMadeCodeLeft();
+					// Check Removed Job Code
+					this._getRemovedJobCodeLeft();
+				}
 				break;
 			}
 		},
-
 		/**
 		 * to handle value help for combo box
 		 * @public
@@ -111,9 +93,7 @@ sap.ui.define([
 		onValueHelp: function (oEvent) {
 			var sInputValue = oEvent.getSource().getSelectedKey();
 			var sTitle, sPath;
-
 			this._sInputId = oEvent.getSource().getId();
-
 			switch (this.getElementRealID(this._sInputId)) {
 			case "idRepairAJC":
 				sTitle = this.getResourceBundle().getText("appliedJobCodeDialog.Title");
@@ -138,26 +118,21 @@ sap.ui.define([
 				sPath = "RepairsModel>/comboBoxValues/RemovedJobCodeLeft";
 				break;
 			}
-
 			if (!this._oValueHelpDialog) {
 				this._oValueHelpDialog = new sap.m.SelectDialog({
 					confirm: [this.onValueHelpConfirm, this],
 					cancel: [this.onValueHelpCancel, this],
 					search: [this.onValueHelpSearch, this]
 				});
-
 				this.getView().addDependent(this._oValueHelpDialog);
-
 				this._oTemplate = new sap.m.StandardListItem({
 					title: "{RepairsModel>key}",
 					description: "{RepairsModel>text}"
 				});
 			}
-
 			this._oValueHelpDialog.setTitle(sTitle);
 			this._oValueHelpDialog.setContentWidth("40%");
 			this._oValueHelpDialog.bindAggregation("items", sPath, this._oTemplate);
-
 			// create a filter for the binding
 			this._oValueHelpDialog.getBinding("items").filter(new sap.ui.model.Filter({
 				filters: [
@@ -166,10 +141,8 @@ sap.ui.define([
 				],
 				and: false
 			}));
-
 			this._oValueHelpDialog.open(sInputValue);
 		},
-
 		/**
 		 * to handle search function in value help
 		 * @public
@@ -185,7 +158,6 @@ sap.ui.define([
 				and: false
 			}));
 		},
-
 		/**
 		 * to handle selected item in value help
 		 * @public
@@ -193,12 +165,10 @@ sap.ui.define([
 		 */
 		onValueHelpConfirm: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
-
 			if (oSelectedItem) {
 				this.byId(this._sInputId).setSelectedKey(oSelectedItem.getTitle());
 			}
 			oEvent.getSource().getBinding("items").filter([]);
-
 			switch (this.getElementRealID(this._sInputId)) {
 			case "idRepairAJC":
 			case "idRepairAJCLeft":
@@ -208,12 +178,10 @@ sap.ui.define([
 			case "idRepairRJCLeft":
 				this.handleChangeRemovedJobCodeAJC(this.getElementRealID(this._sInputId));
 				break;
-
 			}
 			this._oValueHelpDialog = undefined;
 			this._sInputId = undefined;
 		},
-
 		/**
 		 * to handle cancel action in value help
 		 * @public
@@ -223,7 +191,6 @@ sap.ui.define([
 			this._oValueHelpDialog = undefined;
 			this._sInputId = undefined;
 		},
-
 		/**
 		 * to provide possible drop down list entries for value help
 		 * @public
@@ -231,7 +198,6 @@ sap.ui.define([
 		 */
 		onSuggestionItemSelected: function (oEvent) {
 			var sInputId = this.getElementRealID(oEvent.getSource().getId());
-
 			switch (sInputId) {
 			case "idRepairAJC":
 			case "idRepairAJCLeft":
@@ -243,49 +209,50 @@ sap.ui.define([
 				break;
 			}
 		},
-
 		/**
 		 * to handle change of Removed Job Code event
 		 * @public
 		 * @param {String} sInputId - Input field ID
 		 */
 		handleChangeRemovedJobCodeAJC: function (sInputId) {
+			var sPath, oJobCode;
+			var oContext = this.getModel("addCIDView").getProperty("/response");
 
 			switch (sInputId) {
 			case "idRepairRJC":
-				var removedJobCode = this.getView().byId("idRepairRJC").getSelectedKey();
-				if (removedJobCode === "") {
-					this.getView().byId("idRepairRJC").setValue("");
-					this.getView().byId("idRepairRJC").setValueState(sap.ui.core.ValueState.Error);
-					return;
-				} else {
-					this.getView().byId("idRepairRJC").setValueState(sap.ui.core.ValueState.None);
-				}
-				if (removedJobCode) {
-					this._getRemovedQualifier(removedJobCode, "idRepairRemovedQualifier");
+				var removedJobCode = oContext.BrRemovedJobCodeRight;
+
+				if (removedJobCode && removedJobCode !== "0000") {
+					sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
+						JobCode: removedJobCode,
+						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
+					});
+					oJobCode = this.getModel().getProperty(sPath);
+					this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
+					// this._getRemovedQualifier(removedJobCode, "idRepairRemovedQualifier");
 				}
 				//Determine Why Made Code
 				this._determineWhyMadeCode();
 				break;
 			case "idRepairRJCLeft":
-				var removedJobCodeLeft = this.getView().byId("idRepairRJCLeft").getSelectedKey();
-				if (removedJobCodeLeft === "") {
-					this.getView().byId("idRepairRJCLeft").setValue("");
-					this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.Error);
-					return;
-				} else {
-					this.getView().byId("idRepairRJCLeft").setValueState(sap.ui.core.ValueState.None);
-				}
-				if (removedJobCodeLeft) {
-					this._getRemovedQualifier(removedJobCodeLeft, "idRepairRemovedQualifierLeft");
+				// var removedJobCodeLeft = this.getView().byId("idRepairRJCLeft").getSelectedKey();
+				var removedJobCodeLeft = oContext.BrRemovedJobCodeLeft;
+
+				if (removedJobCodeLeft && removedJobCodeLeft !== "0000") {
+					//Get property of the removed job code
+					sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
+						JobCode: removedJobCodeLeft,
+						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
+					});
+					oJobCode = this.getModel().getProperty(sPath);
+					this._determineRemovedQualifier(removedJobCodeLeft, oJobCode, "idRepairRJCLeft");
+					// this._getRemovedQualifier(removedJobCodeLeft, "idRepairRemovedQualifierLeft");
 				}
 				//Determine Why Made Code
 				this._determineWhyMadeCodeLeft();
 				break;
 			}
-
 		},
-
 		/**
 		 * to handle change of Removed Job Code event
 		 * @public
@@ -295,16 +262,13 @@ sap.ui.define([
 		getElementRealID: function (sSourceID) {
 			return sSourceID.split("--")[1];
 		},
-
 		/**
 		 * to handle on change of Condition Code event
 		 * @public
 		 * @param {sap.ui.base.Event} oEvent - Event object from Condition Code 
 		 */
 		onChangeConditionCode: function (oEvent) {
-
 			var sInputId = this.getElementRealID(oEvent.getSource().getId());
-
 			//Check Why Made Code
 			switch (sInputId) {
 			case "idRepairCondCode":
@@ -313,9 +277,7 @@ sap.ui.define([
 			case "idRepairCondCodeLeft":
 				this._determineWhyMadeCodeLeft();
 			}
-
 		},
-
 		/* =========================================================== */
 		/* begin: internal methods                                     */
 		/* =========================================================== */
@@ -330,6 +292,7 @@ sap.ui.define([
 					ResponsibilityCode: [],
 					AppliedJobCode: [],
 					AppliedQualifier: [],
+					AppliedQualifierUnfiltered: [],
 					ConditionCode: [],
 					RemovedJobCode: [],
 					RemovedQualifier: [],
@@ -344,7 +307,6 @@ sap.ui.define([
 				}
 			});
 		},
-
 		/**
 		 * to get screen values during initial load
 		 * @private
@@ -353,71 +315,30 @@ sap.ui.define([
 			this._getAppliedJobCode();
 			this._getAppliedJobCodeLeft();
 		},
-
 		/**
 		 * to get Applied Job Code value for Right Wheel
 		 * @private
 		 */
 		_getAppliedJobCode: function () {
-			var dateTime = new Date();
-			var aFilter = [new sap.ui.model.Filter({
-					path: "EffectiveDate",
-					operator: sap.ui.model.FilterOperator.LE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "ExpirationDate",
-					operator: sap.ui.model.FilterOperator.GE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "AppliedRemovedIndicator",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: "B",
-					and: true
-				})
-			];
-
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode").then(function (sStatus) {
-				this.getModel("addCIDView").setProperty("/busy", false);
+			return new Promise(function (resolve) {
+				this._getJobCode([], "/comboBoxValues/AppliedJobCode").then(function (aItems) {
+					resolve(aItems);
+				}.bind(this));
+				this.onChangeAppliedJobCode("idRepairAJC");
 			}.bind(this));
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCode");
 		},
-
 		/**
 		 * to get Applied Job Code value for Left Wheel
 		 * @private
 		 */
 		_getAppliedJobCodeLeft: function () {
-			var dateTime = new Date();
-			var aFilter = [new sap.ui.model.Filter({
-					path: "EffectiveDate",
-					operator: sap.ui.model.FilterOperator.LE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "ExpirationDate",
-					operator: sap.ui.model.FilterOperator.GE,
-					value1: dateTime,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "AppliedRemovedIndicator",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: "B",
-					and: true
-				})
-			];
-
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCodeLeft").then(function (sStatus) {
-				this.byId("idRepairAJCLeft").setBusy(false);
+			return new Promise(function (resolve) {
+				this._getJobCodeLeft([], "/comboBoxValues/AppliedJobCodeLeft").then(function (aItems) {
+					resolve(aItems);
+				}.bind(this));
+				this.onChangeAppliedJobCode("idRepairAJCLeft");
 			}.bind(this));
-			this._getJobCode(aFilter, "/comboBoxValues/AppliedJobCodeLeft");
 		},
-
 		/**
 		 * to get Applied Job Code value and bind data to corresponding combo box
 		 * @private
@@ -426,24 +347,103 @@ sap.ui.define([
 		 * @return {object} Promise - return Job Code context
 		 */
 		_getJobCode: function (aFilter, sProperty) {
+
 			var sPath = "/ZMPM_CDS_CAR_REPAIR_JOBCODE";
 			var aComboBoxItem = [];
 			var oComboBoxItem;
 
 			return new Promise(function (resolve) {
 				this.getModel().read(sPath, {
+					urlParameters: {
+						"$orderby": "JobCode"
+					},
 					filters: aFilter,
 					success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
+						var sAppliedRemovedIndicator = (sProperty === "/comboBoxValues/AppliedJobCode" ? "B" : "N");
+
+						//Function to add items
+						function addItem(oItem) {
 							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].JobCode;
-							oComboBoxItem.text = oData.results[i].JobCodeDescription;
+							oComboBoxItem.key = oItem.JobCode;
+							oComboBoxItem.text = oItem.JobCodeDescription;
 							aComboBoxItem.push(oComboBoxItem);
 						}
-						this._aAppliedJobCodeResults = oData.results;
+
+						for (var i = 0; i < oData.results.length; i++) {
+							if (oData.results[i].EffectiveDate === null && oData.results[i].ExpirationDate === null && oData.results[i].PriceMasterID ===
+								"00000000000000000000000000000000000000") {
+								addItem(oData.results[i]);
+							} else {
+								if (sProperty === "/comboBoxValues/AppliedJobCode" && oData.results[i].AppliedRemovedIndicator ===
+									sAppliedRemovedIndicator && oData.results[i].PriceMasterID === this.getModel("addCIDView").getProperty(
+										"/cidHeader/priceMasterId")) {
+									addItem(oData.results[i]);
+								} else if (sProperty === "/comboBoxValues/RemovedJobCode" && oData.results[i].AppliedRemovedIndicator !==
+									sAppliedRemovedIndicator && oData.results[i].PriceMasterID === this.getModel("addCIDView").getProperty(
+										"/cidHeader/priceMasterId")) {
+									addItem(oData.results[i]);
+								}
+							}
+						}
 						this._aAppliedJobCode = aComboBoxItem;
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						resolve("Completed");
+						resolve(aComboBoxItem);
+					}.bind(this),
+					error: function (sMsg) {
+						resolve("Error");
+					}
+				});
+			}.bind(this));
+		},
+
+		/** 
+		 * Method to get Job Code - Left Wheel
+		 * @constructor 
+		 * @param {Object} aFilter - The filter criteia
+		 * @param {String} sProperty - The property to be binded in the model
+		 * @returns {Promise} - Array of items retrieved/Error
+		 */
+		_getJobCodeLeft: function (aFilter, sProperty) {
+			var sPath = "/ZMPM_CDS_CAR_REPAIR_JOBCODE";
+			var aComboBoxItem = [];
+			var oComboBoxItem;
+
+			return new Promise(function (resolve) {
+				this.getModel().read(sPath, {
+					urlParameters: {
+						"$orderby": "JobCode"
+					},
+					filters: aFilter,
+					success: function (oData) {
+						var sAppliedRemovedIndicator = (sProperty === "/comboBoxValues/AppliedJobCodeLeft" ? "B" : "N");
+
+						//Function to add items
+						function addItem(oItem) {
+							oComboBoxItem = {};
+							oComboBoxItem.key = oItem.JobCode;
+							oComboBoxItem.text = oItem.JobCodeDescription;
+							aComboBoxItem.push(oComboBoxItem);
+						}
+
+						for (var i = 0; i < oData.results.length; i++) {
+							if (oData.results[i].EffectiveDate === null && oData.results[i].ExpirationDate === null && oData.results[i].PriceMasterID ===
+								"00000000000000000000000000000000000000") {
+								addItem(oData.results[i]);
+							} else {
+								if (sProperty === "/comboBoxValues/AppliedJobCodeLeft" && oData.results[i].AppliedRemovedIndicator ===
+									sAppliedRemovedIndicator && oData.results[i].PriceMasterID === this.getModel("addCIDView").getProperty(
+										"/cidHeader/priceMasterId")) {
+									addItem(oData.results[i]);
+								} else if (sProperty === "/comboBoxValues/RemovedJobCodeLeft" && oData.results[i].AppliedRemovedIndicator !==
+									sAppliedRemovedIndicator && oData.results[i].PriceMasterID === this.getModel("addCIDView").getProperty(
+										"/cidHeader/priceMasterId")) {
+									addItem(oData.results[i]);
+								}
+							}
+						}
+						this._aAppliedJobCode = aComboBoxItem;
+						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						resolve(aComboBoxItem);
 					}.bind(this),
 					error: function (sMsg) {
 						resolve("Error");
@@ -456,25 +456,45 @@ sap.ui.define([
 		 * to get Condition Code value for Right Wheel
 		 * @private
 		 */
-		_determineConditionCode: function () {
+		_determineConditionCode: function (sInput) {
 			var aFilter;
-			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
+			var appliedJobCode;
 
-			if (appliedJobCode === "") {
-				return;
+			switch (sInput) {
+			case "idRepairAJC":
+				appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
+
+				if (this._compareRule(appliedJobCode, "NEW", "99")) {
+					aFilter = [new Filter({
+						path: "JobCode",
+						operator: FilterOperator.EQ,
+						value1: appliedJobCode,
+						and: true
+					})];
+
+					this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter, "idRepairCondCode");
+				} else {
+					this._getConditionCode("/ZMPM_CDS_CAR_CONDITIONCODE", "/comboBoxValues/ConditionCode", [], "idRepairCondCode");
+				}
+				break;
+			case "idRepairAJCLeft":
+				appliedJobCode = this.getView().byId("idRepairAJCLeft").getSelectedKey();
+
+				if (this._compareRule(appliedJobCode, "NEW", "99")) {
+					aFilter = [new Filter({
+						path: "JobCode",
+						operator: FilterOperator.EQ,
+						value1: appliedJobCode,
+						and: true
+					})];
+
+					this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter, "idRepairCondCodeLeft");
+				} else {
+					this._getConditionCode("/ZMPM_CDS_CAR_CONDITIONCODE", "/comboBoxValues/ConditionCodeLeft", [], "idRepairCondCodeLeft");
+				}
+				break;
 			}
-
-			aFilter = [new sap.ui.model.Filter({
-				path: "JobCode",
-				operator: sap.ui.model.FilterOperator.EQ,
-				value1: appliedJobCode,
-				and: true
-			})];
-
-			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCode", aFilter, "idRepairCondCode");
-
 		},
-
 		/**
 		 * to get Condition Code value for Left Wheel
 		 * @private
@@ -482,22 +502,17 @@ sap.ui.define([
 		_determineConditionCodeLeft: function () {
 			var aFilter;
 			var appliedJobCode = this.getView().byId("idRepairAJCLeft").getSelectedKey();
-
 			if (appliedJobCode === "") {
 				return;
 			}
-
 			aFilter = [new sap.ui.model.Filter({
 				path: "JobCode",
 				operator: sap.ui.model.FilterOperator.EQ,
 				value1: appliedJobCode,
 				and: true
 			})];
-
 			this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter, "idRepairCondCodeLeft");
-
 		},
-
 		/**
 		 * to get Condition Code value and bind data to corresponding combo box
 		 * @private
@@ -509,7 +524,6 @@ sap.ui.define([
 		_getConditionCode: function (sPath, sProperty, aFilter, sInputId) {
 			var aComboBoxItem = [];
 			var oComboBoxItem;
-
 			this.getModel().read(sPath, {
 				filters: aFilter,
 				success: function (oData) {
@@ -524,12 +538,9 @@ sap.ui.define([
 						this.getView().byId(sInputId).setSelectedKey(aComboBoxItem[0].key);
 					}
 				}.bind(this),
-				error: function (sMsg) {
-
-				}.bind(this)
+				error: function (sMsg) {}.bind(this)
 			});
 		},
-
 		/**
 		 * to get Why Made Code value for Right Wheel
 		 * @private
@@ -537,59 +548,52 @@ sap.ui.define([
 		_determineWhyMadeCode: function () {
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
-			var oAppliedJobCode;
+			// var oAppliedJobCode;
 			var aFilter;
-			var sPath;
-
+			// var sPath;
 			//All must filled
 			if (oContext.BrAppliedJobCodeRight === undefined || oContext.BrRemovedJobCodeRight === undefined || responsibilityCode ===
-				undefined ||
-				oContext.BrAppliedJobCodeRight === "" ||
-				oContext.BrRemovedJobCodeRight === "" || responsibilityCode === "" || oContext.BrConditionCodeRight === undefined ||
-				oContext.BrConditionCodeRight === "") {
+				undefined || oContext.BrAppliedJobCodeRight === "" || oContext.BrRemovedJobCodeRight === "" || responsibilityCode === "") {
 				return;
 			}
 
-			//Get Applied Job Code context
-			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.BrAppliedJobCodeRight
-			});
-			oAppliedJobCode = this.getModel().getProperty(sPath);
-
-			aFilter = [new sap.ui.model.Filter({
-					path: "AppliedJobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.BrAppliedJobCodeRight,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "RemovedJobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.BrRemovedJobCodeRight,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "ResponsibilityCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: responsibilityCode,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "PriceMasterID",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oAppliedJobCode.PriceMasterID,
-					and: true
-				})
-			];
+			// //Get Applied Job Code context
+			if (this._compareRule(oContext.WrAppliedJobCodeRight, "NEW", "99")) {
+				aFilter = [new Filter({
+						path: "AppliedJobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.BrAppliedJobCodeRight,
+						and: true
+					}),
+					new Filter({
+						path: "RemovedJobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.BrRemovedJobCodeRight,
+						and: true
+					}),
+					new Filter({
+						path: "ResponsibilityCode",
+						operator: FilterOperator.EQ,
+						value1: responsibilityCode,
+						and: true
+					}),
+					new Filter({
+						path: "PriceMasterID",
+						operator: FilterOperator.EQ,
+						value1: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId"),
+						and: true
+					})
+				];
+			} else {
+				aFilter = [];
+			}
 
 			this._getJobCodePrice(aFilter, "/comboBoxValues/WhyMadeCode", true, null).then(function (aItems) {
 				if (aItems.length === 1) {
 					this.getView().byId("idRepairWhyMadeCode").setSelectedKey(aItems[0].key);
 				}
 			}.bind(this));
-
 		},
-
 		/**
 		 * to get Why Made Code value for Left Wheel
 		 * @private
@@ -597,58 +601,53 @@ sap.ui.define([
 		_determineWhyMadeCodeLeft: function () {
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
-			var oAppliedJobCode;
+			// var oAppliedJobCode;
 			var aFilter;
-			var sPath;
-
+			// var sPath;
 			//All must filled
-			if (oContext.BrAppliedJobCodeLeft === undefined || oContext.BrRemovedJobCodeLeft === undefined || responsibilityCode === undefined ||
-				oContext.BrAppliedJobCodeLeft === "" ||
-				oContext.BrRemovedJobCodeLeft === "" || responsibilityCode === "" || oContext.BrConditionCodeLeft === undefined ||
-				oContext.BrConditionCodeLeft === "") {
+			if (oContext.BrAppliedJobCodeLeft === undefined || oContext.BrRemovedJobCodeLeft === undefined || responsibilityCode ===
+				undefined ||
+				oContext.BrAppliedJobCodeLeft === "" || oContext.BrRemovedJobCodeLeft === "" || responsibilityCode === "") {
 				return;
 			}
 
 			//Get Applied Job Code context
-			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.BrAppliedJobCodeLeft
-			});
-			oAppliedJobCode = this.getModel().getProperty(sPath);
-
-			aFilter = [new sap.ui.model.Filter({
-					path: "AppliedJobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.BrAppliedJobCodeLeft,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "RemovedJobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.BrRemovedJobCodeLeft,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "ResponsibilityCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: responsibilityCode,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "PriceMasterID",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oAppliedJobCode.PriceMasterID,
-					and: true
-				})
-			];
+			if (this._compareRule(oContext.WrAppliedJobCodeLeft, "NEW", "99")) {
+				aFilter = [new Filter({
+						path: "AppliedJobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.BrAppliedJobCodeLeft,
+						and: true
+					}),
+					new Filter({
+						path: "RemovedJobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.BrRemovedJobCodeLeft,
+						and: true
+					}),
+					new Filter({
+						path: "ResponsibilityCode",
+						operator: FilterOperator.EQ,
+						value1: responsibilityCode,
+						and: true
+					}),
+					new Filter({
+						path: "PriceMasterID",
+						operator: FilterOperator.EQ,
+						value1: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId"),
+						and: true
+					})
+				];
+			} else {
+				aFilter = [];
+			}
 
 			this._getJobCodePrice(aFilter, "/comboBoxValues/WhyMadeCodeLeft", true, null).then(function (aItems) {
 				if (aItems.length === 1) {
 					this.getView().byId("idRepairWhyMadeCodeLeft").setSelectedKey(aItems[0].key);
 				}
 			}.bind(this));
-
 		},
-
 		/**
 		 * to get Removed Job Code value for Right Wheel
 		 * @private
@@ -658,43 +657,72 @@ sap.ui.define([
 			var sPath;
 			var oAppliedJobCode;
 			var oContext = this.getModel("addCIDView").getProperty("/response");
-
 			//Get Applied Job Code context
 			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.BrAppliedJobCodeRight
+				JobCode: oContext.BrAppliedJobCodeRight,
+				PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
 			});
 			oAppliedJobCode = this.getModel().getProperty(sPath);
 
-			aFilter = [new sap.ui.model.Filter({
-					path: "JobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.BrAppliedJobCodeRight,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "PriceMasterID",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oAppliedJobCode.PriceMasterID,
-					and: true
-				})
-			];
+			//Check AJC whether it is end with 99
+			if (this._compareRule(oContext.BrAppliedJobCodeRight, "NEW", "99")) {
+				aFilter = [new Filter({
+						path: "JobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.BrAppliedJobCodeRight,
+						and: true
+					}),
+					new Filter({
+						path: "PriceMasterID",
+						operator: FilterOperator.EQ,
+						value1: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId"),
+						and: true
+					})
+				];
 
-			this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCode", false).then(function (aItems) {
-				if (aItems.length === 1) {
-					//If only 1 Item, set default
-					this.getView().byId("idRepairRJC").setSelectedKey(aItems[0].key);
-					// this._determineWhyMadeCode();
-					// this._getRemovedQualifier(aItems[0].key, "idRepairRemovedQualifier");
+				this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCode", false).then(function (aItems) {
+					if (aItems.length === 1) {
+						//If only 1 Item, set default
+						this.getView().byId("idRepairRJC").setSelectedKey(aItems[0]);
+					} else {
+						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
+						// 	this.byId("idRepairRJC").setSelectedKey("");
+						// 	this.byId("idRepairRJC").setValue("");
+						// }
+					}
+					this._determineConditionCode("idRepairAJC");
+					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
+						this._determineAppliedQualifier(oContext.BrAppliedJobCodeRight, oAppliedJobCode);
+					}
+					this.handleChangeRemovedJobCodeAJC("idRepairRJC");
+					// this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
+					// this._getRemovedQualifier(oContext.WrRemovedJobCodeRight, "idRepairRemovedQualifier");
+					this._determineWhyMadeCode();
 					this.getModel("addCIDView").updateBindings(true);
-				}
-				this._determineConditionCode();
-				this._determineAppliedQualifier(oContext.BrAppliedJobCodeRight, oAppliedJobCode.JobCodeOperationTypeID);
-				this._getRemovedQualifier(oContext.BrRemovedJobCodeRight, "idRepairRemovedQualifier");
-				this._determineWhyMadeCode();
-				this.getModel("addCIDView").updateBindings(true);
-			}.bind(this));
-		},
+				}.bind(this));
+			} else {
+				this._getJobCode([], "/comboBoxValues/RemovedJobCode").then(function (sStatus, aItems) {
+					if (aItems.length === 1) {
+						//If only 1 Item, set default
+						this.byId("idRepairRJC").setSelectedKey(aItems[0].key);
+					} else {
+						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
+						// 	this._oController.byId("idRepairRJC").setSelectedKey("");
+						// 	this._oController.byId("idRepairRJC").setValue("");
+						// }
+					}
+					this._determineConditionCode("idRepairAJC");
+					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
+						this._determineAppliedQualifier(oContext.BrAppliedJobCodeRight, oAppliedJobCode);
+					}
+					this.handleChangeRemovedJobCodeAJC("idRepairRJC");
+					this._determineWhyMadeCode();
+					this.getModel("addCIDView").updateBindings(true);
+					// this._getRemovedQualifier(oContext.WrRemovedJobCodeRight, "idRepairRemovedQualifier");
+				}.bind(this));
+			}
 
+		},
 		/**
 		 * to get Removed Job Code value for Left Wheel
 		 * @private
@@ -704,42 +732,74 @@ sap.ui.define([
 			var sPath;
 			var oAppliedJobCode;
 			var oContext = this.getModel("addCIDView").getProperty("/response");
-
 			//Get Applied Job Code context
 			sPath = this.getModel().createKey("/ZMPM_CDS_CAR_REPAIR_JOBCODE", {
-				JobCode: oContext.BrAppliedJobCodeLeft
+				JobCode: oContext.BrAppliedJobCodeLeft,
+				PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
 			});
 			oAppliedJobCode = this.getModel().getProperty(sPath);
 
-			aFilter = [new sap.ui.model.Filter({
-					path: "JobCode",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oContext.BrAppliedJobCodeLeft,
-					and: true
-				}),
-				new sap.ui.model.Filter({
-					path: "PriceMasterID",
-					operator: sap.ui.model.FilterOperator.EQ,
-					value1: oAppliedJobCode.PriceMasterID,
-					and: true
-				})
-			];
-			// this.getView().byId("idRepairRJCLeft").setSelectedKey("");
-			this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCodeLeft", false).then(function (aItems) {
-				if (aItems.length === 1) {
-					//If only 1 Item, set default
-					this.getView().byId("idRepairRJCLeft").setSelectedKey(aItems[0].key);
-					// this._determineWhyMadeCodeLeft();
-					// this._getRemovedQualifier(aItems[0].key, "idRepairRemovedQualifierLeft");
-				}
-				this._determineConditionCodeLeft();
-				this._determineAppliedQualifierLeft(oContext.BrAppliedJobCodeLeft, oAppliedJobCode.JobCodeOperationTypeID);
-				this._getRemovedQualifier(oContext.BrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
-				this._determineWhyMadeCodeLeft();
-				this.getModel("addCIDView").updateBindings(true);
-			}.bind(this));
-		},
+			//Check AJC whether it is end with 99
+			if (this._compareRule(oContext.BrAppliedJobCodeLeft, "NEW", "99")) {
+				aFilter = [new Filter({
+						path: "JobCode",
+						operator: FilterOperator.EQ,
+						value1: oContext.BrAppliedJobCodeLeft,
+						and: true
+					}),
+					new Filter({
+						path: "PriceMasterID",
+						operator: FilterOperator.EQ,
+						value1: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId"),
+						and: true
+					})
+				];
 
+				this._getJobCodeCouplet(aFilter, "/comboBoxValues/RemovedJobCodeLeft", false).then(function (aItems) {
+					if (aItems.length === 1) {
+						//If only 1 Item, set default
+						this.getView().byId("idRepairRJCLeft").setSelectedKey(aItems[0]);
+					} else {
+						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
+						// 	this.byId("idRepairRJC").setSelectedKey("");
+						// 	this.byId("idRepairRJC").setValue("");
+						// }
+					}
+					this._determineConditionCode("idRepairAJCLeft");
+					this._determineWhyMadeCode();
+					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
+						this._determineAppliedQualifierLeft(oContext.BrAppliedJobCodeLeft, oAppliedJobCode);
+					}
+					this.handleChangeRemovedJobCodeAJC("idRepairRJCLeft");
+					// this._getRemovedQualifier(oContext.WrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
+					this.getModel("addCIDView").updateBindings(true);
+					// this.handleChangeRemovedJobCodeAJC();
+					// this._oController.getModel("WOModel").updateBindings(true);
+
+				}.bind(this));
+			} else {
+				this._getJobCode([], "/comboBoxValues/RemovedJobCodeLeft").then(function (sStatus, aItems) {
+					if (aItems.length === 1) {
+						//If only 1 Item, set default
+						this.byId("idRepairRJCLeft").setSelectedKey(aItems[0].key);
+					} else {
+						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
+						// 	this._oController.byId("idRepairRJC").setSelectedKey("");
+						// 	this._oController.byId("idRepairRJC").setValue("");
+						// }
+					}
+					this._determineConditionCode("idRepairAJCLeft");
+					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
+						this._determineAppliedQualifierLeft(oContext.BrAppliedJobCodeLeft, oAppliedJobCode);
+					}
+					this.handleChangeRemovedJobCodeAJC("idRepairRJCLeft");
+					// this._getRemovedQualifier(oContext.WrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
+					this._determineWhyMadeCode();
+					this.getModel("addCIDView").updateBindings(true);
+				}.bind(this));
+			}
+
+		},
 		/**
 		 * to get Job Code couplet value and bind data to corresponding combo box
 		 * @private
@@ -752,31 +812,37 @@ sap.ui.define([
 			var sPath = "/ZMPM_CDS_CAR_JOBCDCOUPLET";
 			var aComboBoxItem = [];
 			var oComboBoxItem;
+			var aKeyAdded = [];
 
 			return new Promise(function (resolve) {
 				this.getModel().read(sPath, {
 					filters: aFilter,
+					urlParameters: {
+						"$orderby": (bAppliedJobCode ? "JobCode" : "RemovedJobCode")
+					},
 					success: function (oData) {
 						for (var i = 0; i < oData.results.length; i++) {
 							oComboBoxItem = {};
-							if (bAppliedJobCode) {
+							if (bAppliedJobCode && aKeyAdded.indexOf(oData.results[i].JobCode) === -1) {
 								oComboBoxItem.key = oData.results[i].JobCode;
-								oComboBoxItem.text = oData.results[i].JobCodeDesc;
-							} else {
+								oComboBoxItem.text = oData.results[i].JobCodeDescription;
+								aComboBoxItem.push(oComboBoxItem);
+								aKeyAdded.push(oData.results[i].JobCode);
+							} else if (!bAppliedJobCode && aKeyAdded.indexOf(oData.results[i].RemovedJobCode) === -1) {
 								oComboBoxItem.key = oData.results[i].RemovedJobCode;
-								oComboBoxItem.text = oData.results[i].RemovedJobCodeDesc;
+								oComboBoxItem.text = oData.results[i].RemovedJobCodeDescription;
+								aComboBoxItem.push(oComboBoxItem);
+								aKeyAdded.push(oData.results[i].RemovedJobCode);
 							}
-							aComboBoxItem.push(oComboBoxItem);
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						resolve(aComboBoxItem);
-						this.getModel("addCIDView").updateBindings(true);
-					}.bind(this),
-					error: function (sMsg) {}.bind(this)
+						resolve(aKeyAdded);
+						// this.getModel("addCIDView").updateBindings(true);
+					}.bind(this)
 				});
 			}.bind(this));
-		},
 
+		},
 		/**
 		 * to get Job Code Price data
 		 * @private
@@ -791,16 +857,14 @@ sap.ui.define([
 			var aComboBoxItem = [];
 			var aWhyMadeCodeAdded = [];
 			var oComboBoxItem;
-
 			return new Promise(function (resolve) {
 				this.getModel().read(sPath, {
 					filters: aFilter,
 					success: function (oData) {
 						for (var i = 0; i < oData.results.length; i++) {
 							oComboBoxItem = {};
-
 							if (bWhyMadeCode) {
-								if (aWhyMadeCodeAdded.includes(oData.results[i].WhyMadeCode)) {
+								if (aWhyMadeCodeAdded.indexOf(oData.results[i].WhyMadeCode) !== -1) {
 									continue;
 								}
 								oComboBoxItem.key = oData.results[i].WhyMadeCode;
@@ -808,7 +872,6 @@ sap.ui.define([
 								aComboBoxItem.push(oComboBoxItem);
 								aWhyMadeCodeAdded.push(oData.results[i].WhyMadeCode);
 							}
-
 							if (bConditionCode) {
 								oComboBoxItem.key = oData.results[i].ConditionCode;
 								oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
@@ -832,89 +895,131 @@ sap.ui.define([
 		 * @returns {Boolean} - Indicator whether the value of right and check compared pattern is matched(true/false)
 		 */
 		_compareRule: function (sLeft, sCheck, sRight) {
+			var bMatch = false;
+
 			switch (sCheck) {
 			case "EQ":
 				return sLeft === sRight;
 			case "NEQ":
 				return sLeft !== sRight;
 			case "EW":
-				return sLeft.endsWith(sRight.toString());
+				if (sLeft.toString().indexOf(sRight.toString(), sLeft.length - sRight.toString().length) !== -1) {
+					bMatch = true;
+				}
+				return bMatch;
 			case "NEW":
-				return !sLeft.endsWith(sRight.toString());
+				if (sLeft.toString().indexOf(sRight.toString(), sLeft.length - sRight.toString().length) === -1) {
+					bMatch = true;
+				}
+				return bMatch;
 			case "SW":
-				return sLeft.startsWith(sRight.toString());
+				if (sLeft.lastIndexOf(sRight.toString(), 0) === 0) {
+					bMatch = true;
+				}
+				return bMatch;
 			case "NSW":
-				return !sLeft.startsWith(sRight.toString());
+				if (!sLeft.lastIndexOf(sRight.toString(), 0) === 0) {
+					bMatch = true;
+				}
+				return bMatch;
 			default:
 				return false;
 			}
 		},
-
 		/**
 		 * to determine Applied Qualifier entries for Right Wheel
 		 * @private
 		 * @param {String} sAppliedJobCode - Applied Job Code 
 		 * @param {String} sJobCodeOpTypeID - Job Code Operation Type ID
 		 */
-		_determineAppliedQualifier: function (sAppliedJobCode, sJobCodeOpTypeID) {
+		_determineAppliedQualifier: function (sAppliedJobCode, oJobCode) {
 			//Check against Rule in Applied Qualifier
 			var aRule = this.getModel("RepairConfig").getProperty("/AppliedQualifier");
 			var aFilter;
+
 			for (var i = 0; i < aRule.length; i++) {
-				if (this._compareRule(sJobCodeOpTypeID, aRule[i].JobCodeOpTypeIDCheck, aRule[i].JobCodeOpTypeID)) {
+				if (this._compareRule(oJobCode.JobCodeOperationTypeID, aRule[i].JobCodeOpTypeIDCheck, aRule[i].JobCodeOpTypeID)) {
 					//Check if any Search Table, disable Applied Qualifier if not found
 					if (aRule[i].SearchTable) {
-						aFilter = [new sap.ui.model.Filter({
-							path: "JobCode",
-							operator: sap.ui.model.FilterOperator.EQ,
-							value1: sAppliedJobCode,
-							and: true
-						})];
+						if (this._compareRule(sAppliedJobCode, "NEW", "99")) {
+							aFilter = [new Filter({
+								path: "JobCode",
+								operator: FilterOperator.EQ,
+								value1: sAppliedJobCode,
+								and: true
+							})];
+						} else {
+							aFilter = [];
+						}
 						this.getView().byId("idRepairAQ").setEnabled(true);
+						if (this.getView().byId("idRepairAQ").getEnabled()) {
+							this.getView().byId("idRepairRemovedQualifier").setEnabled(true);
+						}
+
 						this._sAppliedQualifierSearchTable = "/" + aRule[i].SearchTable;
-						this._getAppliedQualifier("idRepairAQ", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifier", aFilter, aRule[i].SearchExclusion);
+						// this._getAppliedQualifier("idRepairAQ", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifier", aFilter, aRule[i].SearchExclusion);
+						this._getAppliedQualifier(aRule[i].SearchTable, "/comboBoxValues/AppliedQualifier",
+							"/comboBoxValues/AppliedQualifierUnfiltered",
+							aFilter, aRule[i].SearchExclusion);
 					} else {
 						this.getView().byId("idRepairAQ").setEnabled(false);
+						if (!this.getView().byId("idRepairAQ").getEnabled()) {
+							this.getView().byId("idRepairRemovedQualifier").setEnabled(false);
+						}
 						this.getView().byId("idRepairAQ").setSelectedKey("");
 					}
+
 					break;
 				}
 			}
 		},
-
 		/**
 		 * to determine Applied Qualifier entries for Left Wheel
 		 * @private
 		 * @param {String} sAppliedJobCode - Applied Job Code 
 		 * @param {String} sJobCodeOpTypeID - Job Code Operation Type ID
 		 */
-		_determineAppliedQualifierLeft: function (sAppliedJobCode, sJobCodeOpTypeID) {
+		_determineAppliedQualifierLeft: function (sAppliedJobCode, oJobCode) {
 			//Check against Rule in Applied Qualifier
 			var aRule = this.getModel("RepairConfig").getProperty("/AppliedQualifier");
 			var aFilter;
+
 			for (var i = 0; i < aRule.length; i++) {
-				if (this._compareRule(sJobCodeOpTypeID, aRule[i].JobCodeOpTypeIDCheck, aRule[i].JobCodeOpTypeID)) {
+				if (this._compareRule(oJobCode.JobCodeOperationTypeID, aRule[i].JobCodeOpTypeIDCheck, aRule[i].JobCodeOpTypeID)) {
 					//Check if any Search Table, disable Applied Qualifier if not found
 					if (aRule[i].SearchTable) {
-						aFilter = [new sap.ui.model.Filter({
-							path: "JobCode",
-							operator: sap.ui.model.FilterOperator.EQ,
-							value1: sAppliedJobCode,
-							and: true
-						})];
+						if (this._compareRule(sAppliedJobCode, "NEW", "99")) {
+							aFilter = [new Filter({
+								path: "JobCode",
+								operator: FilterOperator.EQ,
+								value1: sAppliedJobCode,
+								and: true
+							})];
+						} else {
+							aFilter = [];
+						}
 						this.getView().byId("idRepairAQLeft").setEnabled(true);
+						if (this.getView().byId("idRepairAQLeft").getEnabled()) {
+							this.getView().byId("idRepairRemovedQualifierLeft").setEnabled(true);
+						}
 
 						this._sAppliedQualifierSearchTable = "/" + aRule[i].SearchTable;
-						this._getAppliedQualifier("idRepairAQLeft", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifierLeft", aFilter, aRule[i].SearchExclusion);
+						// this._getAppliedQualifier("idRepairAQLeft", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifierLeft", aFilter, aRule[i].SearchExclusion);
+						this._getAppliedQualifier(aRule[i].SearchTable, "/comboBoxValues/AppliedQualifierLeft",
+							"/comboBoxValues/AppliedQualifierUnfilteredLeft",
+							aFilter, aRule[i].SearchExclusion);
 					} else {
 						this.getView().byId("idRepairAQLeft").setEnabled(false);
+						if (!this.getView().byId("idRepairAQLeft").getEnabled()) {
+							this.getView().byId("idRepairRemovedQualifierLeft").setEnabled(false);
+						}
 						this.getView().byId("idRepairAQLeft").setSelectedKey("");
 					}
 					break;
 				}
 			}
-		},
 
+		},
 		/**
 		 * to query Applied Qualifier values from CDS
 		 * @private
@@ -924,105 +1029,233 @@ sap.ui.define([
 		 * @param {Array} aFilter - Array for filter
 		 * @param {String} sExclusion - Exclusion string
 		 */
-		_getAppliedQualifier: function (sInputId, sCDS, sProperty, aFilter, sExclusion) {
-			var sPath = "/" + sCDS;
-			var aComboBoxItem = [];
-			var oComboBoxItem;
-			var sFilter;
+		_getAppliedQualifier: function (sCDS, sProperty, sPropertyUnfiltered, aFilter, sExclusion) {
+			var sPath = "/" + sCDS,
+				aComboBoxItem = [],
+				aComboBoxItemUnfiltered = [],
+				oComboBoxItem,
+				sFilter,
+				aQualifierAdded = [];
 
 			if (sExclusion) {
 				sFilter = "not startswith(CarPart,'" + sExclusion + "')"; //Temporary expecting 1 exclusion only
 
 				this.getModel().read(sPath, {
+					filters: aFilter,
 					urlParameters: {
 						"$filter": sFilter
 					},
-					filters: aFilter,
 					success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
-							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].QualifierCode;
-							oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-							aComboBoxItem.push(oComboBoxItem);
-						}
-						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						if (aComboBoxItem.length === 1) {
-							this.getView().byId(sInputId).setSelectedKey(aComboBoxItem[0].key);
-						}
-					}.bind(this),
-					error: function (sMsg) {
+							for (var i = 0; i < oData.results.length; i++) {
+								oComboBoxItem = {};
+								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+									oComboBoxItem.key = oData.results[i].QualifierCode;
+									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+									oComboBoxItem.key = oData.results[i].CarPart;
+									oComboBoxItem.text = oData.results[i].CarPartDescription;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								}
+								var sKey = oComboBoxItem.key;
+								aComboBoxItemUnfiltered.push(oComboBoxItem);
 
-					}.bind(this)
+								if (aQualifierAdded.indexOf(sKey) === -1) {
+									aComboBoxItem.push(oComboBoxItem);
+								}
+
+								aQualifierAdded.push(sKey);
+							}
+							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+							this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
+						}.bind(this)
+						// error: function (sMsg) {
+						// 	// this._oController.getView().byId("idRepairAQ").setBusy(false);
+						// }.bind(this)
 				});
 			} else {
 				this.getModel().read(sPath, {
 					filters: aFilter,
 					success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
-							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].QualifierCode;
-							oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-							aComboBoxItem.push(oComboBoxItem);
-						}
-						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						if (aComboBoxItem.length === 1) {
-							this.getView().byId(sInputId).setSelectedKey(aComboBoxItem[0].key);
-						}
-					}.bind(this),
-					error: function (sMsg) {
+							for (var i = 0; i < oData.results.length; i++) {
+								oComboBoxItem = {};
+								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+									oComboBoxItem.key = oData.results[i].QualifierCode;
+									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+									oComboBoxItem.key = oData.results[i].CarPart;
+									oComboBoxItem.text = oData.results[i].CarPartDescription;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								}
+								var sKey = oComboBoxItem.key;
+								aComboBoxItemUnfiltered.push(oComboBoxItem);
 
-					}.bind(this)
+								if (aQualifierAdded.indexOf(sKey) === -1) {
+									aComboBoxItem.push(oComboBoxItem);
+								}
+
+								aQualifierAdded.push(sKey);
+							}
+							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+							this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
+						}.bind(this)
+						// error: function (sMsg) {
+						// 	// this._oController.getView().byId("idRepairAQ").setBusy(false);
+						// }.bind(this)
 				});
+			}
+
+		},
+
+		/** 
+		 * Method to determine Removed Qualifier
+		 * @constructor 
+		 * @param {String} sRemovedJobCode - Removed Job Code
+		 * @param {Object} oJobCode - The Removed Job Code's context
+		 * @param {String} sInput - Input Key
+		 */
+		_determineRemovedQualifier: function (sRemovedJobCode, oJobCode, sInput) {
+			//Check against Rule in Removed Qualifier
+			var aRule = this.getModel("RepairConfig").getProperty("/RemovedQualifier");
+			var aFilter;
+
+			switch (sInput) {
+			case "idRepairRJC":
+				for (var i = 0; i < aRule.length; i++) {
+					if (this._compareRule(oJobCode.JobCodeOperationTypeID, aRule[i].JobCodeOpTypeIDCheck, aRule[i].JobCodeOpTypeID)) {
+						//Check if any Search Table, disable Applied Qualifier if not found
+						if (aRule[i].SearchTable) {
+							if (this._compareRule(sRemovedJobCode, "NEW", "99")) {
+								aFilter = [new Filter({
+									path: "JobCode",
+									operator: FilterOperator.EQ,
+									value1: sRemovedJobCode,
+									and: true
+								})];
+							} else {
+								aFilter = [];
+							}
+							this.getView().byId("idRepairRemovedQualifier").setEnabled(true);
+							this._getRemovedQualifier(aRule[i].SearchTable, "/comboBoxValues/RemovedQualifier", aFilter, aRule[i].SearchExclusion);
+						} else {
+							this.getView().byId("idRepairRemovedQualifier").setEnabled(false);
+							this.getView().byId("idRepairRemovedQualifier").setSelectedKey("");
+						}
+						break;
+					}
+				}
+				break;
+			case "idRepairRJCLeft":
+				for (i = 0; i < aRule.length; i++) {
+					if (this._compareRule(oJobCode.JobCodeOperationTypeID, aRule[i].JobCodeOpTypeIDCheck, aRule[i].JobCodeOpTypeID)) {
+						//Check if any Search Table, disable Applied Qualifier if not found
+						if (aRule[i].SearchTable) {
+							if (this._compareRule(sRemovedJobCode, "NEW", "99")) {
+								aFilter = [new Filter({
+									path: "JobCode",
+									operator: FilterOperator.EQ,
+									value1: sRemovedJobCode,
+									and: true
+								})];
+							} else {
+								aFilter = [];
+							}
+							this.getView().byId("idRepairRemovedQualifierLeft").setEnabled(true);
+							this._getRemovedQualifier(aRule[i].SearchTable, "/comboBoxValues/RemovedQualifierLeft", aFilter, aRule[i].SearchExclusion);
+						} else {
+							this.getView().byId("idRepairRemovedQualifierLeft").setEnabled(false);
+							this.getView().byId("idRepairRemovedQualifierLeft").setSelectedKey("");
+						}
+						break;
+					}
+				}
+				break;
 			}
 		},
 
-		/**
-		 * to query Removed Qualifier values from CDS and bind the data to the combo box of Removed Qualifier for both Left and Right Wheel
-		 * @private
-		 * @param {String} sRemovedJobCode - Removed Job Code
-		 * @param {String} sInputId - Input field ID
+		/** 
+		 * Method to get Removed Qualifier
+		 * @constructor 
+		 * @param {String} sCDS - The CDS to be retrieved from
+		 * @param {String} sProperty - The property to be binded in the model
+		 * @param {Array } aFilter - The filter criteria
+		 * @param {String} sExclusion - Exclusion criteria
 		 */
-		_getRemovedQualifier: function (sRemovedJobCode, sInputId) {
-			var sPath = "/ZMPM_CDS_CAR_JOBCODEQUAL";
-			var aFilter;
-			var oComboBoxItem;
-			var aComboBoxItem = [];
+		_getRemovedQualifier: function (sCDS, sProperty, aFilter, sExclusion) {
+			var sPath = "/" + sCDS,
+				aComboBoxItem = [],
+				aComboBoxItemUnfiltered = [],
+				oComboBoxItem,
+				sFilter,
+				aQualifierAdded = [];
 
-			aFilter = [new sap.ui.model.Filter({
-				path: "JobCode",
-				operator: sap.ui.model.FilterOperator.EQ,
-				value1: sRemovedJobCode,
-				and: true
-			})];
+			if (sExclusion) {
+				sFilter = "not startswith(CarPart,'" + sExclusion + "')"; //Temporary expecting 1 exclusion only
 
-			this.getModel().read(sPath, {
-				filters: aFilter,
-				success: function (oData) {
-					for (var i = 0; i < oData.results.length; i++) {
-						oComboBoxItem = {};
-						oComboBoxItem.key = oData.results[i].QualifierCode;
-						oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-						aComboBoxItem.push(oComboBoxItem);
-					}
-					switch (sInputId) {
-					case "idRepairRemovedQualifier":
-						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifier", aComboBoxItem);
-						if (aComboBoxItem.length === 1) {
-							this.getView().byId("idRepairRemovedQualifier").setSelectedKey(aComboBoxItem[0].key);
-						}
-						break;
-					case "idRepairRemovedQualifierLeft":
-						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifierLeft", aComboBoxItem);
-						if (aComboBoxItem.length === 1) {
-							this.getView().byId("idRepairRemovedQualifierLeft").setSelectedKey(aComboBoxItem[0].key);
-						}
-						break;
-					}
+				this.getModel().read(sPath, {
+					filters: aFilter,
+					urlParameters: {
+						"$filter": sFilter
+					},
+					success: function (oData) {
+							for (var i = 0; i < oData.results.length; i++) {
+								oComboBoxItem = {};
+								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+									oComboBoxItem.key = oData.results[i].QualifierCode;
+									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+									oComboBoxItem.key = oData.results[i].CarPart;
+									oComboBoxItem.text = oData.results[i].CarPartDescription;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								}
+								var sKey = oComboBoxItem.key;
+								aComboBoxItemUnfiltered.push(oComboBoxItem);
 
-				}.bind(this),
-				error: function (sMsg) {}.bind(this)
-			});
+								if (aQualifierAdded.indexOf(sKey) === -1) {
+									aComboBoxItem.push(oComboBoxItem);
+								}
+
+								aQualifierAdded.push(sKey);
+							}
+							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						}.bind(this)
+						// error: function (sMsg) {
+						// 	this._oController.getView().byId("idRepairRemovedQualifier").setBusy(false);
+						// }.bind(this)
+				});
+			} else {
+				this.getModel().read(sPath, {
+					filters: aFilter,
+					success: function (oData) {
+							for (var i = 0; i < oData.results.length; i++) {
+								oComboBoxItem = {};
+								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+									oComboBoxItem.key = oData.results[i].QualifierCode;
+									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+									oComboBoxItem.key = oData.results[i].CarPart;
+									oComboBoxItem.text = oData.results[i].CarPartDescription;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								}
+								var sKey = oComboBoxItem.key;
+								aComboBoxItemUnfiltered.push(oComboBoxItem);
+
+								if (aQualifierAdded.indexOf(sKey) === -1) {
+									aComboBoxItem.push(oComboBoxItem);
+								}
+
+								aQualifierAdded.push(sKey);
+							}
+							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						}.bind(this)
+						// error: function (sMsg) {
+						// 	this._oController.getView().byId("idRepairRemovedQualifier").setBusy(false);
+						// }.bind(this)
+				});
+			}
 		}
-
 	});
 });

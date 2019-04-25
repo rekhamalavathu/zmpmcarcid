@@ -6,13 +6,13 @@
 			<!--Left-->
 			<core:Title text="{i18n>label.Left}"/>
 			<!--Stamped Month-->
-			<Label text="{i18n>label.MM}" required="true"/>
+			<Label text="{i18n>label.MM}"/>
 			<Input value="{addCIDView>/response/RwStampedMonthLeft}" type="Number" change="onChangeMandatoryMonth"/>
 			<!--Stamped Year-->
-			<Label text="{i18n>label.YY}" required="true"/>
+			<Label text="{i18n>label.YY}"/>
 			<Input value="{addCIDView>/response/RwStampedYearLeft}" type="Number" change="onChangeMandatoryYear"/>
 			<!--Mfg Code-->
-			<Label text="{i18n>label.Mfg}" required="true"/>
+			<Label text="{i18n>label.Mfg}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
 				selectedKey="{addCIDView>/response/RwMfgLeft}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
@@ -28,10 +28,10 @@
 				</items>
 			</ComboBox>
 			<!--Scale-->
-			<Label text="{i18n>label.Scale}" required="true"/>
+			<Label text="{i18n>label.Scale}"/>
 			<Input value="{addCIDView>/response/RwScaleLeft}" type="Number" change="onChangeRemScaleRead"/>
 			<!--Finger-->
-			<Label text="{i18n>label.Finger}" required="true"/>
+			<Label text="{i18n>label.Finger}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C120' }]}"
 				selectedKey="{addCIDView>/response/RwFingerLeft}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
@@ -42,13 +42,13 @@
 	        <!--Right -->
 			<core:Title text="{i18n>label.Right}"/>
 			<!--stamped Month-->
-			<Label text="{i18n>label.MM}" required="true"/>
+			<Label text="{i18n>label.MM}"/>
 			<Input value="{addCIDView>/response/RwStampedMonthRight}" type="Number" change="onChangeMandatoryMonth"/>
 			<!--STamped Year-->
-			<Label text="{i18n>label.YY}" required="true"/>
+			<Label text="{i18n>label.YY}"/>
 			<Input value="{addCIDView>/response/RwStampedYearRight}" type="Number" change="onChangeMandatoryYear"/>
 			<!--Mfg Code-->
-			<Label text="{i18n>label.Mfg}" required="true"/>
+			<Label text="{i18n>label.Mfg}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
 				selectedKey="{addCIDView>/response/RwMfgRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
@@ -64,10 +64,10 @@
 				</items>
 			</ComboBox>
 			<!--Scale-->
-			<Label text="{i18n>label.Scale}" required="true"/>
+			<Label text="{i18n>label.Scale}"/>
 			<Input value="{addCIDView>/response/RwScaleRight}" type="Number" change="onChangeRemScaleRead"/>
 			<!--Finger-->
-			<Label text="{i18n>label.Finger}" required="true"/>
+			<Label text="{i18n>label.Finger}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C120' }]}"
 				selectedKey="{addCIDView>/response/RwFingerRight}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>

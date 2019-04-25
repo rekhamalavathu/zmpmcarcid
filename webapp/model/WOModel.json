@@ -37,9 +37,11 @@
 		"ProcessCode": "",
 		"CreatedDateTime": "",
 		"BadOrderStatus": "",
-		"EstimatedMechanicalReleaseDate": ""
+		"EstimatedMechanicalReleaseDate": "",
+		"SirsIncidentNumber": ""
 	},
 	"BOReason": [],
 	"Intercepts": [],
-	"Repairs": []
+	"Repairs": [],
+	"PriceMasterID": "00000000000000000000000000000000000000"
 }

@@ -1,6 +1,5 @@
 sap.ui.define([
 	"com/nscorp/car/common/controller/BaseController",
-	// "com/nscorp/car/componentid/model/RepairLine",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/m/MessageToast"
@@ -40,33 +39,42 @@ sap.ui.define([
 				sap.ui.getCore().getMessageManager().removeAllMessages();
 				oModel.read(sPath, {
 					success: function (oData, response) {
-						this.getModel("addCIDView").setProperty("/busy", false);
 
-						var oViewModel = this.getModel("addCIDView");
-						oViewModel.setProperty("/wheelSetVisible", oData.WheelSetFlag);
-						oViewModel.setProperty("/bolsterSetVisible", oData.BolsterFlag);
-						oViewModel.setProperty("/couplerSetVisible", oData.CouplerFlag);
-						oViewModel.setProperty("/emerValveSetVisible", oData.EmerValveFlag);
-						oViewModel.setProperty("/servValveSetVisible", oData.ServValveFlag);
-						oViewModel.setProperty("/sideFrameSetVisible", oData.SideFrameFlag);
-						oViewModel.setProperty("/slackAdjusterSetVisible", oData.SlakAdjustFlag);
-						oViewModel.setProperty("/componentTypeSetVisible", true);
-						oViewModel.setProperty("/footerSetVisible", true);
-						oViewModel.setProperty("/editSetEnable", true);
-						oViewModel.setProperty("/buttonSetEnable", true);
-						oViewModel.setProperty("/response", oData);
-						oViewModel.setProperty("/response/Guid", cidHeader.guid);
-						// this.getModel("WOModel").setProperty("/Response", oData);
-						// Initial load for RJC for Wheel Set Component type
-						if (oData.ComponentType === "WHEELSET") {
-							sap.ui.getCore().getEventBus().publish("onLoadRemovedJobCode");
-							sap.ui.getCore().getEventBus().publish("onLoadRemovedJobCodeLeft");
+						var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
+						if (oMessage.length === 0) {
+
+							var oViewModel = this.getModel("addCIDView");
+							oViewModel.setProperty("/wheelSetVisible", oData.WheelSetFlag);
+							oViewModel.setProperty("/bolsterSetVisible", oData.BolsterFlag);
+							oViewModel.setProperty("/couplerSetVisible", oData.CouplerFlag);
+							oViewModel.setProperty("/emerValveSetVisible", oData.EmerValveFlag);
+							oViewModel.setProperty("/servValveSetVisible", oData.ServValveFlag);
+							oViewModel.setProperty("/sideFrameSetVisible", oData.SideFrameFlag);
+							oViewModel.setProperty("/slackAdjusterSetVisible", oData.SlakAdjustFlag);
+							oViewModel.setProperty("/componentTypeSetVisible", true);
+							oViewModel.setProperty("/footerSetVisible", true);
+							oViewModel.setProperty("/editSetEnable", true);
+							oViewModel.setProperty("/buttonSetEnable", true);
+							oViewModel.setProperty("/response", oData);
+							oViewModel.setProperty("/response/Guid", cidHeader.guid);
+							// this.getModel("WOModel").setProperty("/Response", oData);
+							// Initial load for RJC for Wheel Set Component type
+							if (oData.ComponentType === "WHEELSET") {
+								sap.ui.getCore().getEventBus().publish("onLoadRemovedJobCode");
+								sap.ui.getCore().getEventBus().publish("onLoadRemovedJobCodeLeft");
+							}
+
+							// clone original data returned by Railinc Web Service
+							var oDataClone = JSON.parse(JSON.stringify(oData));
+							oViewModel.setProperty("/oCloneData", oDataClone);
+						} else {
+							this.getView().byId("retrieveButton").setEnabled(true);
+							this.getView().byId("idComponentId").setEditable(true);
+							this.getView().byId("idRepairRespCode").setEditable(true);
+							this.getView().byId("idComponentType").setEditable(true);
+							this.getView().byId("idLocation").setEditable(true);
 						}
-
-						// clone original data returned by Railinc Web Service
-						var oDataClone = JSON.parse(JSON.stringify(oData));
-						oViewModel.setProperty("/oCloneData", oDataClone);
-
+						this.getModel("addCIDView").setProperty("/busy", false);
 					}.bind(this),
 					error: function (oError) {
 						this.getModel("addCIDView").setProperty("/busy", false);
