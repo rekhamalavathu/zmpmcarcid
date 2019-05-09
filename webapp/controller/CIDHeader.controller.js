@@ -126,13 +126,16 @@ sap.ui.define([
 			var oInputControl = oEvent.getSource();
 			var resp = this.getModel("addCIDView").getProperty("/response");
 
+			sap.ui.getCore().getMessageManager().removeAllMessages();
+			this._resetComponentFlag(resp);
+
 			if (resp.ComponentType === "" || typeof resp.ComponentType === "undefined") {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
 
 			} else {
 				oInputControl.setValueState(sap.ui.core.ValueState.None);
-				this.getView().byId("idComponentType").setEditable(false);
+				// this.getView().byId("idComponentType").setEditable(false);
 				this.getModel("addCIDView").setProperty("/componentTypeEnable", false);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
 				this.getModel("addCIDView").setProperty("/wheelSetVisible", false);
@@ -229,7 +232,21 @@ sap.ui.define([
 					Location: []
 				}
 			});
-		}
+		},
 
+		/**
+		 * reset component flag upon change of component type 
+		 * @private
+		 * @param {Object} oResponse - Component object
+		 */
+		_resetComponentFlag: function (oResponse) {
+			oResponse.WheelSetFlag = false;
+			oResponse.BolsterFlag = false;
+			oResponse.SideFrameFlag = false;
+			oResponse.CouplerFlag = false;
+			oResponse.EmerValveFlag = false;
+			oResponse.ServValveFlag = false;
+			oResponse.SlakAdjustFlag = false;
+		}
 	});
 }());

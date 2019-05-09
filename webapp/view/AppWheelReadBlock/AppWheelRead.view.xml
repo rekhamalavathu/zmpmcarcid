@@ -1,5 +1,5 @@
 <mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
-controllerName="com.nscorp.car.componentid.controller.OnChange">
+	controllerName="com.nscorp.car.componentid.controller.OnChange">
 	<VBox class="sapUiNoContentPadding">
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
@@ -7,10 +7,12 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<core:Title text="{i18n>label.Left}"/>
 			<!--Stamped Month-->
 			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/AwStampedMonthLeft}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--<Input value="{addCIDView>/response/AwStampedMonthLeft}" type="Number" change="onChangeMandatoryMonth"/>-->
+			<MaskInput value="{addCIDView>/response/AwStampedMonthLeft}" mask="99" change="onChangeMandatoryMonth"/>
 			<!--Stamped Year-->
 			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/AwStampedYearLeft}" type="Number" change="onChangeMandatoryYear"/>
+			<!--<Input value="{addCIDView>/response/AwStampedYearLeft}" type="Number" change="onChangeMandatoryYear"/>-->
+			<MaskInput value="{addCIDView>/response/AwStampedYearLeft}" mask="99" change="onChangeMandatoryYear"/>
 			<!--Manufacturer Code-->
 			<Label text="{i18n>label.Mfg}"/>
 			<ComboBox id="idAwMfgLeft" items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
@@ -29,7 +31,8 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			</ComboBox>
 			<!--Scale-->
 			<Label text="{i18n>label.Scale}"/>
-			<Input value="{addCIDView>/response/AwScaleLeft}" type="Number" change="onChangeScale"/>
+			<!--<Input value="{addCIDView>/response/AwScaleLeft}" type="Number" change="onChangeScale"/>-->
+			<MaskInput value="{addCIDView>/response/AwScaleLeft}" mask="99" change="onChangeScale"/>
 			<!--Finger-->
 			<Label text="{i18n>label.Finger}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C110' }]}"
@@ -41,15 +44,16 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<!--Wheel Stamped Serial Number Left-->
 			<Label text="{i18n>label.WheelStampedSerialNumber}"/>
 			<Input value="{addCIDView>/response/AwSerialNoLeft}" maxLength="8" change="onChangeMandatoryInput"/>
-			
 			<!--Right-->
 			<core:Title text="{i18n>label.Right}"/>
 			<!--Stamped Month-->
 			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/AwStampedMonthRight}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--<Input value="{addCIDView>/response/AwStampedMonthRight}" type="Number" change="onChangeMandatoryMonth"/>-->
+			<MaskInput value="{addCIDView>/response/AwStampedMonthRight}" mask="99" change="onChangeMandatoryMonth"/>
 			<!--Stamped Year-->
 			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/AwStampedYearRight}" type="Number" change="onChangeMandatoryYear"/>
+			<!--<Input value="{addCIDView>/response/AwStampedYearRight}" type="Number" change="onChangeMandatoryYear"/>-->
+			<MaskInput value="{addCIDView>/response/AwStampedYearRight}" mask="99" change="onChangeMandatoryYear"/>
 			<!--Manufacturer Code-->
 			<Label text="{i18n>label.Mfg}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
@@ -68,7 +72,8 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			</ComboBox>
 			<!--Scale-->
 			<Label text="{i18n>label.Scale}"/>
-			<Input value="{addCIDView>/response/AwScaleRight}" type="Number" change="onChangeScale"/>
+			<!--<Input value="{addCIDView>/response/AwScaleRight}" type="Number" change="onChangeScale"/>-->
+			<MaskInput value="{addCIDView>/response/AwScaleRight}" mask="99" change="onChangeScale"/>
 			<!--Finger-->
 			<Label text="{i18n>label.Finger}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C110' }]}"

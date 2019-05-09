@@ -30,7 +30,7 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<!--Coupler Classification Date-->
 			<Label text="{i18n>label.CouplerClassDate}"/>
 			<DatePicker id="idDatePickerCouplerClassDate" 
-			          value="{path: 'addCIDView>/response/CouplerClassDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}">
+			          value="{path: 'addCIDView>/response/CouplerClassDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true, pattern: 'MM.dd.yyyy'}}">
 			</DatePicker>
 			
 			<!--Right-->

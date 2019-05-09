@@ -61,7 +61,8 @@
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_FACILITY_CODE', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C003' }]}"
 				selectedKey="{addCIDView>/response/WsFacilityCode}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>
-					<core:ListItem key="{FacilityCode}" text="{Value} - {Description}"/>
+					<!--<core:ListItem key="{FacilityCode}" text="{Value} - {Description}"/>-->
+					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
 		</forms:SimpleForm>

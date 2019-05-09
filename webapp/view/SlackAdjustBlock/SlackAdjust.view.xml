@@ -18,7 +18,7 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<!--Slack Adjuster Recondition Date-->
 			<Label text="{i18n>label.SARecondDate}"/>
 			<DatePicker id="idDatePickerSaReconditionDate" 
-			          value="{path: 'addCIDView>/response/SaReconditionDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}"> 
+			          value="{path: 'addCIDView>/response/SaReconditionDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true, pattern: 'MM.dd.yyyy'}}"> 
 			</DatePicker>
 			<!--OEM Model Number-->
 			<Label text="{i18n>label.SAModelNo}" required="true"/>

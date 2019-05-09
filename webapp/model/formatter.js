@@ -7,6 +7,7 @@ sap.ui.define([], function () {
 			} else {
 				return "";
 			}
+			
 		}
 	};
 });

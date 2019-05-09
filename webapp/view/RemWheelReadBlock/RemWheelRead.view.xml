@@ -7,10 +7,12 @@
 			<core:Title text="{i18n>label.Left}"/>
 			<!--Stamped Month-->
 			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/RwStampedMonthLeft}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--<Input value="{addCIDView>/response/RwStampedMonthLeft}" type="Number" change="onChangeMandatoryMonth"/>-->
+			<MaskInput value="{addCIDView>/response/RwStampedMonthLeft}" mask="99" change="onChangeMandatoryMonth"/>
 			<!--Stamped Year-->
 			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/RwStampedYearLeft}" type="Number" change="onChangeMandatoryYear"/>
+			<!--<Input value="{addCIDView>/response/RwStampedYearLeft}" type="Number" change="onChangeMandatoryYear"/>-->
+			<MaskInput value="{addCIDView>/response/RwStampedYearLeft}" mask="99" change="onChangeMandatoryYear"/>
 			<!--Mfg Code-->
 			<Label text="{i18n>label.Mfg}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
@@ -29,7 +31,8 @@
 			</ComboBox>
 			<!--Scale-->
 			<Label text="{i18n>label.Scale}"/>
-			<Input value="{addCIDView>/response/RwScaleLeft}" type="Number" change="onChangeRemScaleRead"/>
+			<!--<Input value="{addCIDView>/response/RwScaleLeft}" type="Number" change="onChangeRemScaleRead"/>-->
+			<MaskInput value="{addCIDView>/response/RwScaleLeft}" mask="99" change="onChangeRemScaleRead"/>
 			<!--Finger-->
 			<Label text="{i18n>label.Finger}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C120' }]}"
@@ -38,15 +41,16 @@
 					<core:ListItem key="{Value}" text="{Value}"/>
 				</items>
 			</ComboBox>
-	
-	        <!--Right -->
+			<!--Right -->
 			<core:Title text="{i18n>label.Right}"/>
 			<!--stamped Month-->
 			<Label text="{i18n>label.MM}"/>
-			<Input value="{addCIDView>/response/RwStampedMonthRight}" type="Number" change="onChangeMandatoryMonth"/>
+			<!--<Input value="{addCIDView>/response/RwStampedMonthRight}" type="Number" change="onChangeMandatoryMonth"/>-->
+			<MaskInput value="{addCIDView>/response/RwStampedMonthRight}" mask="99" change="onChangeMandatoryMonth"/>
 			<!--STamped Year-->
 			<Label text="{i18n>label.YY}"/>
-			<Input value="{addCIDView>/response/RwStampedYearRight}" type="Number" change="onChangeMandatoryYear"/>
+			<!--<Input value="{addCIDView>/response/RwStampedYearRight}" type="Number" change="onChangeMandatoryYear"/>-->
+			<MaskInput value="{addCIDView>/response/RwStampedYearRight}" mask="99" change="onChangeMandatoryYear"/>
 			<!--Mfg Code-->
 			<Label text="{i18n>label.Mfg}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C107' }]}"
@@ -65,7 +69,8 @@
 			</ComboBox>
 			<!--Scale-->
 			<Label text="{i18n>label.Scale}"/>
-			<Input value="{addCIDView>/response/RwScaleRight}" type="Number" change="onChangeRemScaleRead"/>
+			<!--<Input value="{addCIDView>/response/RwScaleRight}" type="Number" change="onChangeRemScaleRead"/>-->
+			<MaskInput value="{addCIDView>/response/RwScaleRight}" mask="99" change="onChangeRemScaleRead"/>
 			<!--Finger-->
 			<Label text="{i18n>label.Finger}"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C120' }]}"
@@ -74,7 +79,6 @@
 					<core:ListItem key="{Value}" text="{Value}"/>
 				</items>
 			</ComboBox>
-
 		</forms:SimpleForm>
 	</VBox>
 </mvc:View>

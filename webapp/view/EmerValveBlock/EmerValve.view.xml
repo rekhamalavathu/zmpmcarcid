@@ -16,7 +16,7 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<!--Date Tested-->
 			<Label text="{i18n>label.DateTested}" />
 			<DatePicker id="idDatePickerEmervalveDateTested" 
-			      value="{path: '/response/EvDateTested', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true}}" >
+			      value="{path: 'addCIDView>/response/EvDateTested', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true, pattern: 'MM.dd.yyyy'}}">
 	        </DatePicker>
 	        <!--Part Number-->
 			<Label text="{i18n>label.PartNo}" required="true"/>

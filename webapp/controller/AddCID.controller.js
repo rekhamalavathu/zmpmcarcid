@@ -42,6 +42,7 @@ sap.ui.define([
 						this._onObjectMatched();
 					}
 				}.bind(this)
+				
 			});
 
 			// Register the view with the message manager
@@ -63,7 +64,7 @@ sap.ui.define([
 				}.bind(this)
 			});
 
-			this.getModel("addCIDView").setProperty("/busy", false);
+			// this.getModel("addCIDView").setProperty("/busy", false);
 		},
 
 		/* =========================================================== */
@@ -412,9 +413,11 @@ sap.ui.define([
 							this.getModel("WOModel").setProperty("/ProgramLocation", oDataStation.results[0].to_WcsLocData.programsloc);
 							this.getModel("WOModel").setProperty("/Plant", oDataStation.results[0].to_WcsLocData.plant);
 							this.getModel("WOModel").setProperty("/MainWorkCenter", oDataStation.results[0].to_WcsLocData.mainworkcenter);
+							this.getModel("addCIDView").setProperty("/busy", false);
 						}.bind(this)
 					});
 				}.bind(this),
+				
 				error: function (oError) {
 
 				}
