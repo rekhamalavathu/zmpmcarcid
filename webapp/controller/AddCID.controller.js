@@ -42,7 +42,7 @@ sap.ui.define([
 						this._onObjectMatched();
 					}
 				}.bind(this)
-				
+
 			});
 
 			// Register the view with the message manager
@@ -358,8 +358,8 @@ sap.ui.define([
 		_onObjectMatched: function (oEvent) {
 			var sPath,
 				oObject,
-				aFilter,
-				oComponentData = this.getOwnerComponent().getComponentData();
+				aFilter;
+			// oComponentData = this.getOwnerComponent().getComponentData();
 
 			//get User Station
 			this.getModel().callFunction("/GetCurrentUser", {
@@ -367,44 +367,38 @@ sap.ui.define([
 				success: function (oData, response) {
 					this.getModel("WOModel").setProperty("/CurrentUser", oData.GetCurrentUser.Value);
 
-					sPath = "/ZMPM_CDS_CAR_USERSTATIONS";
-					if (oComponentData && oComponentData.startupParameters.StationNumber) {
-						aFilter = [new sap.ui.model.Filter({
-								path: "zuser",
-								operator: sap.ui.model.FilterOperator.EQ,
-								value1: oData.GetCurrentUser.Value,
-								and: true
-							}),
-							new sap.ui.model.Filter({
-								path: "stationnum",
-								operator: sap.ui.model.FilterOperator.EQ,
-								value1: oComponentData.startupParameters.StationNumber
-							})
-						];
-					} else {
-						aFilter = [new sap.ui.model.Filter({
-								path: "zuser",
-								operator: sap.ui.model.FilterOperator.EQ,
-								value1: oData.GetCurrentUser.Value,
-								and: true
-							}),
-							new sap.ui.model.Filter({
-								path: "default_station",
-								operator: sap.ui.model.FilterOperator.EQ,
-								value1: "X"
-							})
-						];
-					}
+					// sPath = "/ZMPM_CDS_CAR_USERSTATIONS";
+					sPath = "/ZMPM_CDS_CAR_USER_DATA";
+					// if (oComponentData && oComponentData.startupParameters.StationNumber) {
+					// 	aFilter = [new sap.ui.model.Filter({
+					// 			// path: "zuser",
+					// 			path: "user_id",
+					// 			operator: sap.ui.model.FilterOperator.EQ,
+					// 			value1: oData.GetCurrentUser.Value,
+					// 			and: true
+					// 		})
+
+					// 	];
+					// } else {
+					aFilter = [new sap.ui.model.Filter({
+							path: "user_id",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: oData.GetCurrentUser.Value,
+							and: true
+						})
+						// new sap.ui.model.Filter({
+						// 	path: "default_station",
+						// 	operator: sap.ui.model.FilterOperator.EQ,
+						// 	value1: "X"
+						// })
+					];
+					// }
 					this.getModel().read(sPath, {
 						urlParameters: {
 							"$expand": "to_StationsData,to_WcsLocData"
 						},
 						filters: aFilter,
 						success: function (oDataStation) {
-							if (oDataStation.results.length === 0) {
-								this.noStationAssign();
-								return;
-							}
 							this.getModel("WOModel").setProperty("/StationNumber", oDataStation.results[0].to_StationsData.stationnum);
 							this.getModel("WOModel").setProperty("/StationName", oDataStation.results[0].to_StationsData.stationname);
 							this.getModel("WOModel").setProperty("/SPLC", oDataStation.results[0].to_StationsData.splccode);
@@ -412,12 +406,11 @@ sap.ui.define([
 							this.getModel("WOModel").setProperty("/WheelsetsLocation", oDataStation.results[0].to_WcsLocData.cnsgnmntsloc);
 							this.getModel("WOModel").setProperty("/ProgramLocation", oDataStation.results[0].to_WcsLocData.programsloc);
 							this.getModel("WOModel").setProperty("/Plant", oDataStation.results[0].to_WcsLocData.plant);
-							this.getModel("WOModel").setProperty("/MainWorkCenter", oDataStation.results[0].to_WcsLocData.mainworkcenter);
 							this.getModel("addCIDView").setProperty("/busy", false);
 						}.bind(this)
 					});
 				}.bind(this),
-				
+
 				error: function (oError) {
 
 				}
@@ -649,7 +642,8 @@ sap.ui.define([
 				}
 
 				// Wheel Repair - AJC left & Right
-				if (oResponse.WrAppliedJobCodeLeft === "" || oResponse.WrAppliedJobCodeLeft === undefined || oResponse.WrAppliedJobCodeLeft === "0000") {
+				if (oResponse.WrAppliedJobCodeLeft === "" || oResponse.WrAppliedJobCodeLeft === undefined || oResponse.WrAppliedJobCodeLeft ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/WrAppliedJobCodeLeft",
@@ -663,7 +657,8 @@ sap.ui.define([
 						this.getModel("addCIDView").setProperty("/response/UpdateFlag", true);
 					}
 				}
-				if (oResponse.WrAppliedJobCodeRight === "" || oResponse.WrAppliedJobCodeRight === undefined || oResponse.WrAppliedJobCodeRight === "0000") {
+				if (oResponse.WrAppliedJobCodeRight === "" || oResponse.WrAppliedJobCodeRight === undefined || oResponse.WrAppliedJobCodeRight ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/WrAppliedJobCodeRight",
@@ -736,7 +731,8 @@ sap.ui.define([
 					}
 				}
 				// Wheel Repair - RJC left & Right
-				if (oResponse.WrRemovedJobCodeLeft === "" || oResponse.WrRemovedJobCodeLeft === undefined || oResponse.WrRemovedJobCodeLeft === "0000" ) {
+				if (oResponse.WrRemovedJobCodeLeft === "" || oResponse.WrRemovedJobCodeLeft === undefined || oResponse.WrRemovedJobCodeLeft ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/WrRemovedJobCodeLeft",
@@ -746,7 +742,8 @@ sap.ui.define([
 					}));
 					this.getModel("addCIDView").setProperty("/hasError", true);
 				}
-				if (oResponse.WrRemovedJobCodeRight === "" || oResponse.WrRemovedJobCodeRight === undefined || oResponse.WrRemovedJobCodeRight === "0000") {
+				if (oResponse.WrRemovedJobCodeRight === "" || oResponse.WrRemovedJobCodeRight === undefined || oResponse.WrRemovedJobCodeRight ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/WrRemovedJobCodeRight",
@@ -1142,7 +1139,8 @@ sap.ui.define([
 					this.getModel("addCIDView").setProperty("/hasError", true);
 				}
 				// Bearing Wheel AJC Left & Right
-				if (oResponse.BrAppliedJobCodeLeft === "" || oResponse.BrAppliedJobCodeLeft === undefined || oResponse.BrAppliedJobCodeLeft === "0000") {
+				if (oResponse.BrAppliedJobCodeLeft === "" || oResponse.BrAppliedJobCodeLeft === undefined || oResponse.BrAppliedJobCodeLeft ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/BrAppliedJobCodeLeft",
@@ -1156,7 +1154,8 @@ sap.ui.define([
 						this.getModel("addCIDView").setProperty("/response/UpdateFlag", true);
 					}
 				}
-				if (oResponse.BrAppliedJobCodeRight === "" || oResponse.BrAppliedJobCodeRight === undefined || oResponse.BrAppliedJobCodeRight === "0000") {
+				if (oResponse.BrAppliedJobCodeRight === "" || oResponse.BrAppliedJobCodeRight === undefined || oResponse.BrAppliedJobCodeRight ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/BrAppliedJobCodeRight",
@@ -1229,7 +1228,8 @@ sap.ui.define([
 					}
 				}
 				// Bearing Wheel RJC Left & Right
-				if (oResponse.BrRemovedJobCodeLeft === "" || oResponse.BrRemovedJobCodeLeft === undefined || oResponse.BrRemovedJobCodeLeft === "0000") {
+				if (oResponse.BrRemovedJobCodeLeft === "" || oResponse.BrRemovedJobCodeLeft === undefined || oResponse.BrRemovedJobCodeLeft ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/BrRemovedJobCodeLeft",
@@ -1239,7 +1239,8 @@ sap.ui.define([
 					}));
 					this.getModel("addCIDView").setProperty("/hasError", true);
 				}
-				if (oResponse.BrRemovedJobCodeRight === "" || oResponse.BrRemovedJobCodeRight === undefined || oResponse.BrRemovedJobCodeRight === "0000") {
+				if (oResponse.BrRemovedJobCodeRight === "" || oResponse.BrRemovedJobCodeRight === undefined || oResponse.BrRemovedJobCodeRight ===
+					"0000") {
 					sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 						message: this.getResourceBundle().getText("error.requiredField"),
 						target: "/response/BrRemovedJobCodeRight",
@@ -1343,10 +1344,7 @@ sap.ui.define([
 					}));
 					this.getModel("addCIDView").setProperty("/hasError", true);
 				}
-
-				// }
 			}
-
 		},
 
 		/**
@@ -1360,7 +1358,7 @@ sap.ui.define([
 				if (oResponse.BolsterCastMonth === "" || oResponse.BolsterCastMonth === undefined || oResponse.BolsterAarDesignCode === "" ||
 					oResponse.BolsterAarDesignCode === undefined || oResponse.BolsterMfgPatternNo === "" || oResponse.BolsterMfgPatternNo ===
 					undefined || oResponse.BolsterWearPlate === "" || oResponse.BolsterWearPlate === undefined || oResponse.BolsterCastYear === "" ||
-					oResponse.BolsterCastYear === undefined) {
+					oResponse.BolsterCastYear === undefined || oResponse.BolsterAarCode === "" || oResponse.BolsterAarCode === undefined ) {
 					this.getModel("addCIDView").setProperty("/hasError", true);
 
 					if (oResponse.BolsterCastMonth === "" || oResponse.BolsterCastMonth === undefined) {
@@ -1403,6 +1401,15 @@ sap.ui.define([
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 							message: this.getResourceBundle().getText("error.requiredField"),
 							target: "/response/BolsterWearPlate",
+							processor: this.getModel("addCIDView"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
+						}));
+					}
+					if (oResponse.BolsterAarCode === "" || oResponse.BolsterAarCode === undefined) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+							message: this.getResourceBundle().getText("error.requiredField"),
+							target: "/response/BolsterAarCode",
 							processor: this.getModel("addCIDView"),
 							persistent: true,
 							type: sap.ui.core.MessageType.Error

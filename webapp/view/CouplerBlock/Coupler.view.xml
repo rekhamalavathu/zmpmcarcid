@@ -1,40 +1,44 @@
 <mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
-controllerName="com.nscorp.car.componentid.controller.OnChange">
+	controllerName="com.nscorp.car.componentid.controller.OnChange">
 	<VBox class="sapUiNoContentPadding">
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
 			<!--Left-->
 			<core:Title text=" "/>
+			<Label/>
+			<!-- Show Qualifier Chart -->
+			<Button text="{i18n>buttonCplrQlfrChart}" width="200px" press="onPressQualifierChart"/>
 			<!--Coupler Condition Code-->
 			<Label text="{i18n>label.CondCode}"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C601' }]}" 
-			          selectedKey="{addCIDView>/response/CouplerConditionCode}" showSecondaryValues="true" change="onChangeComboBox">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C601' }]}"
+				selectedKey="{addCIDView>/response/CouplerConditionCode}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
 			<!--Coupler Cast Month-->
 			<Label text="{i18n>label.CouplerCastMonth}" required="true"/>
-			<Input value="{addCIDView>/response/CouplerCastMonth}" type ="Number" change="onChangeMandatoryMonth"/>
+			<Input value="{addCIDView>/response/CouplerCastMonth}" type="Number" change="onChangeMandatoryMonth"/>
 			<!--Coupler Serial Number-->
 			<Label text="{i18n>label.CouplerSerialNo}"/>
 			<Input value="{addCIDView>/response/CouplerSerialNo}" maxLength="10"/>
 			<!--Coupler Conditional Approval-->
 			<Label text="{i18n>label.CouplerCondApprv}"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C608' }]}" 
-			          selectedKey="{addCIDView>/response/CouplerCondApproval}" showSecondaryValues="true" change="onChangeComboBox">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C608' }]}"
+				selectedKey="{addCIDView>/response/CouplerCondApproval}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
 			<!--Coupler Classification Date-->
 			<Label text="{i18n>label.CouplerClassDate}"/>
-			<DatePicker id="idDatePickerCouplerClassDate" 
-			          value="{path: 'addCIDView>/response/CouplerClassDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true, pattern: 'MM.dd.yyyy'}}">
-			</DatePicker>
-			
+			<DatePicker id="idDatePickerCouplerClassDate"
+				value="{path: 'addCIDView>/response/CouplerClassDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true, pattern: 'MM.dd.yyyy'}}"></DatePicker>
 			<!--Right-->
 			<core:Title text=" "/>
+			<FlexBox height="30px">
+				<Label></Label>
+			</FlexBox>
 			<!--Coupler Catalog Number-->
 			<Label text="{i18n>label.CouplerCatalog}" required="true"/>
 			<Input value="{addCIDView>/response/CouplerCatalogNo}" change="onChangeMandatoryInput" maxLength="12"/>
@@ -46,16 +50,16 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<Input value="{addCIDView>/response/CouplerCavityNo}" maxLength="2"/>
 			<!--Coupler AAR Facility Code-->
 			<Label text="{i18n>label.CouplerAARCode}" required="true"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C609' }]}" 
-			          selectedKey="{addCIDView>/response/CouplerAarFacilityCode}" showSecondaryValues="true" change="onChangeMandatory">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C609' }]}"
+				selectedKey="{addCIDView>/response/CouplerAarFacilityCode}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
 			<!--Reconditioner Tag-->
 			<Label text="{i18n>label.CouplerRecondTag}"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C615' }]}" 
-			          selectedKey="{addCIDView>/response/CouplerReconditionerTag}" showSecondaryValues="true" change="onChangeComboBox">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C615' }]}"
+				selectedKey="{addCIDView>/response/CouplerReconditionerTag}" showSecondaryValues="true" change="onChangeComboBox">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>

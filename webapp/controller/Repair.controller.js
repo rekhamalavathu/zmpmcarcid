@@ -250,7 +250,7 @@ sap.ui.define([
 		handleChangeRemovedJobCodeAJC: function (sInputId) {
 			var sPath, oJobCode;
 			var oContext = this.getModel("addCIDView").getProperty("/response");
-			
+
 			switch (sInputId) {
 			case "idRepairRJC":
 				var removedJobCode = oContext.WrRemovedJobCodeRight;
@@ -262,7 +262,11 @@ sap.ui.define([
 						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
 					});
 					oJobCode = this.getModel().getProperty(sPath);
-					this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
+					if (oJobCode) {
+						this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
+					} else {
+						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifier", []);
+					}
 					// this._getRemovedQualifier(removedJobCode, "idRepairRemovedQualifier");
 				}
 				this._determineWhyMadeCode();
@@ -277,7 +281,12 @@ sap.ui.define([
 						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
 					});
 					oJobCode = this.getModel().getProperty(sPath);
-					this._determineRemovedQualifier(removedJobCodeLeft, oJobCode, "idRepairRJCLeft");
+					if (oJobCode) {
+						this._determineRemovedQualifier(removedJobCodeLeft, oJobCode, "idRepairRJCLeft");
+					} else {
+						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifierLeft", []);
+					}
+
 					// this._getRemovedQualifier(removedJobCodeLeft, "idRepairRemovedQualifierLeft");
 				}
 				this._determineWhyMadeCodeLeft();
@@ -537,41 +546,6 @@ sap.ui.define([
 			}
 		},
 
-		/**
-		 * to get Condition Code value for Left Wheel
-		 * @private
-		 */
-		// _determineConditionCodeLeft: function () {
-		// 	// var aFilter;
-		// 	// var appliedJobCode = this.getView().byId("idRepairAJCLeft").getSelectedKey();
-
-		// 	// if (this._compareRule(appliedJobCode, "NEW", "99")) {
-		// 	// 	aFilter = [new Filter({
-		// 	// 		path: "JobCode",
-		// 	// 		operator: FilterOperator.EQ,
-		// 	// 		value1: appliedJobCode,
-		// 	// 		and: true
-		// 	// 	})];
-
-		// 	// 	this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter, "idRepairCondCodeLeft");
-		// 	// } else {
-		// 	// 	this._getConditionCode("/ZMPM_CDS_CAR_CONDITIONCODE", "/comboBoxValues/ConditionCodeLeft", [], "idRepairCondCodeLeft");
-		// 	// }
-
-		// 	// if (appliedJobCode === "") {
-		// 	// 	return;
-		// 	// }
-
-		// 	// aFilter = [new sap.ui.model.Filter({
-		// 	// 	path: "JobCode",
-		// 	// 	operator: sap.ui.model.FilterOperator.EQ,
-		// 	// 	value1: appliedJobCode,
-		// 	// 	and: true
-		// 	// })];
-
-		// 	// this._getConditionCode("/ZMPM_CDS_CAR_JOBCODECOND", "/comboBoxValues/ConditionCodeLeft", aFilter, "idRepairCondCodeLeft");
-		// },
-
 		/** 
 		 * Method to get Condition Code
 		 * @constructor 
@@ -586,19 +560,17 @@ sap.ui.define([
 			this.getModel().read(sPath, {
 				filters: aFilter,
 				success: function (oData) {
-						for (var i = 0; i < oData.results.length; i++) {
-							oComboBoxItem = {};
-							oComboBoxItem.key = oData.results[i].ConditionCode;
-							oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
-							aComboBoxItem.push(oComboBoxItem);
-						}
-						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-						if (aComboBoxItem.length === 1) {
-							this.getView().byId(sInput).setSelectedKey(aComboBoxItem[0].key);
-						}
-					}.bind(this)
-					// error: function (sMsg) {
-					// }.bind(this)
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].ConditionCode;
+						oComboBoxItem.text = oData.results[i].ConditionCodeDescription;
+						aComboBoxItem.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+					if (aComboBoxItem.length === 1) {
+						this.getView().byId(sInput).setSelectedKey(aComboBoxItem[0].key);
+					}
+				}.bind(this)
 			});
 		},
 
@@ -750,32 +722,20 @@ sap.ui.define([
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.getView().byId("idRepairRJC").setSelectedKey(aItems[0]);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this.byId("idRepairRJC").setSelectedKey("");
-						// 	this.byId("idRepairRJC").setValue("");
-						// }
 					}
 					this._determineConditionCode("idRepairAJC");
 					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
 						this._determineAppliedQualifier(oContext.WrAppliedJobCodeRight, oAppliedJobCode);
 					}
 					this.handleChangeRemovedJobCodeAJC("idRepairRJC");
-					// this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
-					// this._getRemovedQualifier(oContext.WrRemovedJobCodeRight, "idRepairRemovedQualifier");
 					this._determineWhyMadeCode();
-					this.getModel("addCIDView").updateBindings(true);
+					// this.getModel("addCIDView").updateBindings(true);
 				}.bind(this));
 			} else {
 				this._getJobCode([], "/comboBoxValues/RemovedJobCode").then(function (sStatus, aItems) {
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.byId("idRepairRJC").setSelectedKey(aItems[0].key);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this._oController.byId("idRepairRJC").setSelectedKey("");
-						// 	this._oController.byId("idRepairRJC").setValue("");
-						// }
 					}
 					this._determineConditionCode("idRepairAJC");
 					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
@@ -783,9 +743,7 @@ sap.ui.define([
 					}
 					this._determineWhyMadeCode();
 					this.handleChangeRemovedJobCodeAJC("idRepairRJC");
-					this.getModel("addCIDView").updateBindings(true);
-					// this._getRemovedQualifier(oContext.WrRemovedJobCodeRight, "idRepairRemovedQualifier");
-
+					// this.getModel("addCIDView").updateBindings(true);
 				}.bind(this));
 			}
 
@@ -828,11 +786,6 @@ sap.ui.define([
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.getView().byId("idRepairRJCLeft").setSelectedKey(aItems[0]);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this.byId("idRepairRJC").setSelectedKey("");
-						// 	this.byId("idRepairRJC").setValue("");
-						// }
 					}
 					this._determineConditionCode("idRepairAJCLeft");
 					this._determineWhyMadeCode();
@@ -840,10 +793,6 @@ sap.ui.define([
 						this._determineAppliedQualifierLeft(oContext.WrAppliedJobCodeLeft, oAppliedJobCode);
 					}
 					this.handleChangeRemovedJobCodeAJC("idRepairRJCLeft");
-					// this._getRemovedQualifier(oContext.WrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
-					// this.getModel("addCIDView").updateBindings(true);
-
-					// this._oController.getModel("WOModel").updateBindings(true);
 
 				}.bind(this));
 			} else {
@@ -851,11 +800,6 @@ sap.ui.define([
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.byId("idRepairRJCLeft").setSelectedKey(aItems[0].key);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this._oController.byId("idRepairRJC").setSelectedKey("");
-						// 	this._oController.byId("idRepairRJC").setValue("");
-						// }
 					}
 					this._determineConditionCode("idRepairAJCLeft");
 					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
@@ -864,7 +808,7 @@ sap.ui.define([
 					this.handleChangeRemovedJobCodeAJC("idRepairRJCLeft");
 					// this._getRemovedQualifier(oContext.WrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
 					this._determineWhyMadeCode();
-					// this.getModel("addCIDView").updateBindings(true);
+
 				}.bind(this));
 			}
 
@@ -907,7 +851,6 @@ sap.ui.define([
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						resolve(aKeyAdded);
-						// this.getModel("addCIDView").updateBindings(true);
 					}.bind(this)
 				});
 			}.bind(this));
@@ -1119,63 +1062,58 @@ sap.ui.define([
 						"$filter": sFilter
 					},
 					success: function (oData) {
-							for (var i = 0; i < oData.results.length; i++) {
-								oComboBoxItem = {};
-								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
-									oComboBoxItem.key = oData.results[i].QualifierCode;
-									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-									oComboBoxItem.CarPart = oData.results[i].CarPart;
-								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
-									oComboBoxItem.key = oData.results[i].CarPart;
-									oComboBoxItem.text = oData.results[i].CarPartDescription;
-									oComboBoxItem.CarPart = oData.results[i].CarPart;
-								}
-								var sKey = oComboBoxItem.key;
-								aComboBoxItemUnfiltered.push(oComboBoxItem);
-
-								if (aQualifierAdded.indexOf(sKey) === -1) {
-									aComboBoxItem.push(oComboBoxItem);
-								}
-
-								aQualifierAdded.push(sKey);
+						for (var i = 0; i < oData.results.length; i++) {
+							oComboBoxItem = {};
+							if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+								oComboBoxItem.key = oData.results[i].QualifierCode;
+								oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+								oComboBoxItem.CarPart = oData.results[i].CarPart;
+							} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+								oComboBoxItem.key = oData.results[i].CarPart;
+								oComboBoxItem.text = oData.results[i].CarPartDescription;
+								oComboBoxItem.CarPart = oData.results[i].CarPart;
 							}
-							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-							this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
-						}.bind(this)
-						// error: function (sMsg) {
-						// 	// this._oController.getView().byId("idRepairAQ").setBusy(false);
-						// }.bind(this)
+							var sKey = oComboBoxItem.key;
+							aComboBoxItemUnfiltered.push(oComboBoxItem);
+
+							if (aQualifierAdded.indexOf(sKey) === -1) {
+								aComboBoxItem.push(oComboBoxItem);
+							}
+
+							aQualifierAdded.push(sKey);
+						}
+						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
+					}.bind(this)
+
 				});
 			} else {
 				this.getModel().read(sPath, {
 					filters: aFilter,
 					success: function (oData) {
-							for (var i = 0; i < oData.results.length; i++) {
-								oComboBoxItem = {};
-								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
-									oComboBoxItem.key = oData.results[i].QualifierCode;
-									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-									oComboBoxItem.CarPart = oData.results[i].CarPart;
-								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
-									oComboBoxItem.key = oData.results[i].CarPart;
-									oComboBoxItem.text = oData.results[i].CarPartDescription;
-									oComboBoxItem.CarPart = oData.results[i].CarPart;
-								}
-								var sKey = oComboBoxItem.key;
-								aComboBoxItemUnfiltered.push(oComboBoxItem);
-
-								if (aQualifierAdded.indexOf(sKey) === -1) {
-									aComboBoxItem.push(oComboBoxItem);
-								}
-
-								aQualifierAdded.push(sKey);
+						for (var i = 0; i < oData.results.length; i++) {
+							oComboBoxItem = {};
+							if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+								oComboBoxItem.key = oData.results[i].QualifierCode;
+								oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+								oComboBoxItem.CarPart = oData.results[i].CarPart;
+							} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+								oComboBoxItem.key = oData.results[i].CarPart;
+								oComboBoxItem.text = oData.results[i].CarPartDescription;
+								oComboBoxItem.CarPart = oData.results[i].CarPart;
 							}
-							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-							this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
-						}.bind(this)
-						// error: function (sMsg) {
-						// 	// this._oController.getView().byId("idRepairAQ").setBusy(false);
-						// }.bind(this)
+							var sKey = oComboBoxItem.key;
+							aComboBoxItemUnfiltered.push(oComboBoxItem);
+
+							if (aQualifierAdded.indexOf(sKey) === -1) {
+								aComboBoxItem.push(oComboBoxItem);
+							}
+
+							aQualifierAdded.push(sKey);
+						}
+						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
+					}.bind(this)
 				});
 			}
 		},
@@ -1255,121 +1193,80 @@ sap.ui.define([
 		 * @param {String} sExclusion - Exclusion criteria
 		 */
 		_getRemovedQualifier: function (sCDS, sProperty, aFilter, sExclusion) {
-				var sPath = "/" + sCDS,
-					aComboBoxItem = [],
-					aComboBoxItemUnfiltered = [],
-					oComboBoxItem,
-					sFilter,
-					aQualifierAdded = [];
+			var sPath = "/" + sCDS,
+				aComboBoxItem = [],
+				aComboBoxItemUnfiltered = [],
+				oComboBoxItem,
+				sFilter,
+				aQualifierAdded = [];
 
-				if (sExclusion) {
-					sFilter = "not startswith(CarPart,'" + sExclusion + "')"; //Temporary expecting 1 exclusion only
+			if (sExclusion) {
+				sFilter = "not startswith(CarPart,'" + sExclusion + "')"; //Temporary expecting 1 exclusion only
 
-					this.getModel().read(sPath, {
-						filters: aFilter,
-						urlParameters: {
-							"$filter": sFilter
-						},
-						success: function (oData) {
-								for (var i = 0; i < oData.results.length; i++) {
-									oComboBoxItem = {};
-									if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
-										oComboBoxItem.key = oData.results[i].QualifierCode;
-										oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-										oComboBoxItem.CarPart = oData.results[i].CarPart;
-									} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
-										oComboBoxItem.key = oData.results[i].CarPart;
-										oComboBoxItem.text = oData.results[i].CarPartDescription;
-										oComboBoxItem.CarPart = oData.results[i].CarPart;
-									}
-									var sKey = oComboBoxItem.key;
-									aComboBoxItemUnfiltered.push(oComboBoxItem);
-
-									if (aQualifierAdded.indexOf(sKey) === -1) {
-										aComboBoxItem.push(oComboBoxItem);
-									}
-
-									aQualifierAdded.push(sKey);
+				this.getModel().read(sPath, {
+					filters: aFilter,
+					urlParameters: {
+						"$filter": sFilter
+					},
+					success: function (oData) {
+							for (var i = 0; i < oData.results.length; i++) {
+								oComboBoxItem = {};
+								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+									oComboBoxItem.key = oData.results[i].QualifierCode;
+									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+									oComboBoxItem.key = oData.results[i].CarPart;
+									oComboBoxItem.text = oData.results[i].CarPartDescription;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
 								}
-								this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-							}.bind(this)
-							// error: function (sMsg) {
-							// 	this._oController.getView().byId("idRepairRemovedQualifier").setBusy(false);
-							// }.bind(this)
-					});
-				} else {
-					this.getModel().read(sPath, {
-						filters: aFilter,
-						success: function (oData) {
-								for (var i = 0; i < oData.results.length; i++) {
-									oComboBoxItem = {};
-									if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
-										oComboBoxItem.key = oData.results[i].QualifierCode;
-										oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-										oComboBoxItem.CarPart = oData.results[i].CarPart;
-									} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
-										oComboBoxItem.key = oData.results[i].CarPart;
-										oComboBoxItem.text = oData.results[i].CarPartDescription;
-										oComboBoxItem.CarPart = oData.results[i].CarPart;
-									}
-									var sKey = oComboBoxItem.key;
-									aComboBoxItemUnfiltered.push(oComboBoxItem);
+								var sKey = oComboBoxItem.key;
+								aComboBoxItemUnfiltered.push(oComboBoxItem);
 
-									if (aQualifierAdded.indexOf(sKey) === -1) {
-										aComboBoxItem.push(oComboBoxItem);
-									}
-
-									aQualifierAdded.push(sKey);
+								if (aQualifierAdded.indexOf(sKey) === -1) {
+									aComboBoxItem.push(oComboBoxItem);
 								}
-								this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
-							}.bind(this)
-							// error: function (sMsg) {
-							// 	this._oController.getView().byId("idRepairRemovedQualifier").setBusy(false);
-							// }.bind(this)
-					});
-				}
+
+								aQualifierAdded.push(sKey);
+							}
+							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						}.bind(this)
+						// error: function (sMsg) {
+						// 	this._oController.getView().byId("idRepairRemovedQualifier").setBusy(false);
+						// }.bind(this)
+				});
+			} else {
+				this.getModel().read(sPath, {
+					filters: aFilter,
+					success: function (oData) {
+							for (var i = 0; i < oData.results.length; i++) {
+								oComboBoxItem = {};
+								if (sCDS === "ZMPM_CDS_CAR_JOBCODEQUAL") {
+									oComboBoxItem.key = oData.results[i].QualifierCode;
+									oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								} else if (sCDS === "ZMPM_CDS_CAR_CARPARTJCD_AQ") {
+									oComboBoxItem.key = oData.results[i].CarPart;
+									oComboBoxItem.text = oData.results[i].CarPartDescription;
+									oComboBoxItem.CarPart = oData.results[i].CarPart;
+								}
+								var sKey = oComboBoxItem.key;
+								aComboBoxItemUnfiltered.push(oComboBoxItem);
+
+								if (aQualifierAdded.indexOf(sKey) === -1) {
+									aComboBoxItem.push(oComboBoxItem);
+								}
+
+								aQualifierAdded.push(sKey);
+							}
+							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
+						}.bind(this)
+						// error: function (sMsg) {
+						// 	this._oController.getView().byId("idRepairRemovedQualifier").setBusy(false);
+						// }.bind(this)
+				});
 			}
-			// _getRemovedQualifier: function (sRemovedJobCode, sInputId) {
-			// 	var sPath = "/ZMPM_CDS_CAR_JOBCODEQUAL";
-			// 	var aFilter;
-			// 	var oComboBoxItem;
-			// 	var aComboBoxItem = [];
-
-		// 	aFilter = [new sap.ui.model.Filter({
-		// 		path: "JobCode",
-		// 		operator: sap.ui.model.FilterOperator.EQ,
-		// 		value1: sRemovedJobCode,
-		// 		and: true
-		// 	})];
-
-		// 	this.getModel().read(sPath, {
-		// 		filters: aFilter,
-		// 		success: function (oData) {
-		// 			for (var i = 0; i < oData.results.length; i++) {
-		// 				oComboBoxItem = {};
-		// 				oComboBoxItem.key = oData.results[i].QualifierCode;
-		// 				oComboBoxItem.text = oData.results[i].ManufacturerDesignation;
-		// 				aComboBoxItem.push(oComboBoxItem);
-		// 			}
-		// 			switch (sInputId) {
-		// 			case "idRepairRemovedQualifier":
-		// 				this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifier", aComboBoxItem);
-		// 				if (aComboBoxItem.length === 1) {
-		// 					this.getView().byId("idRepairRemovedQualifier").setSelectedKey(aComboBoxItem[0].key);
-		// 				}
-		// 				break;
-		// 			case "idRepairRemovedQualifierLeft":
-		// 				this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifierLeft", aComboBoxItem);
-		// 				if (aComboBoxItem.length === 1) {
-		// 					this.getView().byId("idRepairRemovedQualifierLeft").setSelectedKey(aComboBoxItem[0].key);
-		// 				}
-		// 				break;
-		// 			}
-
-		// 		}.bind(this),
-		// 		error: function (sMsg) {}.bind(this)
-		// 	});
-		// }
+		}
 
 	});
 });

@@ -36,7 +36,7 @@
 			<!--Right-->
 			<core:Title text=" "/>
 			<!--Bolster AAR Code-->
-			<Label text="{i18n>label.BolsterAARcode}"/>
+			<Label text="{i18n>label.BolsterAARcode}" required="true"/>
 			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C401' }]}"
 				selectedKey="{addCIDView>/response/BolsterAarCode}" showSecondaryValues="true">
 				<items>

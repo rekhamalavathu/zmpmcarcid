@@ -228,8 +228,11 @@ sap.ui.define([
 						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
 					});
 					oJobCode = this.getModel().getProperty(sPath);
-					this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
-					// this._getRemovedQualifier(removedJobCode, "idRepairRemovedQualifier");
+					if (oJobCode) {
+						this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
+					} else {
+						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifier", []);
+					}
 				}
 				//Determine Why Made Code
 				this._determineWhyMadeCode();
@@ -245,8 +248,11 @@ sap.ui.define([
 						PriceMasterID: this.getModel("addCIDView").getProperty("/cidHeader/priceMasterId")
 					});
 					oJobCode = this.getModel().getProperty(sPath);
-					this._determineRemovedQualifier(removedJobCodeLeft, oJobCode, "idRepairRJCLeft");
-					// this._getRemovedQualifier(removedJobCodeLeft, "idRepairRemovedQualifierLeft");
+					if (oJobCode) {
+						this._determineRemovedQualifier(removedJobCodeLeft, oJobCode, "idRepairRJCLeft");
+					} else {
+						this.getModel("RepairsModel").setProperty("/comboBoxValues/RemovedQualifierLeft", []);
+					}
 				}
 				//Determine Why Made Code
 				this._determineWhyMadeCodeLeft();
@@ -684,32 +690,20 @@ sap.ui.define([
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.getView().byId("idRepairRJC").setSelectedKey(aItems[0]);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this.byId("idRepairRJC").setSelectedKey("");
-						// 	this.byId("idRepairRJC").setValue("");
-						// }
-					}
+					} 
 					this._determineConditionCode("idRepairAJC");
 					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
 						this._determineAppliedQualifier(oContext.BrAppliedJobCodeRight, oAppliedJobCode);
 					}
 					this.handleChangeRemovedJobCodeAJC("idRepairRJC");
-					// this._determineRemovedQualifier(removedJobCode, oJobCode, "idRepairRJC");
-					// this._getRemovedQualifier(oContext.WrRemovedJobCodeRight, "idRepairRemovedQualifier");
 					this._determineWhyMadeCode();
-					this.getModel("addCIDView").updateBindings(true);
+					// this.getModel("addCIDView").updateBindings(true);
 				}.bind(this));
 			} else {
 				this._getJobCode([], "/comboBoxValues/RemovedJobCode").then(function (sStatus, aItems) {
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.byId("idRepairRJC").setSelectedKey(aItems[0].key);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this._oController.byId("idRepairRJC").setSelectedKey("");
-						// 	this._oController.byId("idRepairRJC").setValue("");
-						// }
 					}
 					this._determineConditionCode("idRepairAJC");
 					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
@@ -717,8 +711,8 @@ sap.ui.define([
 					}
 					this.handleChangeRemovedJobCodeAJC("idRepairRJC");
 					this._determineWhyMadeCode();
-					this.getModel("addCIDView").updateBindings(true);
-					// this._getRemovedQualifier(oContext.WrRemovedJobCodeRight, "idRepairRemovedQualifier");
+					// this.getModel("addCIDView").updateBindings(true);
+
 				}.bind(this));
 			}
 
@@ -759,12 +753,7 @@ sap.ui.define([
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.getView().byId("idRepairRJCLeft").setSelectedKey(aItems[0]);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this.byId("idRepairRJC").setSelectedKey("");
-						// 	this.byId("idRepairRJC").setValue("");
-						// }
-					}
+					} 
 					this._determineConditionCode("idRepairAJCLeft");
 					this._determineWhyMadeCode();
 					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
@@ -772,9 +761,7 @@ sap.ui.define([
 					}
 					this.handleChangeRemovedJobCodeAJC("idRepairRJCLeft");
 					// this._getRemovedQualifier(oContext.WrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
-					this.getModel("addCIDView").updateBindings(true);
-					// this.handleChangeRemovedJobCodeAJC();
-					// this._oController.getModel("WOModel").updateBindings(true);
+					// this.getModel("addCIDView").updateBindings(true);
 
 				}.bind(this));
 			} else {
@@ -782,20 +769,14 @@ sap.ui.define([
 					if (aItems.length === 1) {
 						//If only 1 Item, set default
 						this.byId("idRepairRJCLeft").setSelectedKey(aItems[0].key);
-					} else {
-						// if (aItems.indexOf(oContext.RemovedJobCode) === -1) {
-						// 	this._oController.byId("idRepairRJC").setSelectedKey("");
-						// 	this._oController.byId("idRepairRJC").setValue("");
-						// }
 					}
 					this._determineConditionCode("idRepairAJCLeft");
 					if (oAppliedJobCode && oAppliedJobCode !== undefined) {
 						this._determineAppliedQualifierLeft(oContext.BrAppliedJobCodeLeft, oAppliedJobCode);
 					}
 					this.handleChangeRemovedJobCodeAJC("idRepairRJCLeft");
-					// this._getRemovedQualifier(oContext.WrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
 					this._determineWhyMadeCode();
-					this.getModel("addCIDView").updateBindings(true);
+					// this.getModel("addCIDView").updateBindings(true);
 				}.bind(this));
 			}
 
@@ -837,7 +818,6 @@ sap.ui.define([
 						}
 						this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						resolve(aKeyAdded);
-						// this.getModel("addCIDView").updateBindings(true);
 					}.bind(this)
 				});
 			}.bind(this));
@@ -1251,9 +1231,7 @@ sap.ui.define([
 							}
 							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						}.bind(this)
-						// error: function (sMsg) {
-						// 	this._oController.getView().byId("idRepairRemovedQualifier").setBusy(false);
-						// }.bind(this)
+					
 				});
 			}
 		}

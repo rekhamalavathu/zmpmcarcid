@@ -4,8 +4,9 @@ sap.ui.define([
 	"sap/m/MessagePopover",
 	"sap/m/Link",
 	"sap/m/MessageBox",
-	"sap/m/MessageItem"
-], function (BaseController, JSONModel, MessagePopover, Link, MessageBox, MessageItem) {
+	"sap/m/MessageItem",
+	"sap/m/PDFViewer"
+], function (BaseController, JSONModel, MessagePopover, Link, MessageBox, MessageItem, PDFViewer) {
 	"use strict";
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.OnChange", {
 
@@ -237,6 +238,20 @@ sap.ui.define([
 					}
 				}
 			}
+		},
+		/** 
+		 * Event Handler method to handle Qualifier Chart button
+		 */
+		onPressQualifierChart: function () {
+			var oView = this.getView();
+			if (!this._oPDFViewer) {
+				this._oPDFViewer = new PDFViewer();
+				oView.addDependent(this._oPDFViewer);
+			}
+
+			this._oPDFViewer.setSource($.sap.getModulePath("com.nscorp.car.componentid", "/resources/CouplerQualifierChart.pdf"));
+			this._oPDFViewer.setTitle(this.getResourceBundle().getText("label.QualifierChart"));
+			this._oPDFViewer.open();
 		}
 
 	});

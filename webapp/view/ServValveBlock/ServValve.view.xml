@@ -1,5 +1,5 @@
 <mvc:View xmlns:forms="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns="sap.m"
-controllerName="com.nscorp.car.componentid.controller.OnChange">
+	controllerName="com.nscorp.car.componentid.controller.OnChange">
 	<VBox class="sapUiNoContentPadding">
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1">
@@ -7,35 +7,33 @@ controllerName="com.nscorp.car.componentid.controller.OnChange">
 			<core:Title text=" "/>
 			<!--Condition Code-->
 			<Label text="{i18n>label.CondCode}" required="true"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C801' }]}" 
-			          selectedKey="{addCIDView>/response/SvConditionCode}" showSecondaryValues="true" change="onChangeMandatory">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C801' }]}"
+				selectedKey="{addCIDView>/response/SvConditionCode}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
 			<!--Date Tested-->
 			<Label text="{i18n>label.DateTested}"/>
-			<DatePicker id="idDatePickerServValveDateTested" 
-			      value="{path: 'addCIDView>/response/SvDateTested', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true, pattern: 'MM.dd.yyyy'}}" >
-        	</DatePicker>
-        	<!--Part Number-->
+			<DatePicker id="idDatePickerServValveDateTested" dateValue="{addCIDView>/response/SvDateTested}"
+				displayFormat="{commonAppModel>/dateFormat}"></DatePicker>
+			<!--Part Number-->
 			<Label text="{i18n>label.PartNo}" required="true"/>
 			<Input value="{addCIDView>/response/SvPartNo}" change="onChangeMandatoryInput" maxLength="12"/>
 			<!--Valve Type-->
 			<Label text="{i18n>label.ValveType}" required="true"/>
-			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C807' }]}" 
-			          selectedKey="{addCIDView>/response/SvValveType}" showSecondaryValues="true" change="onChangeMandatory">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C807' }]}"
+				selectedKey="{addCIDView>/response/SvValveType}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
 			</ComboBox>
-			
 			<!--Right-->
 			<core:Title text=" "/>
 			<!--AAR OEM/Recon Facility Code-->
 			<Label text="{i18n>label.AARCode}" required="true"/>
-				<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C802' }]}" 
-			          selectedKey="{addCIDView>/response/SvAarCode}" showSecondaryValues="true" change="onChangeMandatory">
+			<ComboBox items="{path: '/ZMPM_CDS_CAR_COMPVAL', filters: [{ path: 'ElementId', operator: 'EQ', value1: 'C802' }]}"
+				selectedKey="{addCIDView>/response/SvAarCode}" showSecondaryValues="true" change="onChangeMandatory">
 				<items>
 					<core:ListItem key="{Value}" text="{Value} - {Description}"/>
 				</items>
