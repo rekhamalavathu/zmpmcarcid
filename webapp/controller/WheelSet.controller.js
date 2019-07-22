@@ -498,7 +498,8 @@ sap.ui.define([
 		 * @returns {Promise} - Array of items retrieved/Error
 		 */
 		_getJobCode: function (aFilter, sProperty) {
-			var sPath = (sProperty === "/comboBoxValues/AppliedJobCode" ? "/ZMPM_CDS_CAR_APPLIEDJOBCODE" : "/ZMPM_CDS_CAR_REMOVEDJOBCODE");
+			// var sPath = (sProperty === "/comboBoxValues/AppliedJobCode" ? "/ZMPM_CDS_CAR_APPLIEDJOBCODE" : "/ZMPM_CDS_CAR_REMOVEDJOBCODE");
+			var sPath = "/ZMPM_CDS_CAR_REPAIR_JOBCODE";
 			var aComboBoxItem = [];
 			var oComboBoxItem;
 			// var aJobCodes = [];

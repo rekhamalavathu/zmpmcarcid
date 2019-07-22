@@ -43,5 +43,6 @@
 	"BOReason": [],
 	"Intercepts": [],
 	"Repairs": [],
-	"PriceMasterID": "00000000000000000000000000000000000000"
+	"PriceMasterID": "00000000000000000000000000000000000000",
+	"MaterialNotFound": ""
 }
