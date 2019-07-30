@@ -70,6 +70,7 @@ sap.ui.define([
 					this._determineWhyMadeCode();
 					// Check Removed Job Code
 					this._getRemovedJobCode();
+					this._setMD115FromAJCAndWhyMade("Right");
 				}
 				break;
 				// Left Wheel
@@ -96,6 +97,7 @@ sap.ui.define([
 					this._determineWhyMadeCodeLeft();
 					// Check Removed Job Code
 					this._getRemovedJobCodeLeft();
+					this._setMD115FromAJCAndWhyMade("Left");
 				}
 				break;
 			}
@@ -289,6 +291,18 @@ sap.ui.define([
 				}
 				this._determineWhyMadeCodeLeft();
 				break;
+			}
+		},
+		
+		onChangeWhyMadeCode: function (oEvent) {
+			var sInputId = this.getElementRealID(oEvent.getSource().getId());
+			
+			// Left: idRepairWhyMadeCodeLeft, Right: idRepairWhyMadeCode
+			// look up AJC for matching side
+			if (sInputId === "idRepairWhyMadeCodeLeft") {
+				this._setMD115FromAJCAndWhyMade("Left");
+			} else if (sInputId === "idRepairWhyMadeCodeLeft") {
+				this._setMD115FromAJCAndWhyMade("Right");
 			}
 		},
 
@@ -1253,7 +1267,36 @@ sap.ui.define([
 
 				});
 			}
+		},
+		
+		/** 
+		 * Determine if AJC and Why Made Code correspond to MD115 report requirement
+		 * @private 
+		 * @param {String} sWheelSide - Side of wheelset to check if AJC and Why Made correspond to MD115
+		
+		 */
+		_setMD115FromAJCAndWhyMade: function (sWheelSide) {
+			var oModel = this.getModel("addCIDView");
+			var mMD115AJCWhyMade = oModel.getProperty("/MD115AJCWhyMadeMap");
+			var sAJC = oModel.getProperty("/response/WrAppliedJobCode" + sWheelSide);
+			var sWhyMade = oModel.getProperty("/response/WrWhyMadeCode" + sWheelSide);
+			var sMD115 = oModel.getProperty("/MD115");
+			
+			// AJC and WhyMade not null and corresponds to MD115 rule
+			//if (sAJC && sWhyMade && mMD115AJCWhyMade[sAJC][sWhyMade]) {
+			if (sAJC && (sWhyMade || true)) {
+				if (sWheelSide === "Left") {
+					oModel.setProperty("/MD115", (sMD115 === "Right" || sMD115 === "Both") ? "Both" : "Left");	
+				} else if (sWheelSide === "Right") {
+					oModel.setProperty("/MD115", (sMD115 === "Left" || sMD115 === "Both") ? "Both" : "Right");	
+				}
+			} else {
+				if (sWheelSide === "Left") {
+					oModel.setProperty("/MD115", (sMD115 === "Right" || sMD115 === "Both") ? "Right" : "");	
+				} else if (sWheelSide === "Right") {
+					oModel.setProperty("/MD115", (sMD115 === "Left" || sMD115 === "Both") ? "Left" : "");	
+				}
+			}
 		}
-
 	});
 });

@@ -116,6 +116,8 @@ sap.ui.define([
 			}
 
 			var updateFlag = this.getModel("addCIDView").getProperty("/response/UpdateFlag");
+			
+			// TODO: If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
 
 			oResponse.to_Message = [];
 			//perform Component Field Registration
