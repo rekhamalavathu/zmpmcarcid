@@ -864,7 +864,7 @@ sap.ui.define([
 			//Check against Rule in Description
 			var aRule = this.getModel("RepairConfig").getProperty("/MaterialNumber");
 
-			if (sAppliedJobCode === "" || sConditionCode === "") {
+			if (sAppliedJobCode === "" || sConditionCode === "" || sConditionCode === undefined ) {
 				return;
 			}
 
