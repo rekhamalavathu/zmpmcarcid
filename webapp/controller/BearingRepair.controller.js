@@ -476,12 +476,15 @@ sap.ui.define([
 		_loadAJCWhyMadeMap: function () {
 			var mMD11AJCWhyMade = {};
 			var oMD11Item;
-			this.getModel().read("/", {
+			this.getModel().read("/ZMPM_CDS_CAR_MD_REPORT", {
 				success: function (oData) {
 					for (var i = 0; i < oData.results.length; i++) {
 						oMD11Item = oData.results[i];
 						if (oMD11Item.md_report === "MD-11") {
-							mMD11AJCWhyMade[oMD11Item.rulenumber][oMD11Item.whymade] = true;
+							var sRule = "R" + oMD11Item.rulenumber;
+							var sWhyMade = "W" + oMD11Item.whymade;
+							var sIndex = sRule + sWhyMade;
+							mMD11AJCWhyMade[sIndex] = true;
 						}
 					}
 					this.getModel("addCIDView").setProperty("/MD11AJCWhyMadeMap", mMD11AJCWhyMade);
@@ -1419,7 +1422,7 @@ sap.ui.define([
 			
 			// AJC and WhyMade not null and corresponds to MD115 rule
 			//if (sAJC && sWhyMade && mMD115AJCWhyMade[sAJC][sWhyMade]) {
-			if (sRule && sWhyMade && mMD11AJCWhyMade[sRule][sWhyMade]) {
+			if (sRule && sWhyMade && mMD11AJCWhyMade["R" + sRule + "W" + sWhyMade]) {
 				oModel.setProperty("/md11Required" + sWheelSide, true);
 			} else {
 				oModel.setProperty("/md11Required" + sWheelSide, false);

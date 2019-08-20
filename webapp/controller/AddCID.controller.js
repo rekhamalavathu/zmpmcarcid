@@ -396,6 +396,8 @@ sap.ui.define([
 				
 				md11Left: oMD11Left,
 				md11Right: JSON.parse(JSON.stringify(oMD11Left)),
+				md11RequiredLeft: false,
+				md11RequiredRight: false,
 				
 				response: {},
 				oCloneData: {}
