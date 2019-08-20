@@ -22,6 +22,7 @@ sap.ui.define([
 			this._initScreenValues();
 			this._loadComboBoxes();
 			this._loadAJCWhyMadeMap();
+			this._loadAJCRulesMap();
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCodeLeft", this._getRemovedJobCodeLeft, this);
 		},
@@ -38,6 +39,7 @@ sap.ui.define([
 			var sPath;
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 			var appliedJobCodeLeft = this.getView().byId("idRepairAJCLeft").getSelectedKey();
+			var mAppliedJobCodeRules = this.getModel("addCIDView").getProperty("/appliedJobCodeRuleMap");
 			var oJobCode = {};
 			//Determine Removed Job Code
 			switch (sInputId) {
@@ -58,9 +60,8 @@ sap.ui.define([
 					//Check Condition Code
 					this._determineConditionCode("idRepairAJC");
 					// Get AJC Rule
-					var oAppliedJobCodeRightItem = this.getView().byId("idRepairAJC").getSuggestionItemByKey(appliedJobCode);
-					if (oAppliedJobCodeRightItem) {
-						this.getModel("addCIDView").setProperty("/bearingAJCRuleRight", oAppliedJobCodeRightItem.data("rule"));
+					if (mAppliedJobCodeRules[appliedJobCode]) {
+						this.getModel("addCIDView").setProperty("/bearingAJCRuleRight", mAppliedJobCodeRules[appliedJobCode]);
 					}
 					this._setMD11FromAJCAndWhyMade("Right");
 					//Check Why Made Code
@@ -86,9 +87,8 @@ sap.ui.define([
 					//Check Condition Code
 					this._determineConditionCodeLeft("idRepairAJCLeft");
 					// Get AJC rule
-					var oAppliedJobCodeLeftItem = this.getView().byId("idRepairAJCLeft").getSuggestionItemByKey(appliedJobCodeLeft);
-					if (oAppliedJobCodeLeftItem) {
-						this.getModel("addCIDView").setProperty("/bearingAJCRuleLeft", oAppliedJobCodeLeftItem.data("rule"));
+					if (mAppliedJobCodeRules[appliedJobCode]) {
+						this.getModel("addCIDView").setProperty("/bearingAJCRuleLeft", mAppliedJobCodeRules[appliedJobCodeLeft]);
 					}
 					this._setMD11FromAJCAndWhyMade("Left");
 					//Check Why Made Code
@@ -473,6 +473,25 @@ sap.ui.define([
 			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11JournalBurntOff", aComboBoxItems);
 		},
 		
+		_loadAJCRulesMap: function () {
+			var mMD11AJCRules = {};
+			var oAJCItem;
+			var sJobCode;
+			this.getModel().read("/ZMPM_CDS_CAR_APPLIEDJOBCODE", {
+				filters: [new sap.ui.model.Filter("RuleNumber", sap.ui.model.FilterOperator.NE, "")],
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oAJCItem = oData.results[i];
+						sJobCode = oAJCItem.JobCode;
+						mMD11AJCRules[sJobCode] = oAJCItem.RuleNumber;
+					}
+					this.getModel("addCIDView").setProperty("/appliedJobCodeRuleMap", mMD11AJCRules);
+				}.bind(this),
+				error: function (sMsg) {
+				}.bind(this)
+			});
+		},
+		
 		_loadAJCWhyMadeMap: function () {
 			var mMD11AJCWhyMade = {};
 			var oMD11Item;
@@ -553,7 +572,7 @@ sap.ui.define([
 							oComboBoxItem = {};
 							oComboBoxItem.key = oItem.JobCode;
 							oComboBoxItem.text = oItem.JobCodeDescription;
-							oComboBoxItem.rule = oItem.RuleNumber; // For MD-11 report
+							//oComboBoxItem.rule = oItem.RuleNumber; // For MD-11 report
 							aComboBoxItem.push(oComboBoxItem);
 						}
 
@@ -610,7 +629,7 @@ sap.ui.define([
 							oComboBoxItem = {};
 							oComboBoxItem.key = oItem.JobCode;
 							oComboBoxItem.text = oItem.JobCodeDescription;
-							oComboBoxItem.rule = oItem.RuleNumber; // For MD-11 report
+							//oComboBoxItem.rule = oItem.RuleNumber; // For MD-11 report
 							aComboBoxItem.push(oComboBoxItem);
 						}
 
