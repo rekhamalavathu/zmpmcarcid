@@ -50,9 +50,9 @@
 			</ComboBox>
 			<!--Why Made Code Left-->
 			<Label text="{i18n>label.WhyMadeCode}"/>
-			<Label text="{i18n>label.WhyMadeCode}"/>
 			<ComboBox id="idRepairWhyMadeCodeLeft" selectedKey="{addCIDView>/response/BrWhyMadeCodeLeft}"
-				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCodeLeft', sorter: { path: 'key' } }" showSecondaryValues="true">
+				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCodeLeft', sorter: { path: 'key' } }" showSecondaryValues="true"
+				change="onChangeWhyMadeCode">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -65,7 +65,7 @@
 				valueHelpRequest="onValueHelp" suggestionItems="{RepairsModel>/comboBoxValues/AppliedJobCode}"
 				suggestionItemSelected="onSuggestionItemSelected">
 				<suggestionItems>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}" customData:rule="{RepairsModel>rule}"/>
 				</suggestionItems>
 			</Input>
 			<!--Condition Code Right-->
@@ -104,7 +104,7 @@
 			</ComboBox>
 			<!--Why Made Code Right-->
 			<Label text="{i18n>label.WhyMadeCode}"/>
-			<ComboBox id="idRepairWhyMadeCode" selectedKey="{addCIDView>/response/BrWhyMadeCodeRight}"
+			<ComboBox id="idRepairWhyMadeCode" selectedKey="{addCIDView>/response/BrWhyMadeCodeRight}" change="onChangeWhyMadeCode"
 				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCode', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>

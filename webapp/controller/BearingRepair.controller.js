@@ -58,7 +58,7 @@ sap.ui.define([
 					//Check Condition Code
 					this._determineConditionCode("idRepairAJC");
 					// Get AJC Rule
-					var oAppliedJobCodeRightItem = this.getView().byId("idRepairAJC").getSelectedItem();
+					var oAppliedJobCodeRightItem = this.getView().byId("idRepairAJC").getSuggestionItemByKey(appliedJobCode);
 					if (oAppliedJobCodeRightItem) {
 						this.getModel("addCIDView").setProperty("/bearingAJCRuleRight", oAppliedJobCodeRightItem.data("rule"));
 					}
@@ -86,7 +86,7 @@ sap.ui.define([
 					//Check Condition Code
 					this._determineConditionCodeLeft("idRepairAJCLeft");
 					// Get AJC rule
-					var oAppliedJobCodeLeftItem = this.getView().byId("idRepairAJCLeft").getSelectedItem();
+					var oAppliedJobCodeLeftItem = this.getView().byId("idRepairAJCLeft").getSuggestionItemByKey(appliedJobCodeLeft);
 					if (oAppliedJobCodeLeftItem) {
 						this.getModel("addCIDView").setProperty("/bearingAJCRuleLeft", oAppliedJobCodeLeftItem.data("rule"));
 					}
@@ -610,6 +610,7 @@ sap.ui.define([
 							oComboBoxItem = {};
 							oComboBoxItem.key = oItem.JobCode;
 							oComboBoxItem.text = oItem.JobCodeDescription;
+							oComboBoxItem.rule = oItem.RuleNumber; // For MD-11 report
 							aComboBoxItem.push(oComboBoxItem);
 						}
 
