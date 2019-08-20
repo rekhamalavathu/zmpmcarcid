@@ -39,7 +39,7 @@ sap.ui.define([
 			var sPath;
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 			var appliedJobCodeLeft = this.getView().byId("idRepairAJCLeft").getSelectedKey();
-			var mAppliedJobCodeRules = this.getModel("addCIDView").getProperty("/appliedJobCodeRuleMap");
+			var mAppliedJobCodeRules = this.getModel("addCIDView") && this.getModel("addCIDView").getProperty("/appliedJobCodeRuleMap");
 			var oJobCode = {};
 			//Determine Removed Job Code
 			switch (sInputId) {
@@ -1423,7 +1423,6 @@ sap.ui.define([
 							}
 							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 						}.bind(this)
-					
 				});
 			}
 		},
@@ -1438,7 +1437,7 @@ sap.ui.define([
 			var oModel = this.getModel("addCIDView");
 			var mMD11AJCWhyMade = oModel.getProperty("/MD11AJCWhyMadeMap");
 			var sRule = oModel.getProperty("/bearingAJCRule" + sWheelSide);
-			var sWhyMade = oModel.getProperty("/response/WrWhyMadeCode" + sWheelSide);
+			var sWhyMade = oModel.getProperty("/response/BrWhyMadeCode" + sWheelSide);
 			
 			// AJC and WhyMade not null and corresponds to MD115 rule
 			//if (sAJC && sWhyMade && mMD115AJCWhyMade[sAJC][sWhyMade]) {

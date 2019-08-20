@@ -112,13 +112,12 @@ sap.ui.define([
 				return;
 			}
 			
-			// TODO: Delete after testing payload
-			//this.getModel("addCIDView").setProperty("/md11RequiredLeft", true);
-			
-			// TODO: If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
+			// If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
 			if (this.getModel("addCIDView").getProperty("/md11RequiredLeft")) {
+				this._checkMandatoryFieldMD11("Left");
 				this._submitMD11Report("Left");
 			} else if (this.getModel("addCIDView").getProperty("/md11RequiredRight")) {
+				this._checkMandatoryFieldMD11("Right");
 				this._submitMD11Report("Right");
 			} else if (this.getModel("addCIDView").getProperty("/md115RequiredLeft")) {
 				this._submitMD115Report("Left");
@@ -393,11 +392,12 @@ sap.ui.define([
 					Location: []
 				},
 				
-				
 				md11Left: oMD11Left,
 				md11Right: JSON.parse(JSON.stringify(oMD11Left)),
 				md11RequiredLeft: false,
 				md11RequiredRight: false,
+				md11SuccessLeft: false,
+				md11SuccessRight: false,
 				
 				response: {},
 				oCloneData: {}
@@ -1758,6 +1758,71 @@ sap.ui.define([
 						}));
 					}
 				}
+			}
+		},
+		
+		_addCIDFieldError: function (sErrorTargetPath) {
+			sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+				message: this.getResourceBundle().getText("error.requiredField"),
+				target: sErrorTargetPath,
+				processor: this.getModel("addCIDView"),
+				persistent: true,
+				type: sap.ui.core.MessageType.Error
+			}));
+			this.getModel("addCIDView").setProperty("/hasError", true);
+		},
+		
+		/**
+		 * to check mandatory fields for Wheel Set during Field Registration
+		 * @private
+		 * @param {Object} oResponse - component details
+		 * @param {Object} oOriData - Original Data Component data
+		 */
+		_checkMandatoryFieldMD11: function (sWheelSide) {
+			var oAddCIDViewModel = this.getModel("addCIDView");
+			var oMD11 = oAddCIDViewModel.getProperty("/md11" + sWheelSide);
+			var oMD11Shared = oAddCIDViewModel.getProperty("/md11");
+			
+			// TODO: Improve FailureDate input validation
+			if (!oMD11Shared.FailureDate || oMD11Shared.FailureDate > new Date()) {
+				this._addCIDFieldError("/md11/FailureDate");
+			}
+			
+			if (!oMD11Shared.Derailment) {
+				this._addCIDFieldError("/md11/Derailment");
+			}
+			
+			if (!oMD11Shared.BearingSize) {
+				this._addCIDFieldError("/md11/BearingSize");
+			}
+			
+			if (!oMD11Shared.DetectMethod) {
+				this._addCIDFieldError("/md11/DetectMethod");
+			}
+			
+			// TODO: Check for non-alphanumeric characters
+			if (!oMD11Shared.DetectionDesc) {
+				this._addCIDFieldError("/md11/DetectionDesc");
+			}
+			
+			if (!oMD11.AdapterCondition) {
+				this._addCIDFieldError("/md11" + sWheelSide + "/AdapterCondition");
+			}
+			
+			if (!oMD11.AdtpadCondition) {
+				this._addCIDFieldError("/md11" + sWheelSide + "/AdtpadCondition");
+			}
+			
+			if (!oMD11.BurntOff) {
+				this._addCIDFieldError("/md11" + sWheelSide + "/BurntOff");
+			}
+			
+			if (!oMD11.ElastAdtpad) {
+				this._addCIDFieldError("/md11" + sWheelSide + "/ElastAdtpad");
+			}
+			
+			if (!oMD11.WheelSnFailedSide) {
+				this._addCIDFieldError("/md11" + sWheelSide + "/WheelSnFailedSide");
 			}
 		},
 		
