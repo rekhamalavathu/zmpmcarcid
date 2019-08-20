@@ -39,6 +39,11 @@ sap.ui.define([
 						this.getModel("addCIDView").setProperty("/response/Guid", oComponentData.startupParameters.Guid[0]);
 						this.getModel("WOModel").setProperty("/WOHeader/BadOrderStatus", oComponentData.startupParameters.OrderType[0]);
 						this.getModel("addCIDView").setProperty("/cidHeader/priceMasterId", oComponentData.startupParameters.PriceMasterID[0]);
+						if (oComponentData.startupParameters.RepairDate) {
+							this.getModel("addCIDView").setProperty("/cidHeader/repairDate", new Date(oComponentData.startupParameters.RepairDate[0]));
+						} else {
+							this.getModel("addCIDView").setProperty("/cidHeader/repairDate", new Date());
+						}
 						this._onObjectMatched();
 					}
 				}.bind(this)
@@ -77,11 +82,11 @@ sap.ui.define([
 		onSavePress: function () {
 			// Perform Field Registration Web Service call
 			this.getModel("addCIDView").setProperty("/busy", true);
-			var oModel = this.getView().getModel();
+			
 			var oResponse = this.getModel("addCIDView").getProperty("/response");
 			var oHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 			var oOriData = this.getModel("addCIDView").getProperty("/oCloneData");
-			var sMessage;
+			
 
 			sap.ui.getCore().getMessageManager().removeAllMessages();
 
@@ -106,6 +111,32 @@ sap.ui.define([
 				this.getModel("addCIDView").setProperty("/busy", false);
 				return;
 			}
+			
+			// TODO: Delete after testing payload
+			//this.getModel("addCIDView").setProperty("/md11RequiredLeft", true);
+			
+			// TODO: If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
+			if (this.getModel("addCIDView").getProperty("/md11RequiredLeft")) {
+				this._submitMD11Report("Left");
+			} else if (this.getModel("addCIDView").getProperty("/md11RequiredRight")) {
+				this._submitMD11Report("Right");
+			} else if (this.getModel("addCIDView").getProperty("/md115RequiredLeft")) {
+				this._submitMD115Report("Left");
+			} else if (this.getModel("addCIDView").getProperty("/md115RequiredRight")) {
+				this._submitMD115Report("Right");
+			} else {
+				this._registerComponent();
+			}
+		},
+		
+		_registerComponent: function () {
+			var updateFlag = this.getModel("addCIDView").getProperty("/response/UpdateFlag");
+			var oResponse = this.getModel("addCIDView").getProperty("/response");
+			var oOriData = this.getModel("addCIDView").getProperty("/oCloneData");
+			var oModel = this.getView().getModel();
+			
+			var sMessage;
+
 			// check if any changes has been made to component data to trigger CREG field registration
 			if (oResponse.ComponentType !== "WHEELSET") {
 				if (JSON.stringify(oOriData) === JSON.stringify(oResponse)) {
@@ -114,10 +145,6 @@ sap.ui.define([
 					this.getModel("addCIDView").setProperty("/response/UpdateFlag", true);
 				}
 			}
-
-			var updateFlag = this.getModel("addCIDView").getProperty("/response/UpdateFlag");
-			
-			// TODO: If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
 
 			oResponse.to_Message = [];
 			//perform Component Field Registration
@@ -306,6 +333,25 @@ sap.ui.define([
 		 * @return {sap.ui.model.json.JSONModel} JSON Model
 		 */
 		_createViewModel: function () {
+			var oMD11Left = {
+				EquipmentInitial: "",
+				EquipmentNumber: "",
+				EquipmentSide: "",
+				ComponentLocation: "",
+				FailureDate: null, // Date type
+				RepairDate: null, // Date type
+				Derailment: "",
+				AdapterCondition: "",
+				AdtpadCondition: "",
+				BearingSize: "",
+				BurntOff: "",
+				DetectMethod: "",
+				DetectionDesc: "",
+				WhyMadeCode: "",
+				ElasAdtpad: "",
+				WheelSnFailedSide: ""
+			};
+			
 			return new JSONModel({
 				busy: true,
 				busyDelay: 0,
@@ -346,7 +392,11 @@ sap.ui.define([
 					WhyMadeCode: [],
 					Location: []
 				},
-
+				
+				
+				md11Left: oMD11Left,
+				md11Right: JSON.parse(JSON.stringify(oMD11Left)),
+				
 				response: {},
 				oCloneData: {}
 			});
@@ -1707,7 +1757,80 @@ sap.ui.define([
 					}
 				}
 			}
-		}
+		},
+		
+		_submitMD11Report: function (sSide) {
+			var oModel = this.getView().getModel();
+			var oAddCIDViewModel = this.getModel("addCIDView");
+			var oHeader = oAddCIDViewModel.getProperty("/cidHeader");
+			var oMD11 = oAddCIDViewModel.getProperty("/md11" + sSide);
+			var oMD11Shared = oAddCIDViewModel.getProperty("/md11");
+			
+			// TODO: check "addCidView>/MD11"+ sSide + "Success" and Required
+			// TODO: If true, Call 'next' report (if Left, then _submitMD11Report(Right), else _submitMD115Report(Left)
+			
+			oMD11.EquipmentSide = (sSide === "Left") ? "L" : "R";
+			oMD11.ComponentLocation = oHeader.location;
+			oMD11.RepairDate = oHeader.RepairDate;
+			//oMD11.WhyMadeCode = oAddCIDViewModel.getProperty("/response/BrWhyMadeCode" + sSide);
+			oMD11.WhyMadeCode = "51";
+			
+			// TODO: Add properties from addCIDView>/md11
+			oMD11.FailureDate = oMD11Shared.FailureDate;
+			oMD11.Derailment = oMD11Shared.Derailment;
+			oMD11.BearingSize = oMD11Shared.BearingSize;
+			oMD11.DetectMethod = oMD11Shared.DetectMethod;
+			oMD11.DetectionDesc = oMD11Shared.DetectionDesc;
+			
+			// TODO: Move this into its own function to be used by MD-115 function as well
+			var sCarMark = oHeader.carMark;
+			var aSplitCarMark = sCarMark.match(/^([A-Za-z]+)([0-9]+)$/);
+			oMD11.EquipmentInitial = aSplitCarMark[1];
+			oMD11.EquipmentNumber = aSplitCarMark[2];
+			
+			// TODO: Get EquipmentType, CreatedDate
+			
+			oModel.create("/BearingDefectRpt", oMD11, {
+				method: "POST",
+				success: function (oData, resp) {
+					this.getModel("addCIDView").setProperty("/busy", false);
+					
+					var sMessage;
+					var sMessageLength = oData.to_Message.results.length;
+				
+					// fetch report result
+					if (sMessageLength === 0) {
+						// TODO: If success, set "addCidView>/MD11"+ sSide + "Success"
+						// TODO: Call 'next' report
+						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated");
 
+						//show a message toast if the registration is successful
+						MessageToast.show(sMessage, {
+							duration: 1500,
+							onClose: function () {
+								this.onNavBack();
+							}.bind(this)
+						});
+					} else {
+						//fetch error message and register to message manager
+						for (var i = 0; i < oData.to_Message.results.length; i++) {
+							sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+								message: oData.to_Message.results[i].ResponseMessage,
+								persistent: true,
+								type: sap.ui.core.MessageType.Error
+							}));
+						}
+					}
+
+				}.bind(this),
+				//fetch error message and register to message manager
+				error: function (oError) {
+					this.getModel("addCIDView").setProperty("/busy", false);
+					var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
+					var sMsg = oMessage && oMessage[1] && oMessage[1].message;
+					MessageBox.error(sMsg);
+				}.bind(this)
+			});
+		}
 	});
 });

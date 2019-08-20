@@ -151,28 +151,28 @@
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.BrakeShoeStandard}"/>
-			<ComboBox id="idMD11BrakeShoeStandard" selectedKey="{addCIDView>/response/MD115BrakeShoeStandard}"
+			<ComboBox id="idMD115BrakeShoeStandard" selectedKey="{addCIDView>/response/MD115BrakeShoeStandard}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BrakeShoe', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.BodyMountedBrake}"/>
-			<ComboBox id="idMD11BodyMountedBrake" selectedKey="{addCIDView>/response/MD115BodyMountedBrake}"
+			<ComboBox id="idMD115BodyMountedBrake" selectedKey="{addCIDView>/response/MD115BodyMountedBrake}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BodyMountedBrake', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.PlateType}"/>
-			<ComboBox id="idMD11PlateType" selectedKey="{addCIDView>/response/MD115PlateType}" 
+			<ComboBox id="idMD115PlateType" selectedKey="{addCIDView>/response/MD115PlateType}" 
 				items="{path: 'RepairsModel>/comboBoxValues/MD115PlateType', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.Comments}"/>
-			<TextArea id="idMD11Comments" value="{addCIDView>/response/MD115Comments}" maxLength="4000" />
+			<TextArea id="idMD115Comments" value="{addCIDView>/response/MD115Comments}" maxLength="4000" />
 		</forms:SimpleForm>
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1"

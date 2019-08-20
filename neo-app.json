@@ -25,7 +25,7 @@
       "path": "/sap/opu/odata",
       "target": {
         "type": "destination",
-        "name": "H1D",
+        "name": "HD3",
         "entryPath": "/sap/opu/odata"
       },
       "description": "Project Landscape"
@@ -34,7 +34,7 @@
       "path": "/sap/bc/ui5_ui5/sap/zmpmcarcommon",
       "target": {
         "type": "destination",
-        "name": "H1D",
+        "name": "HD3",
         "entryPath": "/sap/bc/ui5_ui5/sap/zmpmcarcommon"
       },
       "description": "Car Common Library"

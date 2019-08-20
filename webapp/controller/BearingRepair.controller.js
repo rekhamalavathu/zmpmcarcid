@@ -20,6 +20,8 @@ sap.ui.define([
 			this.setModel(this._createViewModel(), "RepairsModel");
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
+			this._loadComboBoxes();
+			this._loadAJCWhyMadeMap();
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCodeLeft", this._getRemovedJobCodeLeft, this);
 		},
@@ -55,6 +57,12 @@ sap.ui.define([
 					}
 					//Check Condition Code
 					this._determineConditionCode("idRepairAJC");
+					// Get AJC Rule
+					var oAppliedJobCodeRightItem = this.getView().byId("idRepairAJC").getSelectedItem();
+					if (oAppliedJobCodeRightItem) {
+						this.getModel("addCIDView").setProperty("/bearingAJCRuleRight", oAppliedJobCodeRightItem.data("rule"));
+					}
+					this._setMD11FromAJCAndWhyMade("Right");
 					//Check Why Made Code
 					this._determineWhyMadeCode();
 					// Check Removed Job Code
@@ -77,12 +85,30 @@ sap.ui.define([
 					}
 					//Check Condition Code
 					this._determineConditionCodeLeft("idRepairAJCLeft");
+					// Get AJC rule
+					var oAppliedJobCodeLeftItem = this.getView().byId("idRepairAJCLeft").getSelectedItem();
+					if (oAppliedJobCodeLeftItem) {
+						this.getModel("addCIDView").setProperty("/bearingAJCRuleLeft", oAppliedJobCodeLeftItem.data("rule"));
+					}
+					this._setMD11FromAJCAndWhyMade("Left");
 					//Check Why Made Code
 					this._determineWhyMadeCodeLeft();
 					// Check Removed Job Code
 					this._getRemovedJobCodeLeft();
 				}
 				break;
+			}
+		},
+		
+		onChangeWhyMadeCode: function (oEvent) {
+			var sInputId = this.getElementRealID(oEvent.getSource().getId());
+			
+			// Left: idRepairWhyMadeCodeLeft, Right: idRepairWhyMadeCode
+			// look up AJC for matching side
+			if (sInputId === "idRepairWhyMadeCodeLeft") {
+				this._setMD11FromAJCAndWhyMade("Left");
+			} else if (sInputId === "idRepairWhyMadeCodeLeft") {
+				this._setMD11FromAJCAndWhyMade("Right");
 			}
 		},
 		/**
@@ -309,10 +335,163 @@ sap.ui.define([
 					ConditionCodeLeft: [],
 					RemovedJobCodeLeft: [],
 					RemovedQualifierLeft: [],
-					WhyMadeCodeLeft: []
-				}
+					WhyMadeCodeLeft: [],
+					MD11AdapterCondition: [],
+					MD11AdapterPadCondition: [],
+					MD11JournalBearingSize: [],
+					MD11MethodOfDetection: [],
+					MD11ElastomericAdapterPad: [],
+					MD11Derailment: [],
+					MD11JournalBurntOff: []
+				},
+				MD11AdapterConditionBusy: true,
+				MD11AdapterPadConditionBusy: true,
+				MD11JournalBearingSizeBusy: true,
+				MD11MethodOfDetectionBusy: true,
+				MD11ElastomericAdapterPadBusy: true
 			});
 		},
+		
+		_loadComboBoxes: function () {
+			this._loadAdapterCondition();
+			this._loadAdapterPadCondition();
+			this._loadJournalBearingSize();
+			this._loadMethodOfDetection();
+			this._loadElastomericAdapterPad();
+			this._loadDerailment();
+			this._loadJournalBurntOff();
+		},
+		
+		_loadAdapterCondition: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_ADAPT_COND", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].condition_code;
+						oComboBoxItem.text = oData.results[i].description;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11AdapterCondition", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD11AdapterConditionBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD11AdapterConditionBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadAdapterPadCondition: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_ADTPAD_COND", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].adtpad_cond;
+						oComboBoxItem.text = oData.results[i].adtpad_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11AdapterPadCondition", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD11AdapterPadConditionBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD11AdapterPadConditionBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadJournalBearingSize: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_JRM_BRG_SIZE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].bearing_size;
+						oComboBoxItem.text = oData.results[i].bearing_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11JournalBearingSize", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD11JournalBearingSizeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD11JournalBearingSizeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadMethodOfDetection: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_MTHD_DETECT", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].detect_method;
+						oComboBoxItem.text = oData.results[i].detect_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11MethodOfDetection", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD11MethodOfDetectionBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD11MethodOfDetectionBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadElastomericAdapterPad: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_ELAS_ADTPAD", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].elas_adtpad;
+						oComboBoxItem.text = oData.results[i].elas_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11ElastomericAdapterPad", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD11ElastomericAdapterPadBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD11ElastomericAdapterPadBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadDerailment: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}];
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11Derailment", aComboBoxItems);
+		},
+		
+		_loadJournalBurntOff: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}];
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11JournalBurntOff", aComboBoxItems);
+		},
+		
+		_loadAJCWhyMadeMap: function () {
+			var mMD11AJCWhyMade = {};
+			var oMD11Item;
+			this.getModel().read("/", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oMD11Item = oData.results[i];
+						if (oMD11Item.md_report === "MD-11") {
+							mMD11AJCWhyMade[oMD11Item.rulenumber][oMD11Item.whymade] = true;
+						}
+					}
+					this.getModel("addCIDView").setProperty("/MD11AJCWhyMadeMap", mMD11AJCWhyMade);
+				}.bind(this),
+				error: function (sMsg) {
+				}.bind(this)
+			});
+		},
+		
 		/**
 		 * to get screen values during initial load
 		 * @private
@@ -372,6 +551,7 @@ sap.ui.define([
 							oComboBoxItem = {};
 							oComboBoxItem.key = oItem.JobCode;
 							oComboBoxItem.text = oItem.JobCodeDescription;
+							oComboBoxItem.rule = oItem.RuleNumber; // For MD-11 report
 							aComboBoxItem.push(oComboBoxItem);
 						}
 
@@ -564,7 +744,7 @@ sap.ui.define([
 			}
 
 			// //Get Applied Job Code context
-			if (this._compareRule(oContext.WrAppliedJobCodeRight, "NEW", "99")) {
+			if (this._compareRule(oContext.BrAppliedJobCodeRight, "NEW", "99")) {
 				aFilter = [new Filter({
 						path: "AppliedJobCode",
 						operator: FilterOperator.EQ,
@@ -618,7 +798,7 @@ sap.ui.define([
 			}
 
 			//Get Applied Job Code context
-			if (this._compareRule(oContext.WrAppliedJobCodeLeft, "NEW", "99")) {
+			if (this._compareRule(oContext.BrAppliedJobCodeLeft, "NEW", "99")) {
 				aFilter = [new Filter({
 						path: "AppliedJobCode",
 						operator: FilterOperator.EQ,
@@ -760,7 +940,7 @@ sap.ui.define([
 						this._determineAppliedQualifierLeft(oContext.BrAppliedJobCodeLeft, oAppliedJobCode);
 					}
 					this.handleChangeRemovedJobCodeAJC("idRepairRJCLeft");
-					// this._getRemovedQualifier(oContext.WrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
+					// this._getRemovedQualifier(oContext.BrRemovedJobCodeLeft, "idRepairRemovedQualifierLeft");
 					// this.getModel("addCIDView").updateBindings(true);
 
 				}.bind(this));
@@ -1233,6 +1413,27 @@ sap.ui.define([
 						}.bind(this)
 					
 				});
+			}
+		},
+		
+		/** 
+		 * Determine if AJC and Why Made Code correspond to MD115 report requirement
+		 * @private 
+		 * @param {String} sWheelSide - Side of wheelset to check if AJC and Why Made correspond to MD115
+		
+		 */
+		_setMD11FromAJCAndWhyMade: function (sWheelSide) {
+			var oModel = this.getModel("addCIDView");
+			var mMD11AJCWhyMade = oModel.getProperty("/MD11AJCWhyMadeMap");
+			var sRule = oModel.getProperty("/bearingAJCRule" + sWheelSide);
+			var sWhyMade = oModel.getProperty("/response/WrWhyMadeCode" + sWheelSide);
+			
+			// AJC and WhyMade not null and corresponds to MD115 rule
+			//if (sAJC && sWhyMade && mMD115AJCWhyMade[sAJC][sWhyMade]) {
+			if (sRule && sWhyMade && mMD11AJCWhyMade[sRule][sWhyMade]) {
+				oModel.setProperty("/md11Required" + sWheelSide, true);
+			} else {
+				oModel.setProperty("/md11Required" + sWheelSide, false);
 			}
 		}
 	});
