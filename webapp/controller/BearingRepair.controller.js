@@ -238,7 +238,6 @@ sap.ui.define([
 				this._determineWhyMadeCode();
 				break;
 			case "idRepairRJCLeft":
-				// var removedJobCodeLeft = this.getView().byId("idRepairRJCLeft").getSelectedKey();
 				var removedJobCodeLeft = oContext.BrRemovedJobCodeLeft;
 
 				if (removedJobCodeLeft && removedJobCodeLeft !== "0000") {
@@ -554,9 +553,8 @@ sap.ui.define([
 		_determineWhyMadeCode: function () {
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
-			// var oAppliedJobCode;
 			var aFilter;
-			// var sPath;
+		
 			//All must filled
 			if (oContext.BrAppliedJobCodeRight === undefined || oContext.BrRemovedJobCodeRight === undefined || responsibilityCode ===
 				undefined || oContext.BrAppliedJobCodeRight === "" || oContext.BrRemovedJobCodeRight === "" || responsibilityCode === "") {
@@ -564,7 +562,7 @@ sap.ui.define([
 			}
 
 			// //Get Applied Job Code context
-			if (this._compareRule(oContext.WrAppliedJobCodeRight, "NEW", "99")) {
+			if (this._compareRule(oContext.BrAppliedJobCodeRight, "NEW", "99")) {
 				aFilter = [new Filter({
 						path: "AppliedJobCode",
 						operator: FilterOperator.EQ,
@@ -607,9 +605,8 @@ sap.ui.define([
 		_determineWhyMadeCodeLeft: function () {
 			var oContext = this.getModel("addCIDView").getProperty("/response");
 			var responsibilityCode = this.getModel("addCIDView").getProperty("/cidHeader/responsibility");
-			// var oAppliedJobCode;
 			var aFilter;
-			// var sPath;
+	
 			//All must filled
 			if (oContext.BrAppliedJobCodeLeft === undefined || oContext.BrRemovedJobCodeLeft === undefined || responsibilityCode ===
 				undefined ||
@@ -618,7 +615,7 @@ sap.ui.define([
 			}
 
 			//Get Applied Job Code context
-			if (this._compareRule(oContext.WrAppliedJobCodeLeft, "NEW", "99")) {
+			if (this._compareRule(oContext.BrAppliedJobCodeLeft, "NEW", "99")) {
 				aFilter = [new Filter({
 						path: "AppliedJobCode",
 						operator: FilterOperator.EQ,
@@ -937,7 +934,6 @@ sap.ui.define([
 						}
 
 						this._sAppliedQualifierSearchTable = "/" + aRule[i].SearchTable;
-						// this._getAppliedQualifier("idRepairAQ", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifier", aFilter, aRule[i].SearchExclusion);
 						this._getAppliedQualifier(aRule[i].SearchTable, "/comboBoxValues/AppliedQualifier",
 							"/comboBoxValues/AppliedQualifierUnfiltered",
 							aFilter, aRule[i].SearchExclusion);
@@ -984,7 +980,6 @@ sap.ui.define([
 						}
 
 						this._sAppliedQualifierSearchTable = "/" + aRule[i].SearchTable;
-						// this._getAppliedQualifier("idRepairAQLeft", aRule[i].SearchTable, "/comboBoxValues/AppliedQualifierLeft", aFilter, aRule[i].SearchExclusion);
 						this._getAppliedQualifier(aRule[i].SearchTable, "/comboBoxValues/AppliedQualifierLeft",
 							"/comboBoxValues/AppliedQualifierUnfilteredLeft",
 							aFilter, aRule[i].SearchExclusion);
@@ -1049,9 +1044,6 @@ sap.ui.define([
 							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 							this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
 						}.bind(this)
-						// error: function (sMsg) {
-						// 	// this._oController.getView().byId("idRepairAQ").setBusy(false);
-						// }.bind(this)
 				});
 			} else {
 				this.getModel().read(sPath, {
@@ -1080,9 +1072,6 @@ sap.ui.define([
 							this.getModel("RepairsModel").setProperty(sProperty, aComboBoxItem);
 							this.getModel("RepairsModel").setProperty(sPropertyUnfiltered, aComboBoxItemUnfiltered);
 						}.bind(this)
-						// error: function (sMsg) {
-						// 	// this._oController.getView().byId("idRepairAQ").setBusy(false);
-						// }.bind(this)
 				});
 			}
 
