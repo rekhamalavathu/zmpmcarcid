@@ -1834,8 +1834,8 @@ sap.ui.define([
 				this._addCIDFieldError("/md11" + sWheelSide + "/BurntOff");
 			}
 			
-			if (!oMD11.ElastAdtpad) {
-				this._addCIDFieldError("/md11" + sWheelSide + "/ElastAdtpad");
+			if (!oMD11.ElasAdtpad) {
+				this._addCIDFieldError("/md11" + sWheelSide + "/ElasAdtpad");
 			}
 			
 			if (!oMD11.WheelSnFailedSide) {
@@ -1861,7 +1861,7 @@ sap.ui.define([
 			
 			oMD11.EquipmentSide = (sSide === "Left") ? "L" : "R";
 			oMD11.ComponentLocation = oHeader.location;
-			oMD11.RepairDate = oHeader.RepairDate;
+			oMD11.RepairDate = oHeader.repairDate;
 			oMD11.WhyMadeCode = oAddCIDViewModel.getProperty("/response/BrWhyMadeCode" + sSide);
 		
 			// Add properties from addCIDView>/md11
@@ -1871,13 +1871,16 @@ sap.ui.define([
 			oMD11.DetectMethod = oMD11Shared.DetectMethod;
 			oMD11.DetectionDesc = oMD11Shared.DetectionDesc;
 			
+			// convert Wheel SN to string
+			oMD11.WheelSnFailedSide = oMD11.WheelSnFailedSide + "";
+			
 			// TODO: Move this into its own function to be used by MD-115 function as well
 			var sCarMark = oHeader.carMark;
 			var aSplitCarMark = sCarMark.match(/^([A-Za-z]+)([0-9]+)$/);
 			oMD11.EquipmentInitial = aSplitCarMark[1];
 			oMD11.EquipmentNumber = aSplitCarMark[2];
 			
-			oModel.create("/BearingDefectRpt", oMD11, {
+			oModel.create("/BearingDefectRptSet", oMD11, {
 				method: "POST",
 				success: function (oData, resp) {
 					this.getModel("addCIDView").setProperty("/busy", false);
