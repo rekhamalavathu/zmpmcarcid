@@ -58,7 +58,7 @@ sap.ui.define([
 					}
 					//Check Condition Code
 					this._determineConditionCode("idRepairAJC");
-				
+					//Get rule from AJC and compare to Why Made to determine if MD-11 report/fields required
 					this._setMD11FromAJCAndWhyMade("Right");
 					//Check Why Made Code
 					this._determineWhyMadeCode();
@@ -82,6 +82,7 @@ sap.ui.define([
 					}
 					//Check Condition Code
 					this._determineConditionCodeLeft("idRepairAJCLeft");
+					//Get rule from AJC and compare to Why Made to determine if MD-11 report/fields required
 					this._setMD11FromAJCAndWhyMade("Left");
 					//Check Why Made Code
 					this._determineWhyMadeCodeLeft();
@@ -1432,7 +1433,7 @@ sap.ui.define([
 			}
 			var mMD11AJCWhyMade = oModel.getProperty("/MD11AJCWhyMadeMap");
 			var mAppliedJobCodeRules = oModel.getProperty("/appliedJobCodeRuleMap");
-			var sAppliedJobCode = oModel.getProperty("/brAppliedJobCode" + sWheelSide);
+			var sAppliedJobCode = oModel.getProperty("/response/brAppliedJobCode" + sWheelSide);
 			var sRule = mAppliedJobCodeRules[sAppliedJobCode];
 			var sWhyMade = oModel.getProperty("/response/BrWhyMadeCode" + sWheelSide);
 			
