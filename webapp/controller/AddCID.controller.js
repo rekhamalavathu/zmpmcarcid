@@ -391,6 +391,14 @@ sap.ui.define([
 					Location: []
 				},
 				
+				md11: {
+					FailureDate: null,
+					Derailment: "",
+					BearingSize: "",
+					DefectMethod: "",
+					DetectionDesc: ""
+				},
+				
 				md11Left: oMD11Left,
 				md11Right: JSON.parse(JSON.stringify(oMD11Left)),
 				md11RequiredLeft: false,
