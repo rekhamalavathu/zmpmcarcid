@@ -39,7 +39,6 @@ sap.ui.define([
 			var sPath;
 			var appliedJobCode = this.getView().byId("idRepairAJC").getSelectedKey();
 			var appliedJobCodeLeft = this.getView().byId("idRepairAJCLeft").getSelectedKey();
-			var mAppliedJobCodeRules = this.getModel("addCIDView") && this.getModel("addCIDView").getProperty("/appliedJobCodeRuleMap");
 			var oJobCode = {};
 			//Determine Removed Job Code
 			switch (sInputId) {
@@ -59,10 +58,7 @@ sap.ui.define([
 					}
 					//Check Condition Code
 					this._determineConditionCode("idRepairAJC");
-					// Get AJC Rule
-					if (mAppliedJobCodeRules[appliedJobCode]) {
-						this.getModel("addCIDView").setProperty("/bearingAJCRuleRight", mAppliedJobCodeRules[appliedJobCode]);
-					}
+				
 					this._setMD11FromAJCAndWhyMade("Right");
 					//Check Why Made Code
 					this._determineWhyMadeCode();
@@ -86,10 +82,6 @@ sap.ui.define([
 					}
 					//Check Condition Code
 					this._determineConditionCodeLeft("idRepairAJCLeft");
-					// Get AJC rule
-					if (mAppliedJobCodeRules[appliedJobCode]) {
-						this.getModel("addCIDView").setProperty("/bearingAJCRuleLeft", mAppliedJobCodeRules[appliedJobCodeLeft]);
-					}
 					this._setMD11FromAJCAndWhyMade("Left");
 					//Check Why Made Code
 					this._determineWhyMadeCodeLeft();
@@ -1431,16 +1423,20 @@ sap.ui.define([
 		 * Determine if AJC and Why Made Code correspond to MD115 report requirement
 		 * @private 
 		 * @param {String} sWheelSide - Side of wheelset to check if AJC and Why Made correspond to MD115
-		
 		 */
 		_setMD11FromAJCAndWhyMade: function (sWheelSide) {
 			var oModel = this.getModel("addCIDView");
+			
+			if (!oModel) {
+				return;
+			}
 			var mMD11AJCWhyMade = oModel.getProperty("/MD11AJCWhyMadeMap");
-			var sRule = oModel.getProperty("/bearingAJCRule" + sWheelSide);
+			var mAppliedJobCodeRules = oModel.getProperty("/appliedJobCodeRuleMap");
+			var sAppliedJobCode = oModel.getProperty("/brAppliedJobCode" + sWheelSide);
+			var sRule = mAppliedJobCodeRules[sAppliedJobCode];
 			var sWhyMade = oModel.getProperty("/response/BrWhyMadeCode" + sWheelSide);
 			
 			// AJC and WhyMade not null and corresponds to MD115 rule
-			//if (sAJC && sWhyMade && mMD115AJCWhyMade[sAJC][sWhyMade]) {
 			if (sRule && sWhyMade && mMD11AJCWhyMade["R" + sRule + "W" + sWhyMade]) {
 				oModel.setProperty("/md11Required" + sWheelSide, true);
 			} else {
