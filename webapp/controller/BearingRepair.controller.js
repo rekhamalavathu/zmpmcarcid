@@ -1433,7 +1433,7 @@ sap.ui.define([
 			}
 			var mMD11AJCWhyMade = oModel.getProperty("/MD11AJCWhyMadeMap");
 			var mAppliedJobCodeRules = oModel.getProperty("/appliedJobCodeRuleMap");
-			var sAppliedJobCode = oModel.getProperty("/response/brAppliedJobCode" + sWheelSide);
+			var sAppliedJobCode = oModel.getProperty("/response/BrAppliedJobCode" + sWheelSide);
 			var sRule = mAppliedJobCodeRules[sAppliedJobCode];
 			var sWhyMade = oModel.getProperty("/response/BrWhyMadeCode" + sWheelSide);
 			
