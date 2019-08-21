@@ -1437,7 +1437,7 @@ sap.ui.define([
 			var sRule = mAppliedJobCodeRules[sAppliedJobCode];
 			var sWhyMade = oModel.getProperty("/response/BrWhyMadeCode" + sWheelSide);
 			
-			// AJC and WhyMade not null and corresponds to MD115 rule
+			// AJC and WhyMade not null and corresponds to MD11 rule
 			if (sRule && sWhyMade && mMD11AJCWhyMade["R" + sRule + "W" + sWhyMade]) {
 				oModel.setProperty("/md11Required" + sWheelSide, true);
 			} else {

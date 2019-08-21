@@ -106,6 +106,7 @@ sap.ui.define([
 			this._checkMandatoryFieldServiceValve(oResponse);
 			this._checkMandatoryFieldSideFrame(oResponse);
 			this._checkMandatoryFieldSlackAdjuster(oResponse);
+			this._checkMandatoryFieldsMD11();
 
 			if ((this.getModel("addCIDView").getProperty("/hasError")) === true) {
 				this.getModel("addCIDView").setProperty("/busy", false);
@@ -114,10 +115,8 @@ sap.ui.define([
 			
 			// If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
 			if (this.getModel("addCIDView").getProperty("/md11RequiredLeft")) {
-				this._checkMandatoryFieldMD11("Left");
 				this._submitMD11Report("Left");
 			} else if (this.getModel("addCIDView").getProperty("/md11RequiredRight")) {
-				this._checkMandatoryFieldMD11("Right");
 				this._submitMD11Report("Right");
 			} else if (this.getModel("addCIDView").getProperty("/md115RequiredLeft")) {
 				this._submitMD115Report("Left");
@@ -1772,6 +1771,16 @@ sap.ui.define([
 			this.getModel("addCIDView").setProperty("/hasError", true);
 		},
 		
+		_checkMandatoryFieldsMD11: function () {
+			if (this.getModel("addCIDView").getProperty("/md11RequiredLeft")) {
+				this._checkMandatoryFieldMD11("Left");
+			}
+			
+			if (this.getModel("addCIDView").getProperty("/md11RequiredRight")) {
+				this._checkMandatoryFieldMD11("Right");
+			}
+		},
+		
 		/**
 		 * to check mandatory fields for Wheel Set during Field Registration
 		 * @private
@@ -1833,16 +1842,21 @@ sap.ui.define([
 			var oMD11 = oAddCIDViewModel.getProperty("/md11" + sSide);
 			var oMD11Shared = oAddCIDViewModel.getProperty("/md11");
 			
-			// TODO: check "addCidView>/MD11"+ sSide + "Success" and Required
-			// TODO: If true, Call 'next' report (if Left, then _submitMD11Report(Right), else _submitMD115Report(Left)
+			// Sequence of MD-11/115 reports: 11L, 11R, 115L, 115R
+			if (sSide === "Left" && (!oAddCIDViewModel.getProperty("/md11RequiredLeft") || oAddCIDViewModel.getProperty("/md11SuccessLeft"))) {
+				this._submitMD11Report("Right");
+				return;
+			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md11RequiredLeft") || oAddCIDViewModel.getProperty("/md11SuccessRight"))) {
+				this._submitMD115Report("Left");
+				return;
+			}
 			
 			oMD11.EquipmentSide = (sSide === "Left") ? "L" : "R";
 			oMD11.ComponentLocation = oHeader.location;
 			oMD11.RepairDate = oHeader.RepairDate;
-			//oMD11.WhyMadeCode = oAddCIDViewModel.getProperty("/response/BrWhyMadeCode" + sSide);
-			oMD11.WhyMadeCode = "51";
-			
-			// TODO: Add properties from addCIDView>/md11
+			oMD11.WhyMadeCode = oAddCIDViewModel.getProperty("/response/BrWhyMadeCode" + sSide);
+		
+			// Add properties from addCIDView>/md11
 			oMD11.FailureDate = oMD11Shared.FailureDate;
 			oMD11.Derailment = oMD11Shared.Derailment;
 			oMD11.BearingSize = oMD11Shared.BearingSize;
@@ -1855,8 +1869,6 @@ sap.ui.define([
 			oMD11.EquipmentInitial = aSplitCarMark[1];
 			oMD11.EquipmentNumber = aSplitCarMark[2];
 			
-			// TODO: Get EquipmentType, CreatedDate
-			
 			oModel.create("/BearingDefectRpt", oMD11, {
 				method: "POST",
 				success: function (oData, resp) {
@@ -1867,8 +1879,14 @@ sap.ui.define([
 				
 					// fetch report result
 					if (sMessageLength === 0) {
-						// TODO: If success, set "addCidView>/MD11"+ sSide + "Success"
-						// TODO: Call 'next' report
+						oAddCIDViewModel.setProperty("/md11Success" + sSide, true);
+						
+						if (sSide === "Left") {
+							this._submitMD11Report("Right");
+						} else if (sSide === "Right") {
+							// this._submitMD115Report("Left");
+						}
+						
 						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated");
 
 						//show a message toast if the registration is successful
@@ -1888,7 +1906,6 @@ sap.ui.define([
 							}));
 						}
 					}
-
 				}.bind(this),
 				//fetch error message and register to message manager
 				error: function (oError) {
