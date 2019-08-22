@@ -347,7 +347,8 @@ sap.ui.define([
 				DetectionDesc: "",
 				WhyMadeCode: "",
 				ElasAdtpad: "",
-				WheelSnFailedSide: ""
+				WheelSnFailedSide: "",
+				to_Message: []
 			};
 			
 			return new JSONModel({
