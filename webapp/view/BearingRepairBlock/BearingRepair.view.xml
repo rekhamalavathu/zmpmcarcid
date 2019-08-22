@@ -225,7 +225,7 @@
 			</ComboBox>
 			<Label text="{i18n>label.WheelSerialNumberFailedSide}"/>
 			<Input	id="idMD11RightWheelSerialNumberFailedSide" enabled="${addCIDView>/md11RequiredRight}" 
-					enabled="${addCIDView>/md11RequiredRight}" value="{	path: 'addCIDView>/md11Right/WheelSnFailedSide',
+					value="{	path: 'addCIDView>/md11Right/WheelSnFailedSide',
 								type: 'sap.ui.model.type.Integer',
 								constraints: { minimum: '0', maximum: '9999999999' } }" />
 		</forms:SimpleForm>
