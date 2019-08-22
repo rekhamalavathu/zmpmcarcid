@@ -22,6 +22,15 @@
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</suggestionItems>
 			</Input>
+			<!--Condition Code-->
+			<Label text="{i18n>label.CondCode}"/>
+			<ComboBox id="idRepairCondCode" selectedKey="{addCIDView>/response/WsConditionCode}"
+				items="{path: 'RepairsModel>/comboBoxValues/ConditionCode', sorter: { path: 'key' } }" showSecondaryValues="true"
+				selectionChange="onChangeConditionCode">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
 			<!--Material-->
 			<Label text="{i18n>label.Material}"/>
 			<Input id="idRepairMaterial" type="Text" showSuggestion="true" selectedKey="{addCIDView>/response/Material}" showValueHelp="true"
@@ -39,15 +48,6 @@
 			<Input id="idQuantityAvailable" value="{RepairsModel>/quantityAvailable}" type="Number" editable="editable="/>
 			<!--Right-->
 			<core:Title text=" "/>
-			<!--Condition Code-->
-			<Label text="{i18n>label.CondCode}"/>
-			<ComboBox id="idRepairCondCode" selectedKey="{addCIDView>/response/WsConditionCode}"
-				items="{path: 'RepairsModel>/comboBoxValues/ConditionCode', sorter: { path: 'key' } }" showSecondaryValues="true"
-				selectionChange="onChangeConditionCode">
-				<items>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
-				</items>
-			</ComboBox>
 			<!--Why Made Code-->
 			<Label text="{i18n>label.WhyMadeCode}"/>
 			<ComboBox id="idRepairWhyMadeCode" selectedKey="{addCIDView>/response/WsWhyMadeCode}"
