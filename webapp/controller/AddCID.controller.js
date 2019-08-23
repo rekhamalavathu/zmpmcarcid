@@ -1769,9 +1769,9 @@ sap.ui.define([
 			}
 		},
 		
-		_addCIDFieldError: function (sErrorTargetPath) {
+		_addCIDFieldError: function (sErrorTargetPath, sErrorMessage) {
 			sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
-				message: this.getResourceBundle().getText("error.requiredField"),
+				message: sErrorMessage || this.getResourceBundle().getText("error.requiredField"),
 				target: sErrorTargetPath,
 				processor: this.getModel("addCIDView"),
 				persistent: true,
@@ -1801,9 +1801,8 @@ sap.ui.define([
 			var oMD11 = oAddCIDViewModel.getProperty("/md11" + sWheelSide);
 			var oMD11Shared = oAddCIDViewModel.getProperty("/md11");
 			
-			// TODO: Improve FailureDate input validation
-			if (!oMD11Shared.FailureDate || oMD11Shared.FailureDate > new Date()) {
-				this._addCIDFieldError("/md11/FailureDate");
+			if (oMD11Shared.FailureDate > new Date(oAddCIDViewModel.getProperty("/cidHeader/repairDate"))) {
+				this._addCIDFieldError("/md11/FailureDate", this.getResourceBundle().getText("error.FailureDateAfterRepair"));
 			}
 			
 			if (!oMD11Shared.Derailment) {
@@ -1812,15 +1811,6 @@ sap.ui.define([
 			
 			if (!oMD11Shared.BearingSize) {
 				this._addCIDFieldError("/md11/BearingSize");
-			}
-			
-			if (!oMD11Shared.DetectMethod) {
-				this._addCIDFieldError("/md11/DetectMethod");
-			}
-			
-			// TODO: Check for non-alphanumeric characters
-			if (!oMD11Shared.DetectionDesc) {
-				this._addCIDFieldError("/md11/DetectionDesc");
 			}
 			
 			if (!oMD11.AdapterCondition) {
@@ -1837,10 +1827,6 @@ sap.ui.define([
 			
 			if (!oMD11.ElasAdtpad) {
 				this._addCIDFieldError("/md11" + sWheelSide + "/ElasAdtpad");
-			}
-			
-			if (!oMD11.WheelSnFailedSide) {
-				this._addCIDFieldError("/md11" + sWheelSide + "/WheelSnFailedSide");
 			}
 		},
 		
