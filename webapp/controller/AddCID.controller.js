@@ -1890,12 +1890,13 @@ sap.ui.define([
 					var sMessageLength = oData.to_Message.results.length;
 				
 					// fetch report result
-					if (sMessageLength === 0) {
+					if (sMessageLength === 0 || oData.to_Message.results[0].ResponseType === "S") {
 						oAddCIDViewModel.setProperty("/md11Success" + sSide, true);
 						
 						if (sSide === "Left") {
 							this._submitMD11Report("Right");
 						} else if (sSide === "Right") {
+							// TODO: Submit MD-115 reports (if they exist)
 							// this._submitMD115Report("Left");
 						}
 						
