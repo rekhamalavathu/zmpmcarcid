@@ -153,7 +153,7 @@
 			visible="{= ${addCIDView>/md11RequiredLeft} || ${addCIDView>/md11RequiredRight}}">
 			<!-- TODO: Hide/Disable Left/Right MD-11 inputs -->
 			<core:Title text="{i18n>label.MD11Left}"/>
-			<Label text="{i18n>label.AdapterCondition}" required="true"/>
+			<Label text="{i18n>label.AdapterCondition}" required="{addCIDView>/md11RequiredLeft}"/>
 			<ComboBox	id="idMD11LeftAdapterCondition" selectedKey="{addCIDView>/md11Left/AdapterCondition}" 
 						enabled="{addCIDView>/md11RequiredLeft}" busy="{RepairsModel>/MD11AdapterConditionBusy}"
 						items="{path: 'RepairsModel>/comboBoxValues/MD11AdapterCondition', sorter: { path: 'key' } }" showSecondaryValues="true">
@@ -161,7 +161,7 @@
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.AdapterPadCondition}" required="true"/>
+			<Label text="{i18n>label.AdapterPadCondition}" required="{addCIDView>/md11RequiredLeft}"/>
 			<ComboBox	id="idMD11LeftAdapterPadCondition" selectedKey="{addCIDView>/md11Left/AdtpadCondition}"
 						enabled="{addCIDView>/md11RequiredLeft}" busy="{RepairsModel>/MD11AdapterPadConditionBusy}" showSecondaryValues="true"
 						items="{path: 'RepairsModel>/comboBoxValues/MD11AdapterPadCondition', sorter: { path: 'key' } }">
@@ -169,14 +169,14 @@
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.JournalBurntOff}" required="true"/>
+			<Label text="{i18n>label.JournalBurntOff}" required="{addCIDView>/md11RequiredLeft}"/>
 			<ComboBox	id="idMD11LeftJournalBurntOff" selectedKey="{addCIDView>/md11Left/BurntOff}" enabled="{addCIDView>/md11RequiredLeft}"
 						items="{RepairsModel>/comboBoxValues/MD11JournalBurntOff}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.ElastomericAdapterPad}" required="true"/>
+			<Label text="{i18n>label.ElastomericAdapterPad}" required="{addCIDView>/md11RequiredLeft}"/>
 			<ComboBox	id="idMD11LeftElastomericAdapterPad" selectedKey="{addCIDView>/md11Left/ElasAdtpad}"
 						enabled="{addCIDView>/md11RequiredLeft}" 
 						busy="{RepairsModel>/MD11ElastomericAdapterPadBusy}" showSecondaryValues="true"
@@ -191,7 +191,7 @@
 								type: 'sap.ui.model.type.Integer',
 								constraints: { minimum: '0', maximum: '9999999999' } }" />
 			<core:Title text="{i18n>label.MD11Right}"/>
-			<Label text="{i18n>label.AdapterCondition}" required="true"/>
+			<Label text="{i18n>label.AdapterCondition}" required="{addCIDView>/md11RequiredRight}"/>
 			<ComboBox	id="idMD11RightAdapterCondition" selectedKey="{addCIDView>/md11Right/AdapterCondition}" 
 						enabled="{addCIDView>/md11RequiredRight}" busy="{RepairsModel>/MD11AdapterConditionBusy}"
 						items="{path: 'RepairsModel>/comboBoxValues/MD11AdapterCondition', sorter: { path: 'key' } }" showSecondaryValues="true">
@@ -199,7 +199,7 @@
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.AdapterPadCondition}" required="true"/>
+			<Label text="{i18n>label.AdapterPadCondition}" required="{addCIDView>/md11RequiredRight}"/>
 			<ComboBox	id="idMD11RightAdapterPadCondition" selectedKey="{addCIDView>/md11Right/AdtpadCondition}"
 						enabled="{addCIDView>/md11RequiredRight}" 
 						busy="{RepairsModel>/MD11AdapterPadConditionBusy}" showSecondaryValues="true"
@@ -208,7 +208,7 @@
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.JournalBurntOff}" required="true"/>
+			<Label text="{i18n>label.JournalBurntOff}" required="{addCIDView>/md11RequiredRight}"/>
 			<ComboBox	id="idMD11RightJournalBurntOff" selectedKey="{addCIDView>/md11Right/BurntOff}"
 						enabled="{addCIDView>/md11RequiredRight}" 
 						items="{RepairsModel>/comboBoxValues/MD11JournalBurntOff}" showSecondaryValues="true">
@@ -216,7 +216,7 @@
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.ElastomericAdapterPad}" required="true"/>
+			<Label text="{i18n>label.ElastomericAdapterPad}" required="{addCIDView>/md11RequiredRight}"/>
 			<ComboBox	id="idMD11RightElastomericAdapterPad" selectedKey="{addCIDView>/md11Right/ElasAdtpad}"
 						enabled="{addCIDView>/md11RequiredRight}" items="{path: 'RepairsModel>/comboBoxValues/MD11ElastomericAdapterPad', sorter: { path: 'key' } }">
 				<items>

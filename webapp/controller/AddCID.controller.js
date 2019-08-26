@@ -1852,11 +1852,11 @@ sap.ui.define([
 			oMD11.WhyMadeCode = oAddCIDViewModel.getProperty("/response/BrWhyMadeCode" + sSide);
 		
 			// Add properties from addCIDView>/md11
-			oMD11.FailureDate = oMD11Shared.FailureDate;
+			oMD11.FailureDate = oMD11Shared.FailureDate || null;
 			oMD11.Derailment = oMD11Shared.Derailment;
 			oMD11.BearingSize = oMD11Shared.BearingSize;
-			oMD11.DetectMethod = oMD11Shared.DetectMethod;
-			oMD11.DetectionDesc = oMD11Shared.DetectionDesc;
+			oMD11.DetectMethod = oMD11Shared.DetectMethod || "";
+			oMD11.DetectionDesc = oMD11Shared.DetectionDesc || "";
 			
 			// convert Wheel SN to string
 			oMD11.WheelSnFailedSide = oMD11.WheelSnFailedSide + "";
