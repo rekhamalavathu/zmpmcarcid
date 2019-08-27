@@ -363,8 +363,14 @@ sap.ui.define([
 					RemovedJobCodeLeft: [],
 					RemovedQualifierLeft: [],
 					WhyMadeCodeLeft: [],
-					MD115DetectMethod:[]
-				}
+					MD115DetectMethod: [],
+					MD115JournalBearingSize: [],
+					MD115BrakeShoeStd: []
+				},
+				MD115DetectMethodBusy: true,
+				MD115JournalBearingSizeBusy: true,
+				MD115WheelDesignationBusy: true,
+				MD115BrakeShoeStdBusy: true
 			});
 		},
 
@@ -379,6 +385,8 @@ sap.ui.define([
 		
 		_loadComboBoxValues: function () {
 			this._loadMethodOfDetection();
+			this._loadJournalBearingSize();
+			this._loadWheelDiameterAndDesign();
 		},
 		
 		_loadMethodOfDetection: function () {
@@ -398,6 +406,75 @@ sap.ui.define([
 				}.bind(this),
 				error: function (sMsg) {
 					this.getModel("RepairsModel").setProperty("/MD115DetectMethodBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadJournalBearingSize: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_JRM_BRG_SIZE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].bearing_size;
+						oComboBoxItem.text = oData.results[i].bearing_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115JournalBearingSize", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115JournalBearingSizeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115JournalBearingSizeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadWheelDiameterAndDesign: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			var sWheelDiameter;
+			var mWheelDiameters = {};
+			this.getModel().read("/ZMPM_CDS_CAR_WHEEL_DESIG", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						sWheelDiameter = oData.results[i].wheel_nom_dia + "";
+						if (oData.results[i].valid) {
+							mWheelDiameters[sWheelDiameter] = {diameter: sWheelDiameter};
+						}
+
+						oComboBoxItem = {};
+						oComboBoxItem.design = oData.results[i].wheel_desig;
+						oComboBoxItem.diameter = sWheelDiameter;
+						oComboBoxItem.valid = oData.results[i].valid;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelDesignation", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelDiameter", Object.values(mWheelDiameters));
+					this.getModel("RepairsModel").setProperty("/MD115WheelDesignationBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115WheelDesignationBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadBrakeShoe: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_BRAKE_SHOE_TYPE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].brakeshoe_type;
+						oComboBoxItem.text = oData.results[i].brakeshoe_type_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BrakeShoeStd", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeStdBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeStdBusy", false);
 				}.bind(this)
 			});
 		},

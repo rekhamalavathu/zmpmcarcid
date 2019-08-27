@@ -127,25 +127,27 @@
 			</ComboBox>
 			<Label text="{i18n>label.NumberOfEquipmentDerailed}"/>
 			<!-- visible only if Method of Detection is "Derailed" -->
-			<Input id="idMD115NumberEquipmentDerailed" visible="={ ${addCIDView>/md115/DetectMethod} === 'D' }"
+			<Input id="idMD115NumberEquipmentDerailed" visible="{= ${addCIDView>/md115/DetectMethod} === 'D' }"
 				value="{ path: 'addCIDView>/md115/EquipDerailNo', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99' } }"/>
 			<Label text="{i18n>label.JournalSize}" required="true"/>
-			<ComboBox id="idMD115JournalSize" selectedKey="{addCIDView>/md115/JournalSize}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115JournalSize', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<ComboBox id="idMD115JournalSize" selectedKey="{addCIDView>/md115/JournalSize}" busy="{RepairsModel>/MD115JournalBearingSizeBusy}"
+				items="{path: 'RepairsModel>/comboBoxValues/MD115JournalBearingSize', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.WheelDiameter}" required="true"/>
-			<ComboBox id="idMD115WheelDiameter" selectedKey="{addCIDView>/md115/WheelDiameter}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDiameter', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<!-- TODO: Load Diameter from Wheel RJC and WMC -->
+			<!-- TODO: On change event, filter Wheel Designation combobox -->
+			<ComboBox id="idMD115WheelDiameter" selectedKey="{addCIDView>/md115/WheelDiameter}" busy="{RepairsModel>/MD115WheelDesignationBusy}"
+				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDiameter', sorter: { path: 'diameter' } }" showSecondaryValues="true">
 				<items>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{RepairsModel>diameter}" text="{RepairsModel>diameter}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.BrakeShoeStandard}" required="true"/>
-			<ComboBox id="idMD115BrakeShoeStandard" selectedKey="{addCIDView>/md115/BrakeShoeStd}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115BrakeShoe', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<ComboBox id="idMD115BrakeShoeStandard" selectedKey="{addCIDView>/md115/BrakeShoeStd}" busy="{RepairsModel>/MD115BrakeShoeStdBusy}"
+				items="{RepairsModel>/comboBoxValues/MD115BrakeShoeStd'}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -287,7 +289,7 @@
 			<ComboBox id="idMD115WheelDesignationLeft" selectedKey="{addCIDView>/md115Left/DefWheelDesig}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDesignation', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{RepairsModel>designation}" text="{RepairsModel>designation}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.SerialNumber}" required="{addCIDView>/md115RequiredLeft}"/>

@@ -356,7 +356,6 @@ sap.ui.define([
 				FlangeFingerReading: "",
 				RimThickness: "",
 				JournalSize: "",
-				DetectMethod: "",
 				WhyMadeCode: "",
 				DefectType: "",
 				FrontDiscoloration: "",
