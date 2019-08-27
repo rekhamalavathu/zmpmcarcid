@@ -70,8 +70,6 @@ sap.ui.define([
 					this._determineWhyMadeCode();
 					// Check Removed Job Code
 					this._getRemovedJobCode();
-					//Get rule from AJC and compare to Why Made to determine if MD-115 report/fields required
-					this._setMD115FromAJCAndWhyMade("Right");
 				}
 				break;
 				// Left Wheel
@@ -98,8 +96,6 @@ sap.ui.define([
 					this._determineWhyMadeCodeLeft();
 					// Check Removed Job Code
 					this._getRemovedJobCodeLeft();
-					//Get rule from AJC and compare to Why Made to determine if MD-115 report/fields required
-					this._setMD115FromAJCAndWhyMade("Left");
 				}
 				break;
 			}
@@ -274,6 +270,8 @@ sap.ui.define([
 					// this._getRemovedQualifier(removedJobCode, "idRepairRemovedQualifier");
 				}
 				this._determineWhyMadeCode();
+				//Get rule from RJC and compare to Why Made to determine if MD-115 report/fields required
+				this._setMD115FromRJCAndWhyMade("Right");
 				break;
 
 			case "idRepairRJCLeft":
@@ -292,6 +290,8 @@ sap.ui.define([
 					}
 				}
 				this._determineWhyMadeCodeLeft();
+				//Get rule from RJC and compare to Why Made to determine if MD-115 report/fields required
+				this._setMD115FromRJCAndWhyMade("Left");
 				break;
 			}
 		},
@@ -302,9 +302,9 @@ sap.ui.define([
 			// Left: idRepairWhyMadeCodeLeft, Right: idRepairWhyMadeCode
 			// look up AJC for matching side
 			if (sInputId === "idRepairWhyMadeCodeLeft") {
-				this._setMD115FromAJCAndWhyMade("Left");
+				this._setMD115FromRJCAndWhyMade("Left");
 			} else if (sInputId === "idRepairWhyMadeCodeLeft") {
-				this._setMD115FromAJCAndWhyMade("Right");
+				this._setMD115FromRJCAndWhyMade("Right");
 			}
 		},
 
@@ -1396,24 +1396,24 @@ sap.ui.define([
 		},
 		
 		/** 
-		 * Determine if AJC and Why Made Code correspond to MD115 report requirement
+		 * Determine if RJC and Why Made Code correspond to MD115 report requirement
 		 * @private 
-		 * @param {String} sWheelSide - Side of wheelset to check if AJC and Why Made correspond to MD115
+		 * @param {String} sWheelSide - Side of wheelset to check if RJC and Why Made correspond to MD115
 		 */
-		_setMD115FromAJCAndWhyMade: function (sWheelSide) {
+		_setMD115FromRJCAndWhyMade: function (sWheelSide) {
 			var oModel = this.getModel("addCIDView");
 			
 			if (!oModel) {
 				return;
 			}
-			var mAJCWhyMade = oModel.getProperty("/AJCRuleWhyMadeMap");
-			var mAppliedJobCodeRules = oModel.getProperty("/AJCRuleMap");
-			var sAppliedJobCode = oModel.getProperty("/response/WrAppliedJobCode" + sWheelSide);
-			var sRule = mAppliedJobCodeRules[sAppliedJobCode];
+			var mRJCWhyMade = oModel.getProperty("/RJCRuleWhyMadeMap");
+			var mRemovedJobCodeRules = oModel.getProperty("/RJCRuleMap");
+			var sRemovedJobCode = oModel.getProperty("/response/WrRemovedJobCode" + sWheelSide);
+			var sRule = mRemovedJobCodeRules[sRemovedJobCode];
 			var sWhyMade = oModel.getProperty("/response/WrWhyMadeCode" + sWheelSide);
 			
-			// AJC and WhyMade not null and corresponds to MD-115 rule
-			if (sRule && sWhyMade && (mAJCWhyMade["R" + sRule + "W" + sWhyMade] === "MD-115")) {
+			// RJC and WhyMade not null and corresponds to MD-115 rule
+			if (sRule && sWhyMade && (mRJCWhyMade["R" + sRule + "W" + sWhyMade] === "MD-115")) {
 				oModel.setProperty("/md115Required" + sWheelSide, true);
 			} else {
 				oModel.setProperty("/md115Required" + sWheelSide, false);

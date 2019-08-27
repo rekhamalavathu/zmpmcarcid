@@ -27,8 +27,8 @@ sap.ui.define([
 		onInit: function () {
 			// set view model
 			this.setModel(this._createViewModel(), "addCIDView");
-			this._loadAJCRulesMap();
-			this._loadAJCWhyMadeMap();
+			this._loadRJCRulesMap();
+			this._loadRJCWhyMadeMap();
 			// fetch Car Mark, GUID and Bad Order Status from Repair screen
 			this.getView().addEventDelegate({
 				onAfterShow: function () {
@@ -1977,27 +1977,27 @@ sap.ui.define([
 			});
 		},
 		
-		_loadAJCRulesMap: function () {
-			var mAJCRules = {};
-			var oAJCItem;
+		_loadRJCRulesMap: function () {
+			var mRJCRules = {};
+			var oRJCItem;
 			var sJobCode;
 			this.getModel().read("/ZMPM_CDS_CAR_APPLIEDJOBCODE", {
 				filters: [new sap.ui.model.Filter("RuleNumber", sap.ui.model.FilterOperator.NE, "")],
 				success: function (oData) {
 					for (var i = 0; i < oData.results.length; i++) {
-						oAJCItem = oData.results[i];
-						sJobCode = oAJCItem.JobCode;
-						mAJCRules[sJobCode] = oAJCItem.RuleNumber;
+						oRJCItem = oData.results[i];
+						sJobCode = oRJCItem.JobCode;
+						mRJCRules[sJobCode] = oRJCItem.RuleNumber;
 					}
-					this.getModel("addCIDView").setProperty("/AJCRuleMap", mAJCRules);
+					this.getModel("addCIDView").setProperty("/RJCRuleMap", mRJCRules);
 				}.bind(this),
 				error: function (sMsg) {
 				}.bind(this)
 			});
 		},
 		
-		_loadAJCWhyMadeMap: function () {
-			var mAJCWhyMade = {};
+		_loadRJCWhyMadeMap: function () {
+			var mRJCWhyMade = {};
 			var oMDItem;
 			this.getModel().read("/ZMPM_CDS_CAR_MD_REPORT", {
 				success: function (oData) {
@@ -2007,10 +2007,10 @@ sap.ui.define([
 							var sRule = "R" + oMDItem.rulenumber;
 							var sWhyMade = "W" + oMDItem.whymade;
 							var sIndex = sRule + sWhyMade;
-							mAJCWhyMade[sIndex] = oMDItem.md_report;
+							mRJCWhyMade[sIndex] = oMDItem.md_report;
 						}
 					}
-					this.getModel("addCIDView").setProperty("/AJCRuleWhyMadeMap", mAJCWhyMade);
+					this.getModel("addCIDView").setProperty("/RJCRuleWhyMadeMap", mRJCWhyMade);
 				}.bind(this),
 				error: function (sMsg) {
 				}.bind(this)
