@@ -365,12 +365,16 @@ sap.ui.define([
 					WhyMadeCodeLeft: [],
 					MD115DetectMethod: [],
 					MD115JournalBearingSize: [],
-					MD115BrakeShoeStd: []
+					MD115BrakeShoe: [],
+					MD115WheelDesignation: [],
+					MD115WheelDiameter: [],
+					MD115BodyMountedBrakes: [],
+					MD115BrakeMisalignment: []
 				},
 				MD115DetectMethodBusy: true,
 				MD115JournalBearingSizeBusy: true,
 				MD115WheelDesignationBusy: true,
-				MD115BrakeShoeStdBusy: true
+				MD115BrakeShoeBusy: true
 			});
 		},
 
@@ -387,6 +391,9 @@ sap.ui.define([
 			this._loadMethodOfDetection();
 			this._loadJournalBearingSize();
 			this._loadWheelDiameterAndDesign();
+			this._loadBrakeShoe();
+			this._loadBodyMountedBrakes();
+			this._loadBrakeMisalignment();
 		},
 		
 		_loadMethodOfDetection: function () {
@@ -470,13 +477,27 @@ sap.ui.define([
 						oComboBoxItem.text = oData.results[i].brakeshoe_type_desc;
 						aComboBoxItems.push(oComboBoxItem);
 					}
-					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BrakeShoeStd", aComboBoxItems);
-					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeStdBusy", false);
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BrakeShoe", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeBusy", false);
 				}.bind(this),
 				error: function (sMsg) {
-					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeStdBusy", false);
+					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeBusy", false);
 				}.bind(this)
 			});
+		},
+		
+		_loadBodyMountedBrakes: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}	];
+									
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BodyMountedBrakes", aComboBoxItems);
+		},
+		
+		_loadBrakeMisalignment: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}	];
+									
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BrakeMisalignment", aComboBoxItems);
 		},
 
 		/** 
