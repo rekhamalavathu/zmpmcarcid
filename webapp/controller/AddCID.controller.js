@@ -109,6 +109,7 @@ sap.ui.define([
 			this._checkMandatoryFieldSideFrame(oResponse);
 			this._checkMandatoryFieldSlackAdjuster(oResponse);
 			this._checkMandatoryFieldsMD11();
+			this._checkMandatoryFieldsMD115();
 
 			if ((this.getModel("addCIDView").getProperty("/hasError")) === true) {
 				this.getModel("addCIDView").setProperty("/busy", false);
@@ -1891,6 +1892,130 @@ sap.ui.define([
 			}
 		},
 		
+		_checkMandatoryFieldsMD115: function () {
+			if (this.getModel("addCIDView").getProperty("/md115RequiredLeft")) {
+				this._checkMandatoryFieldMD115("Left");
+			}
+			
+			if (this.getModel("addCIDView").getProperty("/md115RequiredRight")) {
+				this._checkMandatoryFieldMD115("Right");
+			}
+		},
+		
+		_checkMandatoryFieldMD115: function (sWheelSide) {
+			var oAddCIDViewModel = this.getModel("addCIDView");
+			var sOtherSide = (sWheelSide === "Left") ? "Right" : "Left";
+			var oMD115 = oAddCIDViewModel.getProperty("/md115" + sWheelSide);
+			var oMD115Other = oAddCIDViewModel.getProperty("/md115" + sOtherSide);
+			var oMD115Shared = oAddCIDViewModel.getProperty("/md115");
+			
+			if (!oMD115Shared.FailureDate) {
+				this._addCIDFieldError("/md115/FailureDate");
+			} else if (oMD115Shared.FailureDate > new Date(oAddCIDViewModel.getProperty("/cidHeader/repairDate"))) {
+				this._addCIDFieldError("/md115/FailureDate", this.getResourceBundle().getText("error.FailureDateAfterRepair"));
+			}
+			
+			if (!oMD115Shared.DetectMethod) {
+				this._addCIDFieldError("/md115/DetectMethod");
+			} else if (oMD115Shared.DetectMethod === "D" && !oMD115Shared.DetectMethod) {
+				this._addCIDFieldError("/md115/EquipDerailNo");
+			}
+			
+			// TODO: Lookup from RJC/WMC C208/C209
+			if (!oMD115Shared.JournalSize) {
+				this._addCIDFieldError("/md115/JournalSize");
+			}
+			
+			// TODO: Lookup from RJC/WMC C113
+			if (!oMD115Shared.WheelDiameter) {
+				this._addCIDFieldError("/md115/WheelDiameter");
+			}
+			
+			if (!oMD115Shared.BrakeShoeStd) {
+				this._addCIDFieldError("/md115/BrakeShoeStd");
+			}
+			
+			// TODO: Lookup from RJC/WMC C115
+			if (!oMD115Shared.PlateType) {
+				this._addCIDFieldError("/md115/PlateType");
+			}
+			
+			// TODO: Lookup from RJC/WMC C118
+			if (!oMD115Shared.WheelType) {
+				this._addCIDFieldError("/md115/WheelType");
+			}
+			
+			if (!oMD115.FrontDiscoloration) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/FrontDiscoloration");
+			}
+			
+			if (!oMD115.BackDiscoloration) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/BackDiscoloration");
+			}
+			
+			if (!oMD115.MountDateMm || parseInt(oMD115.MountDateMm, 10) < 1 || parseInt(oMD115.MountDateMm, 10) > 12) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/MountDateMm");
+			}
+			
+			if (!oMD115.MountDateYy) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/MountDateYy");
+			}
+			
+			if (!oMD115.WheelShopMark) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/WheelShopMark");
+			}
+			
+			if (!oMD115.LockMountShopMark) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/LockMountShopMark");
+			}
+			
+			if (!oMD115.NewReconditioned) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/NewReconditioned");
+			} else if (oMD115.NewReconditioned === "R" && !oMD115.RecondShopMark) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/RecondShopMark");
+			}
+			
+			if (!oMD115.LockManufacMm || parseInt(oMD115.LockManufacMm, 10) < 1 || parseInt(oMD115.LockManufacMm, 10) > 12) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/LockManufacMm");
+			}
+			
+			if (!oMD115.LockManufacYy) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/LockManufacYy");
+			}
+			
+			// TODO: Lookup from RJC/WMC C114
+			if (!oMD115.DefWheelDesig) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/DefWheelDesig");
+			}
+			
+			// TODO: Lookup from RJC/WMC C114
+			if (!oMD115Other.DefWheelDesig) {
+				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelDesig");
+			}
+			
+			// TODO: Lookup from RJC/WMC C111
+			if (!oMD115.DefWheelSnNo) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/DefWheelSnNo");
+			}
+			
+			// TODO: Lookup from RJC/WMC C111
+			if (!oMD115Other.DefWheelSnNo) {
+				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelSnNo");
+			}
+			
+			if (!oMD115.BrakeShoeFailedWheel) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/BrakeShoeFailedWheel");
+			}
+			
+			if (!oMD115.DefectLocation) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/DefectLocation");
+			}
+			
+			if (!oMD115.NumCrackInches) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/NumCrackInches");
+			}
+		},
+		
 		_submitMD11Report: function (sSide) {
 			var oModel = this.getView().getModel();
 			var oAddCIDViewModel = this.getModel("addCIDView");
@@ -1922,7 +2047,6 @@ sap.ui.define([
 			// convert Wheel SN to string
 			oMD11.WheelSnFailedSide = oMD11.WheelSnFailedSide + "";
 			
-			// TODO: Move this into its own function to be used by MD-115 function as well
 			var sCarMark = oHeader.carMark;
 			var aSplitCarMark = sCarMark.match(/^([A-Za-z]+)([0-9]+)$/);
 			oMD11.EquipmentInitial = aSplitCarMark[1];

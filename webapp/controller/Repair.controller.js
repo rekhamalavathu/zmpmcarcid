@@ -499,6 +499,13 @@ sap.ui.define([
 									
 			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BrakeMisalignment", aComboBoxItems);
 		},
+		
+		_loadStuckBrakes: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}	];
+									
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115StuckBrakes", aComboBoxItems);
+		},
 
 		/** 
 		 * Method to get Applied Job Code
