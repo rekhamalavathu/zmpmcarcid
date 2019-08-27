@@ -21,7 +21,7 @@ sap.ui.define([
 			this.setModel(this._createViewModel(), "RepairsModel");
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
-
+			this._loadComboBoxValues();
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCodeLeft", this._getRemovedJobCodeLeft, this);
 
@@ -70,6 +70,7 @@ sap.ui.define([
 					this._determineWhyMadeCode();
 					// Check Removed Job Code
 					this._getRemovedJobCode();
+					//Get rule from AJC and compare to Why Made to determine if MD-115 report/fields required
 					this._setMD115FromAJCAndWhyMade("Right");
 				}
 				break;
@@ -97,6 +98,7 @@ sap.ui.define([
 					this._determineWhyMadeCodeLeft();
 					// Check Removed Job Code
 					this._getRemovedJobCodeLeft();
+					//Get rule from AJC and compare to Why Made to determine if MD-115 report/fields required
 					this._setMD115FromAJCAndWhyMade("Left");
 				}
 				break;
@@ -360,7 +362,8 @@ sap.ui.define([
 					ConditionCodeLeft: [],
 					RemovedJobCodeLeft: [],
 					RemovedQualifierLeft: [],
-					WhyMadeCodeLeft: []
+					WhyMadeCodeLeft: [],
+					MD115DetectMethod:[]
 				}
 			});
 		},
@@ -372,6 +375,31 @@ sap.ui.define([
 		_initScreenValues: function () {
 			this._getAppliedJobCode();
 			this._getAppliedJobCodeLeft();
+		},
+		
+		_loadComboBoxValues: function () {
+			this._loadMethodOfDetection();
+		},
+		
+		_loadMethodOfDetection: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_MTHD_DETECT", {
+				filters: [new Filter("md_report", FilterOperator.EQ, "MD-115")],
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].detect_method;
+						oComboBoxItem.text = oData.results[i].detect_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115DetectMethod", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115DetectMethodBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115DetectMethodBusy", false);
+				}.bind(this)
+			});
 		},
 
 		/** 
@@ -1273,29 +1301,24 @@ sap.ui.define([
 		 * Determine if AJC and Why Made Code correspond to MD115 report requirement
 		 * @private 
 		 * @param {String} sWheelSide - Side of wheelset to check if AJC and Why Made correspond to MD115
-		
 		 */
 		_setMD115FromAJCAndWhyMade: function (sWheelSide) {
 			var oModel = this.getModel("addCIDView");
-			var mMD115AJCWhyMade = oModel.getProperty("/MD115AJCWhyMadeMap");
-			var sAJC = oModel.getProperty("/response/WrAppliedJobCode" + sWheelSide);
-			var sWhyMade = oModel.getProperty("/response/WrWhyMadeCode" + sWheelSide);
-			var sMD115 = oModel.getProperty("/MD115");
 			
-			// AJC and WhyMade not null and corresponds to MD115 rule
-			//if (sAJC && sWhyMade && mMD115AJCWhyMade[sAJC][sWhyMade]) {
-			if (sAJC && (sWhyMade || true)) {
-				if (sWheelSide === "Left") {
-					oModel.setProperty("/MD115", (sMD115 === "Right" || sMD115 === "Both") ? "Both" : "Left");	
-				} else if (sWheelSide === "Right") {
-					oModel.setProperty("/MD115", (sMD115 === "Left" || sMD115 === "Both") ? "Both" : "Right");	
-				}
+			if (!oModel) {
+				return;
+			}
+			var mAJCWhyMade = oModel.getProperty("/AJCRuleWhyMadeMap");
+			var mAppliedJobCodeRules = oModel.getProperty("/AJCRuleMap");
+			var sAppliedJobCode = oModel.getProperty("/response/WrAppliedJobCode" + sWheelSide);
+			var sRule = mAppliedJobCodeRules[sAppliedJobCode];
+			var sWhyMade = oModel.getProperty("/response/WrWhyMadeCode" + sWheelSide);
+			
+			// AJC and WhyMade not null and corresponds to MD-115 rule
+			if (sRule && sWhyMade && (mAJCWhyMade["R" + sRule + "W" + sWhyMade] === "MD-115")) {
+				oModel.setProperty("/md115Required" + sWheelSide, true);
 			} else {
-				if (sWheelSide === "Left") {
-					oModel.setProperty("/MD115", (sMD115 === "Right" || sMD115 === "Both") ? "Right" : "");	
-				} else if (sWheelSide === "Right") {
-					oModel.setProperty("/MD115", (sMD115 === "Left" || sMD115 === "Both") ? "Left" : "");	
-				}
+				oModel.setProperty("/md115Required" + sWheelSide, false);
 			}
 		}
 	});

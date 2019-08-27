@@ -27,6 +27,8 @@ sap.ui.define([
 		onInit: function () {
 			// set view model
 			this.setModel(this._createViewModel(), "addCIDView");
+			this._loadAJCRulesMap();
+			this._loadAJCWhyMadeMap();
 			// fetch Car Mark, GUID and Bad Order Status from Repair screen
 			this.getView().addEventDelegate({
 				onAfterShow: function () {
@@ -332,12 +334,8 @@ sap.ui.define([
 		 */
 		_createViewModel: function () {
 			var oMD11Left = {
-				EquipmentInitial: "",
-				EquipmentNumber: "",
 				EquipmentSide: "",
 				ComponentLocation: "",
-				FailureDate: null, // Date type
-				RepairDate: null, // Date type
 				Derailment: "",
 				AdapterCondition: "",
 				AdtpadCondition: "",
@@ -348,6 +346,43 @@ sap.ui.define([
 				WhyMadeCode: "",
 				ElasAdtpad: "",
 				WheelSnFailedSide: "",
+				to_Message: []
+			};
+			
+			var oMD115Left = {
+				DefWheelDesig: "",
+				EquipmentSide: "",
+				DefectLocation: "",
+				FlangeFingerReading: "",
+				RimThickness: "",
+				JournalSize: "",
+				DetectMethod: "",
+				WhyMadeCode: "",
+				DefectType: "",
+				FrontDiscoloration: "",
+				BackDiscoloration: "",
+				MountDateMm: "",
+				MountDateYy: "",
+				WheelShopMark: "",
+				DefWheelSnNo: "",
+				DefManufacMm: "",
+				DefManufacYy: "",
+				DefWheelManufacturer: "",
+				DefMountStamp2Mm: "",
+				DefMountStamp2Yy:"",
+				DefWhStamp2ShopMark: "",
+				DefMountStamp3Mm: "",
+				DefMountStamp3Yy: "",
+				DefWhStamp3ShopMark: "",
+				LockMountShopMark: "",
+				NewReconditioned: "",
+				RecondShopMark: "",
+				LockManufacMm: "",
+				LockManufacYy: "",
+				BrakeShoeFailedWheel: "",
+				BrakeMisalignment: "",
+				StuckBrakes: "",
+				NumCrackInches: "",
 				to_Message: []
 			};
 			
@@ -393,11 +428,31 @@ sap.ui.define([
 				},
 				
 				md11: {
+					EquipmentInitial: "",
+					EquipmentNumber: "",
+					RepairDate: null,
 					FailureDate: null,
 					Derailment: "",
 					BearingSize: "",
 					DefectMethod: "",
 					DetectionDesc: ""
+				},
+				
+				md115: {
+					EquipmentInitial: "",
+					EquipmentNumber: "",
+					FailureDate: null,
+					RepairDate: null,
+					DetectMethod: "",
+					EquipDerailNo: "",
+					AxleLocation: "",
+					WheelsetCid: "",
+					ClassHeatTreatment: "",
+					WheelType: "",
+					WheelDiameter: "",
+					PlateType: "",
+					BodyMountedBrakes: "",
+					Comments: ""
 				},
 				
 				md11Left: oMD11Left,
@@ -406,6 +461,13 @@ sap.ui.define([
 				md11RequiredRight: false,
 				md11SuccessLeft: false,
 				md11SuccessRight: false,
+				
+				md115Left: oMD115Left,
+				md115Right: JSON.parse(JSON.stringify(oMD115Left)),
+				md115RequiredLeft: false,
+				md115RequiredRight: false,
+				md115SuccessLeft: false,
+				md115SuccessRight: false,
 				
 				response: {},
 				oCloneData: {}
@@ -1912,6 +1974,46 @@ sap.ui.define([
 					var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
 					var sMsg = oMessage && oMessage[1] && oMessage[1].message;
 					MessageBox.error(sMsg);
+				}.bind(this)
+			});
+		},
+		
+		_loadAJCRulesMap: function () {
+			var mAJCRules = {};
+			var oAJCItem;
+			var sJobCode;
+			this.getModel().read("/ZMPM_CDS_CAR_APPLIEDJOBCODE", {
+				filters: [new sap.ui.model.Filter("RuleNumber", sap.ui.model.FilterOperator.NE, "")],
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oAJCItem = oData.results[i];
+						sJobCode = oAJCItem.JobCode;
+						mAJCRules[sJobCode] = oAJCItem.RuleNumber;
+					}
+					this.getModel("addCIDView").setProperty("/AJCRuleMap", mAJCRules);
+				}.bind(this),
+				error: function (sMsg) {
+				}.bind(this)
+			});
+		},
+		
+		_loadAJCWhyMadeMap: function () {
+			var mAJCWhyMade = {};
+			var oMDItem;
+			this.getModel().read("/ZMPM_CDS_CAR_MD_REPORT", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oMDItem = oData.results[i];
+						if (oMDItem.md_report === "MD-11" || oMDItem.md_report === "MD-115") {
+							var sRule = "R" + oMDItem.rulenumber;
+							var sWhyMade = "W" + oMDItem.whymade;
+							var sIndex = sRule + sWhyMade;
+							mAJCWhyMade[sIndex] = oMDItem.md_report;
+						}
+					}
+					this.getModel("addCIDView").setProperty("/AJCRuleWhyMadeMap", mAJCWhyMade);
+				}.bind(this),
+				error: function (sMsg) {
 				}.bind(this)
 			});
 		}

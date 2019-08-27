@@ -105,8 +105,7 @@
 			<!--Why Made Code Right-->
 			<Label text="{i18n>label.WhyMadeCode}"/>
 			<ComboBox id="idRepairWhyMadeCode" selectedKey="{addCIDView>/response/WrWhyMadeCodeRight}"
-				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCode', sorter: { path: 'key' } }" showSecondaryValues="true"
-				change="onChangeWhyMadeCode">
+				items="{path: 'RepairsModel>/comboBoxValues/WhyMadeCode', sorter: { path: 'key' } }" showSecondaryValues="true" change="onChangeWhyMadeCode">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -114,385 +113,372 @@
 		</forms:SimpleForm>
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1"
-			visible="{= ${addCIDView>/MD115} === 'Left' || ${addCIDView>/MD115} === 'Right' || ${addCIDView>/MD115} === 'Both' }">
+			visible="{= ${addCIDView>/md115RequiredLeft} || ${addCIDView>/md115RequiredRight} }">
 			<core:Title text="{i18n>label.MD115}"/>
-			<Label text="{i18n>label.DateOfFailure}"/>
-			<DatePicker id="idDatePickerReconditionDate" 
-			        	value="{
-			        			path: 'addCIDView>/response/MD115DateOfFailure', 
-			        			type: 'sap.ui.model.type.Date', 
-			        			formatOptions: {style: 'short', strictParsing: true}
-			        		   }"/> 
-			<Label text="{i18n>label.MethodOfDetection}"/>
-			<ComboBox id="idMD115MethodOfDetection" selectedKey="{addCIDView>/response/MD115MethodOfDetection}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115MethodOfDetection', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<Label text="{i18n>label.DateOfFailure}" required="true"/>
+			<DatePicker id="idDatePickerReconditionDate"
+				value="{ path: 'addCIDView>/md115/FailureDate', type: 'sap.ui.model.type.Date', formatOptions: {style: 'short', strictParsing: true} }"/>
+			<Label text="{i18n>label.MethodOfDetection}" required="true"/>
+			<ComboBox	id="idMD115MethodOfDetection" selectedKey="{addCIDView>/md115/DetectMethod}" busy="{RepairsModel>/MD115DetectMethodBusy}"
+						items="{path: 'RepairsModel>/comboBoxValues/MD115DetectMethod', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.NumberOfEquipmentDerailed}"/>
-			<!-- TODO: visible only if Method of Detection is "Derailed" -->
-			<Input	id="idMD115NumberEquipmentDerailed" 
-					value="{	path: 'addCIDView>/response/MD115NumberOfEquipmentDerailed',
-								type: 'sap.ui.model.type.Integer',
-								constraints: { minimum: '0', maximum: '99' } }" />
-			<Label text="{i18n>label.JournalSize}"/>
-			<ComboBox id="idMD115JournalSize" selectedKey="{addCIDView>/response/MD115JournalSize}"
+			<!-- visible only if Method of Detection is "Derailed" -->
+			<Input id="idMD115NumberEquipmentDerailed" visible="={ ${addCIDView>/md115/DetectMethod} === 'D' }"
+				value="{ path: 'addCIDView>/md115/EquipDerailNo', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99' } }"/>
+			<Label text="{i18n>label.JournalSize}" required="true"/>
+			<ComboBox id="idMD115JournalSize" selectedKey="{addCIDView>/md115/JournalSize}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115JournalSize', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.WheelDiameter}"/>
-			<ComboBox id="idMD115WheelDiameter" selectedKey="{addCIDView>/response/MD115WheelDiameter}"
+			<Label text="{i18n>label.WheelDiameter}" required="true"/>
+			<ComboBox id="idMD115WheelDiameter" selectedKey="{addCIDView>/md115/WheelDiameter}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDiameter', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.BrakeShoeStandard}"/>
-			<ComboBox id="idMD115BrakeShoeStandard" selectedKey="{addCIDView>/response/MD115BrakeShoeStandard}"
+			<Label text="{i18n>label.BrakeShoeStandard}" required="true"/>
+			<ComboBox id="idMD115BrakeShoeStandard" selectedKey="{addCIDView>/md115/BrakeShoeStd}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BrakeShoe', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.BodyMountedBrake}"/>
-			<ComboBox id="idMD115BodyMountedBrake" selectedKey="{addCIDView>/response/MD115BodyMountedBrake}"
+			<ComboBox id="idMD115BodyMountedBrake" selectedKey="{addCIDView>/md115/BodyMountedBrakes}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BodyMountedBrake', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.PlateType}"/>
-			<ComboBox id="idMD115PlateType" selectedKey="{addCIDView>/response/MD115PlateType}" 
+			<ComboBox id="idMD115PlateType" selectedKey="{addCIDView>/md115/PlateType}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115PlateType', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.Comments}"/>
-			<TextArea id="idMD115Comments" value="{addCIDView>/response/MD115Comments}" maxLength="4000" />
+			<TextArea id="idMD115Comments" value="{addCIDView>/md115/Comments}" maxLength="4000"/>
 		</forms:SimpleForm>
 		<forms:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="true" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1"
-			visible="{= ${addCIDView>/MD115} === 'Left' || ${addCIDView>/MD115} === 'Right' || ${addCIDView>/MD115} === 'Both' }">
+			visible="{= ${addCIDView>/md115RequiredLeft} || ${addCIDView>/md115RequiredRight} }">
 			<core:Title text="{i18n>label.MD115Left}"/>
-			<Label text="{i18n>label.WheelType}"/>
-			<ComboBox id="idMD115WheelTypeLeft" selectedKey="{addCIDView>/response/MD115WheelTypeLeft}"
+			<Label text="{i18n>label.WheelType}" required="{addCIDView>/md115RequiredLeft}"/>
+			<ComboBox id="idMD115WheelTypeLeft" selectedKey="{addCIDView>/md115Left/WheelType}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelType', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.FrontDiscoloration}"/>
-			<Input	id="idMD115FrontDiscolorationLeft" 
-					value="{	path: 'addCIDView>/response/MD115FrontDiscolorationLeft',
-								type: 'sap.ui.model.type.Integer',
-								constraints : { minimum: '0', maximum: '99' } }" />
-			<Label text="{i18n>label.BackDiscoloration}"/>
-			<Input	id="idMD115BackDiscolorationLeft" 
-					value="{	path: 'addCIDView>/response/MD115BackDiscolorationLeft',
-								type: 'sap.ui.model.type.Integer',
-								constraints: { minimum: '0', maximum: '99' } }" />
-			<Label text="{i18n>label.HubMountingDateMonth}"/>
-			<MaskInput	id="idMD115HubMountingDateMonthLeft" value="{addCIDView>/response/MD115HubMountingDateMonthLeft}"
-						mask="CD" placeholderSymbol="_">
+			<Label text="{i18n>label.FrontDiscoloration}" required="{addCIDView>/md115RequiredLeft}"/>
+			<Input id="idMD115FrontDiscolorationLeft"
+				value="{ path: 'addCIDView>/md115Left/FrontDiscoloration', type: 'sap.ui.model.type.Integer', constraints : { minimum: '0', maximum: '99' } }"/>
+			<Label text="{i18n>label.BackDiscoloration}" required="{addCIDView>/md115RequiredLeft}"/>
+			<Input id="idMD115BackDiscolorationLeft"
+				value="{ path: 'addCIDView>/md115Left/BackDiscoloration', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99' } }"/>
+			<Label text="{i18n>label.DefectiveWheelManufacturer}" required="true"/>
+			<ComboBox id="idMD115DefectiveWheelManufacturerLeft" selectedKey="{addCIDView>/md115Left/DefWheelManufacturer}"
+				items="{path: 'RepairsModel>/comboBoxValues/WheelManufacturer', sorter: { path: 'key' } }" showSecondaryValues="true">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.WheelManufactureDateMonth}" required="true"/>
+			<!-- TODO: Right MateManufacMm -->
+			<MaskInput id="idMD115WheelManufactureDateMonthLeft" value="{addCIDView>/md115Left/DefManufacMm}" mask="CD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.HubMountingDateLeft}"/>
-			<MaskInput	id="idMD115HubMountingDateYearLeft" value="{addCIDView>/response/MD115HubMountingDateYearLeft}"
-						mask="DD" placeholderSymbol="_">
+			<Label text="{i18n>label.WheelManufactureDateYear}" required="true"/>
+			<!-- TODO: Right MateManufacYy -->
+			<MaskInput id="idMD115HubMountingDateYYLeft" value="{addCIDView>/md115Left/DefManufacYy}" mask="DD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.HubStampShopMark}"/>
-			<Input	id="idMD115HubWheelShopMarkLeft" 
-					value="{	path: 'addCIDView>/response/MD115HubWheelShopMarkLeft',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
+			<Label text="{i18n>label.HubMountingDateMonth}" required="true"/>
+			<MaskInput id="idMD115HubMountingDateMonthLeft" value="{addCIDView>/md115Left/MountDateMm}" mask="CD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.HubMountingDateLeft}" required="true"/>
+			<MaskInput id="idMD115HubMountingDateYearLeft" value="{addCIDView>/md115Left/MountDateYy}" mask="DD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.HubStampShopMark}" required="true"/>
+			<!-- TODO: Right MateWheelManufacturer -->
+			<Input id="idMD115HubWheelShopMarkLeft"
+				value="{ path: 'addCIDView>/md115Left/WheelShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
 			<Label text="{i18n>label.Hub2MountingDateMonth}"/>
-			<MaskInput	id="idMD115Hub2MountingDateMonthLeft" value="{addCIDView>/response/MD115Hub2MountingDateMonthLeft}"
-					mask="CD" placeholderSymbol="_">
+			<MaskInput id="idMD115Hub2MountingDateMonthLeft" value="{addCIDView>/md115Left/DefMountStamp2Mm}" mask="CD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
 			<Label text="{i18n>label.Hub2MountingDateYear}"/>
-			<MaskInput	id="idMD115Hub2MountingDateYearLeft" value="{addCIDView>/response/MD115Hub2MountingDateYearLeft}"
-						mask="DD" placeholderSymbol="_">
+			<MaskInput id="idMD115Hub2MountingDateYearLeft" value="{addCIDView>/md115Left/DefMountStamp2Yy}" mask="DD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
 			<Label text="{i18n>label.Hub2StampShopMark}"/>
-			<Input	id="idMD115Hub2WheelShopMarkLeft" 
-					value="{	path: 'addCIDView>/response/MD115Hub2WheelShopMarkLeft',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
+			<Input id="idMD115Hub2WheelShopMarkLeft"
+				value="{ path: 'addCIDView>/md115Left/DefWhStamp2ShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
 			<Label text="{i18n>label.Hub3MountingDateMonth}"/>
-			<MaskInput	id="idMD115Hub3MountingDateMonthLeft" value="{addCIDView>/response/MD115Hub3MountingDateMonthLeft}"
-						mask="CD" placeholderSymbol="_">
+			<MaskInput id="idMD115Hub3MountingDateMonthLeft" value="{addCIDView>/md115Left/DefMountStamp3Mm}" mask="CD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
 			<Label text="{i18n>label.Hub3MountingDateYear}"/>
-			<MaskInput	id="idMD115Hub3MountingDateYearLeft" value="{addCIDView>/response/MD115Hub3MountingDateYearLeft}"
-						mask="DD" placeholderSymbol="_">
+			<MaskInput id="idMD115Hub3MountingDateYearLeft" value="{addCIDView>/md115Left/DefMountStamp3Yy}" mask="DD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
 			<Label text="{i18n>label.Hub3StampShopMark}"/>
-			<Input	id="idMD115Hub3WheelShopMarkLeft" 
-					value="{	path: 'addCIDView>/response/MD115Hub3WheelShopMarkLeft',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-								
-			<Label text="{i18n>label.LockingTabMountingShopMark}"/>
-			<Input	id="idMD115LockingTabMountingShopMarkLeft" 
-					value="{	path: 'addCIDView>/response/MD115LockingTabMountingShopMarkLeft',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-			<Label text="{i18n>label.LockingTabReconditioned}"/>
-			<ComboBox id="idMD11LockingTabReconditionedLeft" selectedKey="{addCIDView>/response/MD115LockingTabReconditionedLeft}"
+			<Input id="idMD115Hub3WheelShopMarkLeft"
+				value="{ path: 'addCIDView>/md115Left/DefWhStamp3ShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.LockingTabMountingShopMark}" required="{addCIDView>/md115RequiredLeft}"/>
+			<Input id="idMD115LockingTabMountingShopMarkLeft"
+				value="{ path: 'addCIDView>/md115Left/LockMountShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.LockingTabReconditioned}" required="{addCIDView>/md115RequiredLeft}"/>
+			<ComboBox id="idMD11LockingTabReconditionedLeft" selectedKey="{addCIDView>/md115Left/NewReconditioned}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115LockingTabReconditioned', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.LockingTabReconditionedShopMark}"/>
-			<Input	id="idMD115LockingTabShopReconditionedMarkLeft" 
-					value="{	path: 'addCIDView>/response/MD115LockingTabReconditionedShopMarkLeft',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-			<Label text="{i18n>label.LockingTabManufacturedMonth}"/>
-			<MaskInput	id="idMD115LockingTabManufacturedMonthLeft" value="{addCIDView>/response/MD115Hub3LockingTabManufacturedMonthLeft}"
-						mask="CD" placeholderSymbol="_">
+			<Label text="{i18n>label.LockingTabReconditionedShopMark}" required="={ ${addCIDView>/md115Left/NewReconditioned} === 'R' }"/>
+			<Input id="idMD115LockingTabShopReconditionedMarkLeft"
+				value="{ path: 'addCIDView>/md115Left/RecondShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.LockingTabManufacturedMonth}" required="{addCIDView>/md115RequiredLeft}"/>
+			<MaskInput id="idMD115LockingTabManufacturedMonthLeft" value="{addCIDView>/md115Left/LockManufacMm}" mask="CD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.LockingTabManufacturedYear}"/>
-			<MaskInput	id="idMD115LockingTabManufacturedYearLeft" value="{addCIDView>/response/MD115LockingTabManufacturedYearLeft}"
-						mask="DD" placeholderSymbol="_">
+			<Label text="{i18n>label.LockingTabManufacturedYear}" required="{addCIDView>/md115RequiredLeft}"/>
+			<MaskInput id="idMD115LockingTabManufacturedYearLeft" value="{addCIDView>/md115Left/LockManufacYy}" mask="DD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.WheelDesignation}"/>
+			<Label text="{i18n>label.WheelDesignation}" required="{addCIDView>/md115RequiredLeft}"/>
 			<!-- TODO: Make sure wheel designation list filtered by diameter -->
-			<!-- TODO: Editable if mate -->
-			<ComboBox id="idMD115WheelDesignationLeft" selectedKey="{addCIDView>/response/MD115WheelDesignationLeft}"
+			<!-- TODO: Right MateWheelDesig -->
+			<ComboBox id="idMD115WheelDesignationLeft" selectedKey="{addCIDView>/md115Left/DefWheelDesig}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDesignation', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.SerialNumber}"/>
-			<Input	id="idMD115SerialNumberLeft" 
-					value="{	path: 'addCIDView>/response/MD115SerialNumberLeft',
-								type: 'sap.ui.model.type.Integer',
-								constraints : { minimum: '0', maximum: '99999999' } }" />
-			<Label text="{i18n>label.BrakeShoeFailedWheel}"/>
-			<ComboBox id="idMD115BrakeShoeFailedWheelLeft" selectedKey="{addCIDView>/response/MD115BrakeShoeFailedWheelLeft}"
+			<Label text="{i18n>label.SerialNumber}" required="{addCIDView>/md115RequiredLeft}"/>
+			<!-- TODO: Right MateWheelSnNo -->
+			<Input id="idMD115SerialNumberLeft"
+				value="{ path: 'addCIDView>/md115Left/DefWheelSnNo', type: 'sap.ui.model.type.Integer', constraints : { minimum: '0', maximum: '99999999' } }"/>
+			<Label text="{i18n>label.BrakeShoeFailedWheel}" required="{addCIDView>/md115RequiredLeft}"/>
+			<ComboBox id="idMD115BrakeShoeFailedWheelLeft" selectedKey="{addCIDView>/md115Left/BrakeShoeFailedWheel}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BrakeShoe', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.BrakeRiggingMisalignment}"/>
-			<ComboBox id="idMD115BrakeRiggingMisalignmentLeft" selectedKey="{addCIDView>/response/MD115BrakeRiggingMisalignmentLeft}"
+			<ComboBox id="idMD115BrakeRiggingMisalignmentLeft" selectedKey="{addCIDView>/md115Left/BrakeMisalignment}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BrakeRiggingMisalignment', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.StuckBrake}"/>
-			<ComboBox id="idMD115StuckBrakeLeft" selectedKey="{addCIDView>/response/MD115StuckBrakeLeft}"
+			<ComboBox id="idMD115StuckBrakeLeft" selectedKey="{addCIDView>/md115Left/StuckBrakes}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115StuckBrake', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.LocationOfDefect}"/>
-			<ComboBox id="idMD115LocationOfDefectLeft" selectedKey="{addCIDView>/response/MD115LocationofDefectLeft}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115LocationOfDefect', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<Label text="{i18n>label.LocationOfDefect}" required="{addCIDView>/md115RequiredLeft}"/>
+			<ComboBox id="idMD115LocationOfDefectLeft" selectedKey="{addCIDView>/md115Left/DefectLocation}"
+				items="{path: 'RepairsModel>/comboBoxValues/MD115DefectLocation', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.NumberOfInchesOfCrack}"/>
-			<Input	id="idMD115InchesOfCrackLeft" 
-					value="{	path: 'addCIDView>/response/MD115NumberOfInchesOfCrackLeft',
-								type: 'sap.ui.model.type.Integer',
-								constraints: { minimum: '0', maximum: '99' } }" />
+			<Label text="{i18n>label.NumCrackInches}" required="{addCIDView>/md115RequiredLeft}"/>
+			<Input id="idMD115InchesOfCrackLeft"
+				value="{ path: 'addCIDView>/md115Left/NumCrackInches', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99' } }"/>
+			<!-- MD115Right -->
 			<core:Title text="{i18n>label.MD115Right}"/>
-			<Label text="{i18n>label.WheelType}"/>
-			<ComboBox id="idMD115WheelTypeRight" selectedKey="{addCIDView>/response/MD115WheelTypeRight}"
+			<Label text="{i18n>label.WheelType}" required="{addCIDView>/md115RequiredRight}"/>
+			<ComboBox id="idMD115WheelTypeRight" selectedKey="{addCIDView>/md115Right/WheelType}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelType', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.FrontDiscoloration}"/>
-			<Input	id="idMD115FrontDiscolorationRight" 
-					value="{	path: 'addCIDView>/response/MD115FrontDiscolorationRight',
-								type: 'sap.ui.model.type.Integer',
-								constraints : { minimum: '0', maximum: '99' } }" />
-			<Label text="{i18n>label.BackDiscoloration}"/>
-			<Input	id="idMD115BackDiscolorationRight" 
-					value="{	path: 'addCIDView>/response/MD115BackDiscolorationRight',
-								type: 'sap.ui.model.type.Integer',
-								constraints : { minimum: '0', maximum: '99' } }" />
-			<Label text="{i18n>label.HubMountingDateMonth}"/>
-			<MaskInput	id="idMD115HubMountingDateMonthRight" value="{addCIDView>/response/MD115HubMountingDateMonthRight}"
-						mask = "CD" placeholderSymbol = "_">
-				<rules>
-					<MaskInputRule maskFormatSymbol = "C" regex = "[0-1xX]"/>
-					<MaskInputRule maskFormatSymbol = "D" regex = "[0-9xX]"/>
-				</rules>
-			</MaskInput>
-			<Label text="{i18n>label.HubMountingDateYear}"/>
-			<MaskInput	id="idMD115HubMountingDateYearRight" value="{addCIDView>/response/MD115HubMountingDateYearRight}"
-						mask = "DD" placeholderSymbol = "_">
-				<rules>
-					<MaskInputRule maskFormatSymbol = "D" regex = "[0-9xX]"/>
-				</rules>
-			</MaskInput>
-			<Label text="{i18n>label.HubStampShopMark}"/>
-			<Input	id="idMD115HubWheelShopMarkRight" 
-					value="{	path: 'addCIDView>/response/MD115HubWheelShopMarkRight',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-			
-			<Label text="{i18n>label.Hub2MountingDateMonth}"/>
-			<MaskInput	id="idMD115Hu2bMountingDateMonthRight" value="{addCIDView>/response/MD115Hub2MountingDateMonthRight}"
-							mask = "CD" placeholderSymbol = "_">
-				<rules>
-					<MaskInputRule maskFormatSymbol = "C" regex = "[0-1xX]"/>
-					<MaskInputRule maskFormatSymbol = "D" regex = "[0-9xX]"/>
-				</rules>
-			</MaskInput>
-			<Label text="{i18n>label.Hub2MountingDateYear}"/>
-			<MaskInput	id="idMD115Hub2MountingDateYearRight" value="{addCIDView>/response/MD115Hub2MountingDateYearRight}"
-						mask = "DD" placeholderSymbol = "_">
-				<rules>
-					<MaskInputRule maskFormatSymbol = "D" regex = "[0-9xX]"/>
-				</rules>
-			</MaskInput>
-			<Label text="{i18n>label.Hub2StampShopMark}"/>
-			<Input	id="idMD115Hub2WheelShopMarkRight" 
-					value="{	path: 'addCIDView>/response/MD115Hub2WheelShopMarkRight',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-			<Label text="{i18n>label.Hub3MountingDateMonth}"/>
-			<MaskInput	id="idMD115Hub3MountingDateMonthRight" value="{addCIDView>/response/MD115Hub3MountingDateMonthRight}"
-						mask = "CD" placeholderSymbol = "_">
-				<rules>
-					<MaskInputRule maskFormatSymbol = "C" regex = "[0-1xX]"/>
-					<MaskInputRule maskFormatSymbol = "D" regex = "[0-9xX]"/>
-				</rules>
-			</MaskInput>
-			<Label text="{i18n>label.Hub3MountingDateYear}"/>
-			<MaskInput	id="idMD115Hub3MountingDateYearRight" value="{addCIDView>/response/MD115Hub3MountingDateYearRight}"
-						mask = "DD" placeholderSymbol = "_">
-				<rules>
-					<MaskInputRule maskFormatSymbol = "D" regex = "[0-9xX]"/>
-				</rules>
-			</MaskInput>
-			<Label text="{i18n>label.Hub3StampShopMark}"/>
-			<Input	id="idMD115Hub3WheelShopMarkRight" 
-					value="{	path: 'addCIDView>/response/MD115Hub3WheelShopMarkRight',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-			<Label text="{i18n>label.LockingTabMountingShopMark}"/>
-			<Input	id="idMD115LockingTabMountingShopMarkRight" 
-					value="{	path: 'addCIDView>/response/MD115LockingTabMountingShopMarkRight',
-								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-			<Label text="{i18n>label.LockingTabReconditioned}"/>
-			<ComboBox id="idMD11LockingTabReconditionedRight" selectedKey="{addCIDView>/response/MD115LockingTabReconditionedRight}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115LockingTabReconditioned', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<Label text="{i18n>label.FrontDiscoloration}" required="{addCIDView>/md115RequiredRight}"/>
+			<Input id="idMD115FrontDiscolorationRight"
+				value="{ path: 'addCIDView>/md115Right/FrontDiscoloration', type: 'sap.ui.model.type.Integer', constraints : { minimum: '0', maximum: '99' } }"/>
+			<Label text="{i18n>label.BackDiscoloration}" required="{addCIDView>/md115RequiredRight}"/>
+			<Input id="idMD115BackDiscolorationRight"
+				value="{ path: 'addCIDView>/md115Right/BackDiscoloration', type: 'sap.ui.model.type.Integer', constraints : { minimum: '0', maximum: '99' } }"/>
+			<Label text="{i18n>label.DefectiveWheelManufacturer}" required="true"/>
+			<ComboBox id="idMD115DefectiveWheelManufacturerRight" selectedKey="{addCIDView>/md115Right/DefWheelManufacturer}"
+				items="{path: 'RepairsModel>/comboBoxValues/WheelManufacturer', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.LockingTabReconditionedShopMark}"/>
-			<Input	id="idMD115LockingTabShopReconditionedMarkRight" 
-					value="{	path: 'addCIDView>/response/MD115LockingTabReconditionedShopMarkRight',
-								type: 'sap.ui.model.type.String',
-								constraints: { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }" />
-			<Label text="{i18n>label.LockingTabManufacturedMonth}"/>
-			<MaskInput	id="idMD115LockingTabManufacturedMonthRight" value="{addCIDView>/response/MD115Hub3LockingTabManufacturedMonthRight}"
-						mask = "CD" placeholderSymbol = "_">
+			<Label text="{i18n>label.WheelManufactureDateMonth}" required="true"/>
+			<!-- TODO: Right MateManufacMm -->
+			<MaskInput id="idMD115WheelManufactureDateMonthRight" value="{addCIDView>/md115Right/DefManufacMm}" mask="CD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.LockingTabManufacturedYear}"/>
-			<MaskInput	id="idMD115LockingTabManufacturedYearRight" value="{addCIDView>/response/MD115LockingTabManufacturedYearRight}"
-						mask="DD" placeholderSymbol="_">
+			<Label text="{i18n>label.WheelManufactureDateYear}" required="true"/>
+			<!-- TODO: Right MateManufacYy -->
+			<MaskInput id="idMD115HubMountingDateYYRight" value="{addCIDView>/md115Right/DefManufacYy}" mask="DD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.WheelDesignation}"/>
+			<Label text="{i18n>label.HubMountingDateMonth}" required="{addCIDView>/md115RequiredRight}"/>
+			<MaskInput id="idMD115HubMountingDateMonthRight" value="{addCIDView>/md115Right/MountDateMm}" mask="CD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.HubMountingDateYear}" required="{addCIDView>/md115RequiredRight}"/>
+			<MaskInput id="idMD115HubMountingDateYearRight" value="{addCIDView>/md115Right/MountDateYy}" mask="DD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.HubStampShopMark}" required="{addCIDView>/md115RequiredRight}"/>
+			<Input id="idMD115HubWheelShopMarkRight"
+				value="{ path: 'addCIDView>/md115Right/WheelShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.Hub2MountingDateMonth}"/>
+			<MaskInput id="idMD115Hu2bMountingDateMonthRight" value="{addCIDView>/md115Right/DefMountStamp2Mm}" mask="CD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.Hub2MountingDateYear}"/>
+			<MaskInput id="idMD115Hub2MountingDateYearRight" value="{addCIDView>/md115Right/DefMountStamp2Yy}" mask="DD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.Hub2StampShopMark}"/>
+			<Input id="idMD115Hub2WheelShopMarkRight"
+				value="{ path: 'addCIDView>/md115Right/DefWhStamp2ShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.Hub3MountingDateMonth}"/>
+			<MaskInput id="idMD115Hub3MountingDateMonthRight" value="{addCIDView>/md115Right/DefMountStamp3Mm}" mask="CD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.Hub3MountingDateYear}"/>
+			<MaskInput id="idMD115Hub3MountingDateYearRight" value="{addCIDView>/md115Right/DefMountStamp3Yy}" mask="DD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.Hub3StampShopMark}"/>
+			<Input id="idMD115Hub3WheelShopMarkRight"
+				value="{ path: 'addCIDView>/md115Right/DefWhStamp3ShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.LockingTabMountingShopMark}" required="{addCIDView>/md115RequiredRight}"/>
+			<Input id="idMD115LockingTabMountingShopMarkRight"
+				value="{ path: 'addCIDView>/md115Right/LockMountShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.LockingTabReconditioned}" required="{addCIDView>/md115RequiredRight}"/>
+			<ComboBox id="idMD11LockingTabReconditionedRight" selectedKey="{addCIDView>/md115Right/NewReconditioned}"
+				items="{path: 'RepairsModel>/comboBoxValues/MD115LockingTabReconditioned', sorter: { path: 'key' } }" showSecondaryValues="true">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
+			<Label text="{i18n>label.LockingTabReconditionedShopMark}" required="{= ${addCIDView>/md115Right/NewReconditioned} === 'R' }"/>
+			<Input id="idMD115LockingTabShopReconditionedMarkRight"
+				value="{ path: 'addCIDView>/md115Right/RecondShopMark', type: 'sap.ui.model.type.String', constraints: { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Label text="{i18n>label.LockingTabManufacturedMonth}" required="{addCIDView>/md115RequiredRight}"/>
+			<MaskInput id="idMD115LockingTabManufacturedMonthRight" value="{addCIDView>/md115Right/LockManufacMm}" mask="CD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.LockingTabManufacturedYear}" required="{addCIDView>/md115RequiredRight}"/>
+			<MaskInput id="idMD115LockingTabManufacturedYearRight" value="{addCIDView>/md115Right/LockManufacYy}" mask="DD" placeholderSymbol="_">
+				<rules>
+					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
+				</rules>
+			</MaskInput>
+			<Label text="{i18n>label.WheelDesignation}" required="{addCIDView>/md115RequiredRight}"/>
 			<!-- TODO: Make sure wheel designation list filtered by diameter -->
 			<!-- TODO: Editable if mate -->
-			<ComboBox id="idMD115WheelDesignationRight" selectedKey="{addCIDView>/response/MD115WheelDesignationRight}"
+			<ComboBox id="idMD115WheelDesignationRight" selectedKey="{addCIDView>/md115Right/DefWheelDesig}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDesignation', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.SerialNumber}"/>
-			<Input	id="idMD115SerialNumberRight" 
-					value="{	path: 'addCIDView>/response/MD115SerialNumberRight',
-								type: 'sap.ui.model.type.Integer',
-								constraints: { minimum: '0', maximum: '99999999' } }" />
-			<Label text="{i18n>label.BrakeShoeFailedWheel}"/>
-			<ComboBox id="idMD115BrakeShoeFailedWheelRight" selectedKey="{addCIDView>/response/MD115BrakeShoeFailedWheelRight}"
+			<Label text="{i18n>label.SerialNumber}" required="{addCIDView>/md115RequiredRight}"/>
+			<Input id="idMD115SerialNumberRight"
+				value="{ path: 'addCIDView>/md115Right/DefWheelSnNo', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99999999' } }"/>
+			<Label text="{i18n>label.BrakeShoeFailedWheel}" required="{addCIDView>/md115RequiredRight}"/>
+			<ComboBox id="idMD115BrakeShoeFailedWheelRight" selectedKey="{addCIDView>/md115Right/BrakeShoeFailedWheel}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BrakeShoe', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.BrakeRiggingMisalignment}"/>
-			<ComboBox id="idMD115BrakeRiggingMisalignmentRight" selectedKey="{addCIDView>/response/MD115BrakeRiggingMisalignmentRight}"
+			<ComboBox id="idMD115BrakeRiggingMisalignmentRight" selectedKey="{addCIDView>/md115Right/BrakeMisalignment}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115BrakeRiggingMisalignment', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.StuckBrake}"/>
-			<ComboBox id="idMD115StuckBrakeRight" selectedKey="{addCIDView>/response/MD115StuckBrakeRight}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115StuckBrake', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<Label text="{i18n>label.StuckBrakes}"/>
+			<ComboBox id="idMD115StuckBrakesRight" selectedKey="{addCIDView>/md115Right/StuckBrakes}"
+				items="{path: 'RepairsModel>/comboBoxValues/MD115StuckBrakes', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.LocationOfDefect}"/>
-			<ComboBox id="idMD115LocationOfDefectRight" selectedKey="{addCIDView>/response/MD115LocationofDefectRight}"
+			<Label text="{i18n>label.DefectLocation}" required="{addCIDView>/md115RequiredRight}"/>
+			<ComboBox id="idMD115LocationOfDefectRight" selectedKey="{addCIDView>/md115Right/DefectLocation}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115LocationOfDefect', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.NumberOfInchesOfCrack}"/>
-			<Input	id="idMD115InchesOfCrackRight" 
-					value="{	path: 'addCIDView>/response/MD115NumberOfInchesOfCrackRight',
-								type: 'sap.ui.model.type.Integer',
-								constraints: { minimum: '0', maximum: '99' } }" />
+			<Label text="{i18n>label.NumCrackInches}" required="{addCIDView>/md115RequiredRight}"/>
+			<Input id="idMD115NumCrackInchesRight"
+				value="{ path: 'addCIDView>/md115Right/NumCrackInches', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99' } }"/>
 		</forms:SimpleForm>
 	</VBox>
 </mvc:View>

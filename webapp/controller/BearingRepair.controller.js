@@ -21,8 +21,6 @@ sap.ui.define([
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
 			this._loadComboBoxes();
-			this._loadAJCWhyMadeMap();
-			this._loadAJCRulesMap();
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCodeLeft", this._getRemovedJobCodeLeft, this);
 		},
@@ -418,6 +416,7 @@ sap.ui.define([
 			var aComboBoxItems = [];
 			var oComboBoxItem;
 			this.getModel().read("/ZMPM_CDS_CAR_MTHD_DETECT", {
+				filters: [new Filter("md_report", FilterOperator.EQ, "MD-11")],
 				success: function (oData) {
 					for (var i = 0; i < oData.results.length; i++) {
 						oComboBoxItem = {};
@@ -464,46 +463,6 @@ sap.ui.define([
 			var aComboBoxItems = [	{key: "Y", text: "Yes"},
 									{key: "N", text: "No"}];
 			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD11JournalBurntOff", aComboBoxItems);
-		},
-		
-		_loadAJCRulesMap: function () {
-			var mMD11AJCRules = {};
-			var oAJCItem;
-			var sJobCode;
-			this.getModel().read("/ZMPM_CDS_CAR_APPLIEDJOBCODE", {
-				filters: [new sap.ui.model.Filter("RuleNumber", sap.ui.model.FilterOperator.NE, "")],
-				success: function (oData) {
-					for (var i = 0; i < oData.results.length; i++) {
-						oAJCItem = oData.results[i];
-						sJobCode = oAJCItem.JobCode;
-						mMD11AJCRules[sJobCode] = oAJCItem.RuleNumber;
-					}
-					this.getModel("addCIDView").setProperty("/appliedJobCodeRuleMap", mMD11AJCRules);
-				}.bind(this),
-				error: function (sMsg) {
-				}.bind(this)
-			});
-		},
-		
-		_loadAJCWhyMadeMap: function () {
-			var mMD11AJCWhyMade = {};
-			var oMD11Item;
-			this.getModel().read("/ZMPM_CDS_CAR_MD_REPORT", {
-				success: function (oData) {
-					for (var i = 0; i < oData.results.length; i++) {
-						oMD11Item = oData.results[i];
-						if (oMD11Item.md_report === "MD-11") {
-							var sRule = "R" + oMD11Item.rulenumber;
-							var sWhyMade = "W" + oMD11Item.whymade;
-							var sIndex = sRule + sWhyMade;
-							mMD11AJCWhyMade[sIndex] = true;
-						}
-					}
-					this.getModel("addCIDView").setProperty("/MD11AJCWhyMadeMap", mMD11AJCWhyMade);
-				}.bind(this),
-				error: function (sMsg) {
-				}.bind(this)
-			});
 		},
 		
 		/**
@@ -1421,9 +1380,9 @@ sap.ui.define([
 		},
 		
 		/** 
-		 * Determine if AJC and Why Made Code correspond to MD115 report requirement
+		 * Determine if AJC and Why Made Code correspond to MD-11 report requirement
 		 * @private 
-		 * @param {String} sWheelSide - Side of wheelset to check if AJC and Why Made correspond to MD115
+		 * @param {String} sWheelSide - Side of wheelset to check if AJC and Why Made correspond to MD-11
 		 */
 		_setMD11FromAJCAndWhyMade: function (sWheelSide) {
 			var oModel = this.getModel("addCIDView");
@@ -1431,14 +1390,14 @@ sap.ui.define([
 			if (!oModel) {
 				return;
 			}
-			var mMD11AJCWhyMade = oModel.getProperty("/MD11AJCWhyMadeMap");
-			var mAppliedJobCodeRules = oModel.getProperty("/appliedJobCodeRuleMap");
+			var mMD11AJCWhyMade = oModel.getProperty("/AJCRuleWhyMadeMap");
+			var mAppliedJobCodeRules = oModel.getProperty("/AJCRuleMap");
 			var sAppliedJobCode = oModel.getProperty("/response/BrAppliedJobCode" + sWheelSide);
 			var sRule = mAppliedJobCodeRules[sAppliedJobCode];
 			var sWhyMade = oModel.getProperty("/response/BrWhyMadeCode" + sWheelSide);
 			
 			// AJC and WhyMade not null and corresponds to MD11 rule
-			if (sRule && sWhyMade && mMD11AJCWhyMade["R" + sRule + "W" + sWhyMade]) {
+			if (sRule && sWhyMade && (mMD11AJCWhyMade["R" + sRule + "W" + sWhyMade] === "MD-11")) {
 				oModel.setProperty("/md11Required" + sWheelSide, true);
 			} else {
 				oModel.setProperty("/md11Required" + sWheelSide, false);
