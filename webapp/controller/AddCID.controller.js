@@ -1989,6 +1989,7 @@ sap.ui.define([
 			}
 			
 			// TODO: Lookup from RJC/WMC C114
+			// Mate Wheel Design Designation
 			if (!oMD115Other.DefWheelDesig) {
 				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelDesig");
 			}
@@ -2028,7 +2029,7 @@ sap.ui.define([
 				this._submitMD11Report("Right");
 				return;
 			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md11RequiredRight") || oAddCIDViewModel.getProperty("/md11SuccessRight"))) {
-				//this._submitMD115Report("Left");
+				this._submitMD115Report("Left");
 				return;
 			}
 			
@@ -2067,11 +2068,118 @@ sap.ui.define([
 						if (sSide === "Left") {
 							this._submitMD11Report("Right");
 						} else if (sSide === "Right") {
-							// TODO: Submit MD-115 reports (if they exist)
-							// this._submitMD115Report("Left");
+							this._submitMD115Report("Left");
 						}
 						
 						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated");
+
+						//show a message toast if the registration is successful
+						MessageToast.show(sMessage, {
+							duration: 1500,
+							onClose: function () {
+								this.onNavBack();
+							}.bind(this)
+						});
+					} else {
+						//fetch error message and register to message manager
+						for (var i = 0; i < oData.to_Message.results.length; i++) {
+							sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+								message: oData.to_Message.results[i].ResponseMessage,
+								persistent: true,
+								type: sap.ui.core.MessageType.Error
+							}));
+						}
+					}
+				}.bind(this),
+				//fetch error message and register to message manager
+				error: function (oError) {
+					this.getModel("addCIDView").setProperty("/busy", false);
+					var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
+					var sMsg = oMessage && oMessage[1] && oMessage[1].message;
+					MessageBox.error(sMsg);
+				}.bind(this)
+			});
+		},
+		
+		_submitMD115Report: function (sSide) {
+			var oModel = this.getView().getModel();
+			var oAddCIDViewModel = this.getModel("addCIDView");
+			var sOtherSide = (sSide === "Left") ? "Right" : "Left";
+			var oHeader = oAddCIDViewModel.getProperty("/cidHeader");
+			var oRepair = oAddCIDViewModel.getProperty("/response");
+			var oMD115 = oAddCIDViewModel.getProperty("/md115" + sSide);
+			var oMD115Other = oAddCIDViewModel.getProperty("/md115" + sOtherSide);
+			var oMD115Shared = oAddCIDViewModel.getProperty("/md115");
+			
+			// Sequence of MD-11/115 reports: 11L, 11R, 115L, 115R
+			if (sSide === "Left" && (!oAddCIDViewModel.getProperty("/md115RequiredLeft") || oAddCIDViewModel.getProperty("/md115SuccessLeft"))) {
+				this._submitMD115Report("Right");
+				return;
+			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md151RequiredRight") || oAddCIDViewModel.getProperty("/md115SuccessRight"))) {
+				this._registerComponent();
+				return;
+			}
+			
+			oMD115.EquipmentSide = (sSide === "Left") ? "L" : "R";
+			oMD115.AxleLocation = oHeader.location;
+			oMD115.RepairDate = oHeader.repairDate;
+			oMD115.WheelsetCid = oHeader.cid || "";
+		
+			// Add properties from addCIDView>/md11
+			oMD115.FailureDate = oMD115Shared.FailureDate;
+			oMD115.JournalSize = oMD115Shared.JournalSize;
+			oMD115.DetectMethod = oMD115Shared.DetectMethod;
+			oMD115.Comments = oMD115Shared.Comments;
+			oMD115.EquipDerailNo = oMD115Shared.EquipDerailNo || "";
+			
+			// convert Wheel SN to string
+			oMD115.DefWheelSnNo = oMD115.DefWheelSnNo + "";
+			
+			var sCarMark = oHeader.carMark;
+			var aSplitCarMark = sCarMark.match(/^([A-Za-z]+)([0-9]+)$/);
+			oMD115.EquipmentInitial = aSplitCarMark[1];
+			oMD115.EquipmentNumber = aSplitCarMark[2];
+			
+			// Removed wheel data
+			oMD115.DefWheelManufacturer = oRepair["RwMfg" + sSide];
+			oMD115.DefManufacMm = oRepair["RwStampedMonth" + sSide];
+			oMD115.DefManufacYy = oRepair["RwStampedYear" + sSide];
+			oMD115.FlangeFingerReading = oRepair["RwFinger" + sSide];
+			oMD115.RimThickness = oRepair["RwFinger" + sSide];
+			oMD115.ClassHeatTreatment = oRepair["RwClass" + sSide];
+			
+			// Populate mate fields
+			oMD115.MateWheelManufacturer = oRepair["RwMfg" + sOtherSide];
+			oMD115.MateManufacMm = oRepair["RwStampedMonth" + sOtherSide];
+			oMD115.MateManufacYy = oRepair["RwStampedYear" + sOtherSide];
+			oMD115.MateWheelSnNo = oMD115Other.DefWheelSnNo;
+			oMD115.MateWheelDesig = oMD115Other.DefWheelDesig;
+			oMD115.MateMountStamp2Mm = oMD115Other.DefMountStamp2Mm;
+			oMD115.MateMountStamp2Yy = oMD115Other.MateMountStamp2Yy;
+			oMD115.MateWhStamp2ShopMark = oMD115Other.MateWhStamp2ShopMark;
+			oMD115.MateMountStamp3Mm = oMD115Other.MateMountStamp3Mm;
+			oMD115.MateMountStamp3Yy = oMD115Other.MateMountStamp3Yy;
+			oMD115.MateWhStamp3ShopMark = oMD115Other.MateWhStamp3ShopMark;
+			
+			oModel.create("/WheelDefectRptSet", oMD115, {
+				method: "POST",
+				success: function (oData, resp) {
+					this.getModel("addCIDView").setProperty("/busy", false);
+					
+					var sMessage;
+					var sMessageLength = oData.to_Message.results.length;
+				
+					// fetch report result
+					if (sMessageLength === 0 || oData.to_Message.results[0].ResponseType === "S") {
+						oAddCIDViewModel.setProperty("/md115Success" + sSide, true);
+						
+						if (sSide === "Left") {
+							this._submitMD115Report("Right");
+						} else {
+							this._registerComponent();
+						}
+						
+						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportCreated");
 
 						//show a message toast if the registration is successful
 						MessageToast.show(sMessage, {
