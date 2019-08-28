@@ -312,9 +312,9 @@ sap.ui.define([
 		onChangeWheelDiameter: function (oEvent) {
 			var sDiameter = this.getModel("addCIDView").getProperty("/md115/WheelDiameter");
 			
-			this.getView().byId("idWheelDesignationLeft").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
+			this.getView().byId("idMD115WheelDesignationLeft").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
 																						new Filter("valid", FilterOperator.EQ, "X")				]);
-			this.getView().byId("idWheelDesignationRight").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
+			this.getView().byId("idMD115WheelDesignationRight").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
 																						new Filter("valid", FilterOperator.EQ, "X")				]);
 		},
 
