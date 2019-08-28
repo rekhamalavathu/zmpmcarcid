@@ -369,12 +369,21 @@ sap.ui.define([
 					MD115WheelDesignation: [],
 					MD115WheelDiameter: [],
 					MD115BodyMountedBrakes: [],
-					MD115BrakeMisalignment: []
+					MD115BrakeMisalignment: [],
+					MD115StuckBrakes: [],
+					MD115PlateType: [],
+					MD115WheelType: [],
+					MD115DefectLocation: [],
+					MD115NewReconditioned: [],
 				},
 				MD115DetectMethodBusy: true,
 				MD115JournalBearingSizeBusy: true,
 				MD115WheelDesignationBusy: true,
-				MD115BrakeShoeBusy: true
+				MD115BrakeShoeBusy: true,
+				MD115PlateTypeBusy: true,
+				MD115WheelTypeBusy: true,
+				MD115DefectLocationBusy: true,
+				MD115NewReconditioned: true
 			});
 		},
 
@@ -394,6 +403,11 @@ sap.ui.define([
 			this._loadBrakeShoe();
 			this._loadBodyMountedBrakes();
 			this._loadBrakeMisalignment();
+			this._loadStuckBrakes();
+			this._loadPlateTypes();
+			this._loadWheelTypes();
+			this._loadDefectLocation();
+			this._loadNewReconditioned();
 		},
 		
 		_loadMethodOfDetection: function () {
@@ -505,6 +519,87 @@ sap.ui.define([
 									{key: "N", text: "No"}	];
 									
 			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115StuckBrakes", aComboBoxItems);
+		},
+		
+		_loadPlateTypes: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_WHEEL_PLATE_TYPE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].plate_type;
+						oComboBoxItem.text = oData.results[i].plate_type_desc;
+						oComboBoxItem.railinc_plate_type = oData.results[i].railinc_plate_type;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115PlateType", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115PlateTypeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115PlateTypeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadWheelTypes: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_WHEEL_TYPE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].wheel_type;
+						oComboBoxItem.text = oData.results[i].wheel_type_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelType", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115WheelTypeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115WheelTypeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadDefectLocation: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_DEFECT_LOC", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].defect_loc;
+						oComboBoxItem.text = oData.results[i].defect_loc_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115DefectLocation", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115DefectLocationBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115DefectLocationBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadNewReconditioned: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_NEW_RECOND", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].new_recond;
+						oComboBoxItem.text = oData.results[i].new_recond_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115NewReconditioned", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115NewReconditionedBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115NewReconditionedBusy", false);
+				}.bind(this)
+			});
 		},
 
 		/** 

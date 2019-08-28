@@ -162,7 +162,7 @@
 			<Label text="{i18n>label.PlateType}" required="true"/>
 			<!-- TODO: Populate plate type from JC/WMC and/or mate? -->
 			<!-- TODO: Shaw Yun to implement Z-table/EntitySet -->
-			<ComboBox id="idMD115PlateType" selectedKey="{addCIDView>/md115/PlateType}"
+			<ComboBox id="idMD115PlateType" selectedKey="{addCIDView>/md115/PlateType}" busy="{RepairsModel>/MD115PlateTypeBusy}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115PlateType', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
@@ -171,7 +171,7 @@
 			<Label text="{i18n>label.WheelType}" required="true"/>
 			<!-- TODO: Robin: How to look up Wheel Type from CID JC/WMC -->
 			<!-- TODO: Shaw Yun: Table and Odata for ZMPM_WHEEL_TYPE -->
-			<ComboBox	id="idMD115WheelType" selectedKey="{addCIDView>/md115/WheelType}"
+			<ComboBox	id="idMD115WheelType" selectedKey="{addCIDView>/md115/WheelType}" busy="{RepairsModel>/MD115WheelTypeBusy}"
 						items="{RepairsModel>/comboBoxValues/MD115WheelType}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
@@ -239,21 +239,28 @@
 				</rules>
 			</MaskInput>
 			<Label text="{i18n>label.Hub3StampShopMark}"/>
-			<Input id="idMD115Hub3WheelShopMarkLeft"
-				value="{ path: 'addCIDView>/md115Left/DefWhStamp3ShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Input	id="idMD115Hub3WheelShopMarkLeft"
+					value="{	path: 'addCIDView>/md115Left/DefWhStamp3ShopMark', 
+								type: 'sap.ui.model.type.String', 
+								constraints: { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
 			<Label text="{i18n>label.LockingTabMountingShopMark}" required="{addCIDView>/md115RequiredLeft}"/>
 			<Input id="idMD115LockingTabMountingShopMarkLeft"
-				value="{ path: 'addCIDView>/md115Left/LockMountShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+					value="{	path: 'addCIDView>/md115Left/LockMountShopMark',
+								type: 'sap.ui.model.type.String',
+								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
 			<Label text="{i18n>label.LockingTabReconditioned}" required="{addCIDView>/md115RequiredLeft}"/>
-			<ComboBox id="idMD11LockingTabReconditionedLeft" selectedKey="{addCIDView>/md115Left/NewReconditioned}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115LockingTabReconditioned', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<ComboBox	id="idMD11LockingTabReconditionedLeft" selectedKey="{addCIDView>/md115Left/NewReconditioned}"
+						items="{RepairsModel>/comboBoxValues/MD115NewReconditioned}" showSecondaryValues="true"
+						busy="{RepairsModel>/MD115NewReconditionedBusy}">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.LockingTabReconditionedShopMark}" required="={ ${addCIDView>/md115Left/NewReconditioned} === 'R' }"/>
-			<Input id="idMD115LockingTabShopReconditionedMarkLeft"
-				value="{ path: 'addCIDView>/md115Left/RecondShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Input	id="idMD115LockingTabShopReconditionedMarkLeft"
+					value="{	path: 'addCIDView>/md115Left/RecondShopMark', 
+								type: 'sap.ui.model.type.String',
+								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
 			<Label text="{i18n>label.LockingTabManufacturedMonth}" required="{addCIDView>/md115RequiredLeft}"/>
 			<MaskInput id="idMD115LockingTabManufacturedMonthLeft" value="{addCIDView>/md115Left/LockManufacMm}" mask="CD" placeholderSymbol="_">
 				<rules>
@@ -278,11 +285,13 @@
 			</ComboBox>
 			<Label text="{i18n>label.SerialNumber}" required="{addCIDView>/md115RequiredLeft}"/>
 			<!-- TODO: Right MateWheelSnNo -->
-			<Input id="idMD115SerialNumberLeft"
-				value="{ path: 'addCIDView>/md115Left/DefWheelSnNo', type: 'sap.ui.model.type.Integer', constraints : { minimum: '0', maximum: '99999999' } }"/>
+			<Input	id="idMD115SerialNumberLeft"
+					value="{ path: 'addCIDView>/md115Left/DefWheelSnNo',
+					type: 'sap.ui.model.type.Integer',
+					constraints : { minimum: '0', maximum: '99999999' } }"/>
 			<Label text="{i18n>label.BrakeShoeFailedWheel}" required="{addCIDView>/md115RequiredLeft}"/>
-			<ComboBox	id="idMD115BrakeShoeFailedWheelLeft" selectedKey="{addCIDView>/md115Left/BrakeShoeFailedWheel}" busy="{RepairsModel>/MD115BrakeShoeBusy}"
-						items="{RepairsModel>/comboBoxValues/MD115BrakeShoe}" showSecondaryValues="true">
+			<ComboBox	id="idMD115BrakeShoeFailedWheelLeft" selectedKey="{addCIDView>/md115Left/BrakeShoeFailedWheel}"
+						items="{RepairsModel>/comboBoxValues/MD115BrakeShoe}" showSecondaryValues="true" busy="{RepairsModel>/MD115BrakeShoeBusy}">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -302,9 +311,8 @@
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.LocationOfDefect}" required="{addCIDView>/md115RequiredLeft}"/>
-			<!-- TODO: Shaw Yun: ZMPM_DEFECT_LOCATION table/cds/OData-->
-			<ComboBox id="idMD115LocationOfDefectLeft" selectedKey="{addCIDView>/md115Left/DefectLocation}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115LocationOfDefect', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<ComboBox id="idMD115LocationOfDefectLeft" selectedKey="{addCIDView>/md115Left/DefectLocation}" busy="{RepairsModel>/MD115DefectLocationBusy}"
+				items="{RepairsModel>/comboBoxValues/MD115LocationOfDefect}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -318,8 +326,10 @@
 			<Input id="idMD115FrontDiscolorationRight"
 				value="{ path: 'addCIDView>/md115Right/FrontDiscoloration', type: 'sap.ui.model.type.Integer', constraints : { minimum: '0', maximum: '99' } }"/>
 			<Label text="{i18n>label.BackDiscoloration}" required="{addCIDView>/md115RequiredRight}"/>
-			<Input id="idMD115BackDiscolorationRight"
-				value="{ path: 'addCIDView>/md115Right/BackDiscoloration', type: 'sap.ui.model.type.Integer', constraints : { minimum: '0', maximum: '99' } }"/>
+			<Input	id="idMD115BackDiscolorationRight"
+					value="{	path: 'addCIDView>/md115Right/BackDiscoloration', 
+								type: 'sap.ui.model.type.Integer',
+								constraints : { minimum: '0', maximum: '99' }	}"/>
 			<Label text="{i18n>label.HubMountingDateMonth}" required="{addCIDView>/md115RequiredRight}"/>
 			<MaskInput id="idMD115HubMountingDateMonthRight" value="{addCIDView>/md115Right/MountDateMm}" mask="CD" placeholderSymbol="_">
 				<rules>
@@ -437,8 +447,8 @@
 			</ComboBox>
 			<Label text="{i18n>label.LocationOfDefect}" required="{addCIDView>/md115RequiredRight}"/>
 			<!-- TODO: Shaw Yun: ZMPM_DEFECT_LOCATION table/cds/OData-->
-			<ComboBox id="idMD115LocationOfDefectRight" selectedKey="{addCIDView>/md115Right/DefectLocation}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115LocationOfDefect', sorter: { path: 'key' } }" showSecondaryValues="true">
+			<ComboBox id="idMD115LocationOfDefectRight" selectedKey="{addCIDView>/md115Right/DefectLocation}"  busy="{RepairsModel>/MD115DefectLocationBusy}"
+				items="{RepairsModel>/comboBoxValues/MD115LocationOfDefect}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
