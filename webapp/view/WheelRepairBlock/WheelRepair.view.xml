@@ -139,8 +139,8 @@
 			<Label text="{i18n>label.WheelDiameter}" required="true"/>
 			<!-- TODO: Load Diameter from Wheel RJC and WMC -->
 			<!-- TODO: On change event, filter Wheel Designation combobox -->
-			<ComboBox id="idMD115WheelDiameter" selectedKey="{addCIDView>/md115/WheelDiameter}" busy="{RepairsModel>/MD115WheelDesignationBusy}"
-				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDiameter', sorter: { path: 'diameter' } }" showSecondaryValues="true">
+			<ComboBox	id="idMD115WheelDiameter" selectedKey="{addCIDView>/md115/WheelDiameter}" busy="{RepairsModel>/MD115WheelDesignationBusy}"
+						items="{RepairsModel>/comboBoxValues/MD115WheelDiameter}" showSecondaryValues="true" change="onChangeWheelDiameter">
 				<items>
 					<core:ListItem key="{RepairsModel>diameter}" text="{RepairsModel>diameter}"/>
 				</items>
@@ -312,7 +312,7 @@
 			</ComboBox>
 			<Label text="{i18n>label.LocationOfDefect}" required="{addCIDView>/md115RequiredLeft}"/>
 			<ComboBox id="idMD115LocationOfDefectLeft" selectedKey="{addCIDView>/md115Left/DefectLocation}" busy="{RepairsModel>/MD115DefectLocationBusy}"
-				items="{RepairsModel>/comboBoxValues/MD115LocationOfDefect}" showSecondaryValues="true">
+				items="{RepairsModel>/comboBoxValues/MD115DefectLocation}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -395,7 +395,7 @@
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.LockingTabReconditionedShopMark}" required="{= ${addCIDView>/md115Right/NewReconditioned} === 'R' }"/>
-			<Input	id="idMD115LockingTabShopReconditionedMarkRight"
+			<Input	id="idMD115LockingTabShopReconditionedMarkRight" visible="{= ${addCIDView>/md115Right/NewReconditioned} === 'R' }"
 					value="{	path: 'addCIDView>/md115Right/RecondShopMark', 
 								type: 'sap.ui.model.type.String', 
 								constraints: { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
@@ -448,7 +448,7 @@
 			<Label text="{i18n>label.LocationOfDefect}" required="{addCIDView>/md115RequiredRight}"/>
 			<!-- TODO: Shaw Yun: ZMPM_DEFECT_LOCATION table/cds/OData-->
 			<ComboBox id="idMD115LocationOfDefectRight" selectedKey="{addCIDView>/md115Right/DefectLocation}"  busy="{RepairsModel>/MD115DefectLocationBusy}"
-				items="{RepairsModel>/comboBoxValues/MD115LocationOfDefect}" showSecondaryValues="true">
+				items="{RepairsModel>/comboBoxValues/MD115DefectLocation}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>

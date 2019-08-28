@@ -307,6 +307,15 @@ sap.ui.define([
 				this._setMD115FromRJCAndWhyMade("Right");
 			}
 		},
+		
+		// Update filter to wheel designation
+		onChangeWheelDiameter: function (oEvent) {
+			var oChangeWheelDiameterComboBox = oEvent.getSource();
+			var sDiameter = this.getModel("addCIDView").getProperty("/md115/WheelDiameter");
+			
+			oChangeWheelDiameterComboBox.getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
+																		new Filter("valid", FilterOperator.EQ, "X")				]);
+		},
 
 		/**
 		 * to handle change of Removed Job Code event
@@ -374,7 +383,7 @@ sap.ui.define([
 					MD115PlateType: [],
 					MD115WheelType: [],
 					MD115DefectLocation: [],
-					MD115NewReconditioned: [],
+					MD115NewReconditioned: []
 				},
 				MD115DetectMethodBusy: true,
 				MD115JournalBearingSizeBusy: true,
@@ -394,6 +403,15 @@ sap.ui.define([
 		_initScreenValues: function () {
 			this._getAppliedJobCode();
 			this._getAppliedJobCodeLeft();
+			//this._loadInitialMD115Values();
+		},
+		
+		// TODO: Shaw Yun to get removed wheel serial numbers for MD-115
+		_loadInitialMD115Values: function () {
+			var oViewModel = this.getModel("addCIDView");
+			var oCloneData = oViewModel.getProperty("/oCloneData");
+			oViewModel.setProperty("/md115Left/DefWheelSnNo", oCloneData.AwSerialNoLeft || "");
+			oViewModel.setProperty("/md115Right/DefWheelSnNo", oCloneData.AwSerialNoRight || "");
 		},
 		
 		_loadComboBoxValues: function () {
@@ -465,7 +483,7 @@ sap.ui.define([
 						}
 
 						oComboBoxItem = {};
-						oComboBoxItem.design = oData.results[i].wheel_desig;
+						oComboBoxItem.designation = oData.results[i].wheel_desig;
 						oComboBoxItem.diameter = sWheelDiameter;
 						oComboBoxItem.valid = oData.results[i].valid;
 						aComboBoxItems.push(oComboBoxItem);
