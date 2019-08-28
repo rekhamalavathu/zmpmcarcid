@@ -310,11 +310,12 @@ sap.ui.define([
 		
 		// Update filter to wheel designation
 		onChangeWheelDiameter: function (oEvent) {
-			var oChangeWheelDiameterComboBox = oEvent.getSource();
 			var sDiameter = this.getModel("addCIDView").getProperty("/md115/WheelDiameter");
 			
-			oChangeWheelDiameterComboBox.getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
-																		new Filter("valid", FilterOperator.EQ, "X")				]);
+			this.getView().byId("idWheelDesignationLeft").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
+																						new Filter("valid", FilterOperator.EQ, "X")				]);
+			this.getView().byId("idWheelDesignationRight").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
+																						new Filter("valid", FilterOperator.EQ, "X")				]);
 		},
 
 		/**

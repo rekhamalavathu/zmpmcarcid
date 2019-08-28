@@ -257,7 +257,7 @@
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.LockingTabReconditionedShopMark}" required="={ ${addCIDView>/md115Left/NewReconditioned} === 'R' }"/>
-			<Input	id="idMD115LockingTabShopReconditionedMarkLeft"
+			<Input	id="idMD115LockingTabShopReconditionedMarkLeft"  visible="{= ${addCIDView>/md115Right/NewReconditioned} === 'R' }"
 					value="{	path: 'addCIDView>/md115Left/RecondShopMark', 
 								type: 'sap.ui.model.type.String',
 								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
