@@ -2012,7 +2012,7 @@ sap.ui.define([
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefectLocation");
 			}
 			
-			if (!oMD115.NumCrackInches) {
+			if (isNaN(parseInt(oMD115.NumCrackInches, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/NumCrackInches");
 			}
 		},
