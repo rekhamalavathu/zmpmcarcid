@@ -135,7 +135,7 @@
 								constraints: { minimum: '0', maximum: '99' } }"/>
 			<Label text="{i18n>label.JournalSize}" required="true"/>
 			<ComboBox id="idMD115JournalSize" selectedKey="{addCIDView>/md115/JournalSize}" busy="{RepairsModel>/MD115JournalBearingSizeBusy}"
-				items="{RepairsModel>/comboBoxValues/MD115JournalBearingSize}" showSecondaryValues="true">
+				items="{ path: 'RepairsModel>/comboBoxValues/MD115JournalBearingSize', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
 				</items>
@@ -277,7 +277,7 @@
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.WheelDesignation}" required="{addCIDView>/md115RequiredLeft}"/>
+			<Label text="{i18n>label.WheelDesignation}" required="true"/>
 			<!-- TODO: Make sure wheel designation list filtered by diameter -->
 			<!-- TODO: Right MateWheelDesig -->
 			<ComboBox id="idMD115WheelDesignationLeft" selectedKey="{addCIDView>/md115Left/DefWheelDesig}"
@@ -286,7 +286,7 @@
 					<core:ListItem key="{RepairsModel>designation}" text="{RepairsModel>designation}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.SerialNumber}" required="{addCIDView>/md115RequiredLeft}"/>
+			<Label text="{i18n>label.SerialNumber}" required="true"/>
 			<!-- TODO: Right MateWheelSnNo -->
 			<Input	id="idMD115SerialNumberLeft"
 					value="{ path: 'addCIDView>/md115Left/DefWheelSnNo',
@@ -415,17 +415,19 @@
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
 				</rules>
 			</MaskInput>
-			<Label text="{i18n>label.WheelDesignation}" required="{addCIDView>/md115RequiredRight}"/>
+			<Label text="{i18n>label.WheelDesignation}" required="true"/>
 			<ComboBox id="idMD115WheelDesignationRight" selectedKey="{addCIDView>/md115Right/DefWheelDesig}"
 				items="{RepairsModel>/comboBoxValues/MD115WheelDesignation}" showSecondaryValues="true">
 				<items>
 					<core:ListItem key="{RepairsModel>designation}" text="{RepairsModel>designation}"/>
 				</items>
 			</ComboBox>
-			<Label text="{i18n>label.SerialNumber}" required="{addCIDView>/md115RequiredRight}"/>
+			<Label text="{i18n>label.SerialNumber}" required="true"/>
 			<!-- TODO: Load from Removed Wheel -->
-			<Input id="idMD115SerialNumberRight"
-				value="{ path: 'addCIDView>/md115Right/DefWheelSnNo', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99999999' } }"/>
+			<Input	id="idMD115SerialNumberRight"
+					value="{	path: 'addCIDView>/md115Right/DefWheelSnNo',
+								type: 'sap.ui.model.type.Integer',
+								constraints: { minimum: '0', maximum: '99999999' } }"/>
 			<Label text="{i18n>label.BrakeShoeFailedWheel}" required="{addCIDView>/md115RequiredRight}"/>
 			<ComboBox	id="idMD115BrakeShoeFailedWheelRight" selectedKey="{addCIDView>/md115Right/BrakeShoeFailedWheel}" busy="{RepairsModel>/MD115BrakeShoeBusy}"
 						items="{RepairsModel>/comboBoxValues/MD115BrakeShoe}" showSecondaryValues="true">

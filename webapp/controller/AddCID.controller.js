@@ -357,7 +357,6 @@ sap.ui.define([
 				FlangeFingerReading: "",
 				RimThickness: "",
 				JournalSize: "",
-				WhyMadeCode: "",
 				DefectType: "",
 				FrontDiscoloration: "",
 				BackDiscoloration: "",
@@ -2124,6 +2123,10 @@ sap.ui.define([
 			oMD115.AxleLocation = oHeader.location;
 			oMD115.RepairDate = oHeader.repairDate;
 			oMD115.WheelsetCid = oHeader.cid || "";
+			
+			oMD115.FrontDiscoloration = oMD115.FrontDiscoloration + "";
+			oMD115.BackDiscoloration = oMD115.BackDiscoloration + "";
+			oMD115.NumCrackInches = oMD115.NumCrackInches + "";
 		
 			// Add properties from addCIDView>/md11
 			oMD115.FailureDate = oMD115Shared.FailureDate;
@@ -2147,19 +2150,20 @@ sap.ui.define([
 			oMD115.FlangeFingerReading = oRepair["RwFinger" + sSide];
 			oMD115.RimThickness = oRepair["RwFinger" + sSide];
 			oMD115.ClassHeatTreatment = oRepair["RwClass" + sSide];
+			oMD115.DefectType = oRepair["WrRemovedJobCode" + sSide]                 
 			
 			// Populate mate fields
 			oMD115.MateWheelManufacturer = oRepair["RwMfg" + sOtherSide];
 			oMD115.MateManufacMm = oRepair["RwStampedMonth" + sOtherSide];
 			oMD115.MateManufacYy = oRepair["RwStampedYear" + sOtherSide];
-			oMD115.MateWheelSnNo = oMD115Other.DefWheelSnNo;
-			oMD115.MateWheelDesig = oMD115Other.DefWheelDesig;
-			oMD115.MateMountStamp2Mm = oMD115Other.DefMountStamp2Mm;
-			oMD115.MateMountStamp2Yy = oMD115Other.MateMountStamp2Yy;
-			oMD115.MateWhStamp2ShopMark = oMD115Other.MateWhStamp2ShopMark;
-			oMD115.MateMountStamp3Mm = oMD115Other.MateMountStamp3Mm;
-			oMD115.MateMountStamp3Yy = oMD115Other.MateMountStamp3Yy;
-			oMD115.MateWhStamp3ShopMark = oMD115Other.MateWhStamp3ShopMark;
+			oMD115.MateWheelSnNo = (oMD115Other.DefWheelSnNo  + "") || "";
+			oMD115.MateWheelDesig = (oMD115Other.DefWheelDesig + "") || "";
+			oMD115.MateMountStamp2Mm = oMD115Other.DefMountStamp2Mm || "";
+			oMD115.MateMountStamp2Yy = oMD115Other.MateMountStamp2Yy || "";
+			oMD115.MateWhStamp2ShopMark = oMD115Other.MateWhStamp2ShopMark || "";
+			oMD115.MateMountStamp3Mm = oMD115Other.MateMountStamp3Mm || "";
+			oMD115.MateMountStamp3Yy = oMD115Other.MateMountStamp3Yy || "";
+			oMD115.MateWhStamp3ShopMark = oMD115Other.MateWhStamp3ShopMark || "";
 			
 			oModel.create("/WheelDefectRptSet", oMD115, {
 				method: "POST",
