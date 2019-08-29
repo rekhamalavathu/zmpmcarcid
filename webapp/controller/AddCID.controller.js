@@ -451,6 +451,7 @@ sap.ui.define([
 					WheelDiameter: "",
 					PlateType: "",
 					BodyMountedBrakes: "",
+					BrakeShoeStd: "",
 					Comments: ""
 				},
 				
@@ -2128,12 +2129,15 @@ sap.ui.define([
 			oMD115.BackDiscoloration = oMD115.BackDiscoloration + "";
 			oMD115.NumCrackInches = oMD115.NumCrackInches + "";
 		
-			// Add properties from addCIDView>/md11
+			// Add properties from addCIDView>/md115
 			oMD115.FailureDate = oMD115Shared.FailureDate;
 			oMD115.JournalSize = oMD115Shared.JournalSize;
 			oMD115.DetectMethod = oMD115Shared.DetectMethod;
 			oMD115.Comments = oMD115Shared.Comments;
 			oMD115.EquipDerailNo = oMD115Shared.EquipDerailNo || "";
+			oMD115.BrakeShoeStd = oMD115Shared.BrakeShoeStd;
+			oMD115.PlateType = oMD115Shared.PlateType;
+			oMD115.WheelType = oMD115Shared.WheelType;
 			
 			// convert Wheel SN to string
 			oMD115.DefWheelSnNo = oMD115.DefWheelSnNo + "";
@@ -2150,7 +2154,7 @@ sap.ui.define([
 			oMD115.FlangeFingerReading = oRepair["RwFinger" + sSide];
 			oMD115.RimThickness = oRepair["RwFinger" + sSide];
 			oMD115.ClassHeatTreatment = oRepair["RwClass" + sSide];
-			oMD115.DefectType = oRepair["WrRemovedJobCode" + sSide]                 
+			oMD115.DefectType = oRepair["WrWhyMadeCode" + sSide];                 
 			
 			// Populate mate fields
 			oMD115.MateWheelManufacturer = oRepair["RwMfg" + sOtherSide];
