@@ -404,15 +404,19 @@ sap.ui.define([
 		_initScreenValues: function () {
 			this._getAppliedJobCode();
 			this._getAppliedJobCodeLeft();
-			//this._loadInitialMD115Values();
 		},
 		
-		// TODO: Shaw Yun to get removed wheel serial numbers for MD-115
 		_loadInitialMD115Values: function () {
 			var oViewModel = this.getModel("addCIDView");
-			var oCloneData = oViewModel.getProperty("/oCloneData");
-			oViewModel.setProperty("/md115Left/DefWheelSnNo", oCloneData.AwSerialNoLeft || "");
-			oViewModel.setProperty("/md115Right/DefWheelSnNo", oCloneData.AwSerialNoRight || "");
+			var oComponentData = oViewModel.getProperty("/response");
+			oViewModel.setProperty("/md115Left/DefWheelSnNo", oComponentData.RemovedWhSerialL || "");
+			oViewModel.setProperty("/md115Right/DefWheelSnNo", oComponentData.RemovedWhSerialR || "");
+			oViewModel.setProperty("/md115Left/DefWheelDesig", oComponentData.RemovedWhDesignL || "");
+			oViewModel.setProperty("/md115Right/DefWheelDesig", oComponentData.RemovedWhDesignR || "");
+			oViewModel.setProperty("/md115/PlateType", oComponentData.RemovedPlateTypeL || oComponentData.RemovedPlateTypeR || "");
+			oViewModel.setProperty("/md115/WheelType", oComponentData.RemovedWhTypeL || oComponentData.RemovedWhTypeR || "");
+			oViewModel.setProperty("/md115/JournalSize", oComponentData.RemovedJournalSizeL || oComponentData.RemovedJournalSizeR || "");
+			oViewModel.setProperty("/md115/WheelDiameter", oComponentData.RemovedWhDiaL || oComponentData.RemovedWhDiaR || "");
 		},
 		
 		_loadComboBoxValues: function () {
@@ -1536,6 +1540,7 @@ sap.ui.define([
 			// RJC and WhyMade not null and corresponds to MD-115 rule
 			if (sRule && sWhyMade && (mRJCWhyMade["R" + sRule + "W" + sWhyMade] === "MD-115")) {
 				oModel.setProperty("/md115Required" + sWheelSide, true);
+				this._loadInitialMD115Values();
 			} else {
 				oModel.setProperty("/md115Required" + sWheelSide, false);
 			}

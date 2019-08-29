@@ -2094,9 +2094,9 @@ sap.ui.define([
 				//fetch error message and register to message manager
 				error: function (oError) {
 					this.getModel("addCIDView").setProperty("/busy", false);
-					var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
-					var sMsg = oMessage && oMessage[1] && oMessage[1].message;
-					MessageBox.error(sMsg);
+					//var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
+					//var sMsg = oMessage && oMessage[1] && oMessage[1].message;
+					//MessageBox.error(sMsg);
 				}.bind(this)
 			});
 		},
@@ -2134,7 +2134,7 @@ sap.ui.define([
 			oMD115.JournalSize = oMD115Shared.JournalSize;
 			oMD115.DetectMethod = oMD115Shared.DetectMethod;
 			oMD115.Comments = oMD115Shared.Comments;
-			oMD115.EquipDerailNo = oMD115Shared.EquipDerailNo || "";
+			oMD115.EquipDerailNo = (oMD115Shared.EquipDerailNo + "") || "";
 			oMD115.BrakeShoeStd = oMD115Shared.BrakeShoeStd;
 			oMD115.PlateType = oMD115Shared.PlateType;
 			oMD115.WheelType = oMD115Shared.WheelType;
@@ -2210,9 +2210,9 @@ sap.ui.define([
 				//fetch error message and register to message manager
 				error: function (oError) {
 					this.getModel("addCIDView").setProperty("/busy", false);
-					var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
-					var sMsg = oMessage && oMessage[1] && oMessage[1].message;
-					MessageBox.error(sMsg);
+					//var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
+					//var sMsg = oMessage && oMessage[1] && oMessage[1].message;
+					//MessageBox.error(sMsg);
 				}.bind(this)
 			});
 		},
