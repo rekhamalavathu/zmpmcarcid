@@ -406,6 +406,10 @@ sap.ui.define([
 			this._getAppliedJobCodeLeft();
 		},
 		
+		/**
+		 * Set as many MD-115 fields from removed wheelset component
+		 * @private
+		 **/ 
 		_loadInitialMD115Values: function () {
 			var oViewModel = this.getModel("addCIDView");
 			var oComponentData = oViewModel.getProperty("/response");
@@ -413,12 +417,18 @@ sap.ui.define([
 			oViewModel.setProperty("/md115Right/DefWheelSnNo", oComponentData.RemovedWhSerialR || "");
 			oViewModel.setProperty("/md115Left/DefWheelDesig", oComponentData.RemovedWhDesignL || "");
 			oViewModel.setProperty("/md115Right/DefWheelDesig", oComponentData.RemovedWhDesignR || "");
-			oViewModel.setProperty("/md115/PlateType", oComponentData.RemovedPlateTypeL || oComponentData.RemovedPlateTypeR || "");
+			var sRemovedPlate =  oComponentData.RemovedPlateTypeL || oComponentData.RemovedPlateTypeR || "";
+			// If it exists, set plate type to first character of retrieved plate type value
+			oViewModel.setProperty("/md115/PlateType", sRemovedPlate ? sRemovedPlate.charAt(0) : "");
 			oViewModel.setProperty("/md115/WheelType", oComponentData.RemovedWhTypeL || oComponentData.RemovedWhTypeR || "");
 			oViewModel.setProperty("/md115/JournalSize", oComponentData.RemovedJournalSizeL || oComponentData.RemovedJournalSizeR || "");
 			oViewModel.setProperty("/md115/WheelDiameter", oComponentData.RemovedWhDiaL || oComponentData.RemovedWhDiaR || "");
 		},
 		
+		/**
+		 * Load values for ComboBox controls (MD-115)
+		 * @private
+		 **/
 		_loadComboBoxValues: function () {
 			this._loadMethodOfDetection();
 			this._loadJournalBearingSize();

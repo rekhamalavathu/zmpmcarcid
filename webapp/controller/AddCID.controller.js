@@ -2151,8 +2151,8 @@ sap.ui.define([
 			oMD115.DefWheelManufacturer = oRepair["RwMfg" + sSide];
 			oMD115.DefManufacMm = oRepair["RwStampedMonth" + sSide];
 			oMD115.DefManufacYy = oRepair["RwStampedYear" + sSide];
-			oMD115.FlangeFingerReading = oRepair["RwFinger" + sSide];
-			oMD115.RimThickness = oRepair["RwFinger" + sSide];
+			oMD115.FlangeFingerReading = parseInt(oRepair["RwFinger" + sSide], 10) + "";
+			oMD115.RimThickness = oRepair["RwScale" + sSide];
 			oMD115.ClassHeatTreatment = oRepair["RwClass" + sSide];
 			oMD115.DefectType = oRepair["WrWhyMadeCode" + sSide];                 
 			
