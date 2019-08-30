@@ -141,7 +141,6 @@
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.WheelDiameter}" required="true"/>
-			<!-- TODO: Load Diameter from Wheel RJC and WMC -->
 			<ComboBox	id="idMD115WheelDiameter" selectedKey="{addCIDView>/md115/WheelDiameter}" busy="{RepairsModel>/MD115WheelDesignationBusy}"
 						items="{RepairsModel>/comboBoxValues/MD115WheelDiameter}" showSecondaryValues="true" change="onChangeWheelDiameter">
 				<items>
@@ -278,8 +277,6 @@
 				</rules>
 			</MaskInput>
 			<Label text="{i18n>label.WheelDesignation}" required="true"/>
-			<!-- TODO: Make sure wheel designation list filtered by diameter -->
-			<!-- TODO: Right MateWheelDesig -->
 			<ComboBox id="idMD115WheelDesignationLeft" selectedKey="{addCIDView>/md115Left/DefWheelDesig}"
 				items="{path: 'RepairsModel>/comboBoxValues/MD115WheelDesignation', sorter: { path: 'key' } }" showSecondaryValues="true">
 				<items>
@@ -287,7 +284,6 @@
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.SerialNumber}" required="true"/>
-			<!-- TODO: Right MateWheelSnNo -->
 			<Input	id="idMD115SerialNumberLeft"
 					value="{ path: 'addCIDView>/md115Left/DefWheelSnNo',
 					type: 'sap.ui.model.type.Integer',

@@ -2138,6 +2138,7 @@ sap.ui.define([
 			oMD115.BrakeShoeStd = oMD115Shared.BrakeShoeStd;
 			oMD115.PlateType = oMD115Shared.PlateType;
 			oMD115.WheelType = oMD115Shared.WheelType;
+			oMD115.WheelDiameter = oMD115Shared.WheelDiameter;
 			
 			// convert Wheel SN to string
 			oMD115.DefWheelSnNo = oMD115.DefWheelSnNo + "";
