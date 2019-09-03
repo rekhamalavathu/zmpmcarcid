@@ -192,7 +192,7 @@
 			<Input id="idMD115BackDiscolorationLeft"
 				value="{ path: 'addCIDView>/md115Left/BackDiscoloration', type: 'sap.ui.model.type.Integer', constraints: { minimum: '0', maximum: '99' } }"/>
 			<Label text="{i18n>label.HubMountingDateMonth}" required="true"/>
-			<MaskInput id="idMD115HubMountingDateMonthLeft" value="{addCIDView>/md115Left/MountDateMm}" mask="CD" placeholderSymbol="_">
+			<MaskInput	id="idMD115HubMountingDateMonthLeft" value="{addCIDView>/md115Left/MountDateMm}" mask="CD" placeholderSymbol="_">
 				<rules>
 					<MaskInputRule maskFormatSymbol="C" regex="[0-1xX]"/>
 					<MaskInputRule maskFormatSymbol="D" regex="[0-9xX]"/>
@@ -361,8 +361,10 @@
 				</rules>
 			</MaskInput>
 			<Label text="{i18n>label.Hub2StampShopMark}"/>
-			<Input id="idMD115Hub2WheelShopMarkRight"
-				value="{ path: 'addCIDView>/md115Right/DefWhStamp2ShopMark', type: 'sap.ui.model.type.String', constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+			<Input	id="idMD115Hub2WheelShopMarkRight"
+					value="{	path: 'addCIDView>/md115Right/DefWhStamp2ShopMark', 
+								type: 'sap.ui.model.type.String',
+								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
 			<Label text="{i18n>label.Hub3MountingDateMonth}"/>
 			<MaskInput id="idMD115Hub3MountingDateMonthRight" value="{addCIDView>/md115Right/DefMountStamp3Mm}" mask="CD" placeholderSymbol="_">
 				<rules>

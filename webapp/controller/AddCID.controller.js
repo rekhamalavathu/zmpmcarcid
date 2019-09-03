@@ -381,7 +381,7 @@ sap.ui.define([
 				BrakeShoeFailedWheel: "",
 				BrakeMisalignment: "",
 				StuckBrakes: "",
-				NumCrackInches: "",
+				NumCrackInches: 0,
 				to_Message: []
 			};
 			
@@ -1940,7 +1940,6 @@ sap.ui.define([
 				this._addCIDFieldError("/md115/PlateType");
 			}
 			
-			// TODO: Lookup from RJC/WMC C118
 			if (!oMD115Shared.WheelType) {
 				this._addCIDFieldError("/md115/WheelType");
 			}
@@ -1953,17 +1952,34 @@ sap.ui.define([
 				this._addCIDFieldError("/md115" + sWheelSide + "/BackDiscoloration");
 			}
 			
-			if (!oMD115.MountDateMm || parseInt(oMD115.MountDateMm, 10) < 1 || parseInt(oMD115.MountDateMm, 10) > 12) {
+			if (!oMD115.MountDateMm || (!oMD115.MountDateMm.match(/xx/i) && (parseInt(oMD115.MountDateMm, 10) < 1 || parseInt(oMD115.MountDateMm, 10) > 12))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/MountDateMm");
 			}
 			
-			if (!oMD115.MountDateYy) {
+			if (!oMD115.MountDateYy || (!oMD115.MountDateYy.match(/xx/i) && isNaN(parseInt(oMD115.MountDateYy, 10)))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/MountDateYy");
 			}
 			
 			if (!oMD115.WheelShopMark) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/WheelShopMark");
 			}
+			
+			if (!oMD115.DefMountStamp2Mm && (!oMD115.DefMountStamp2Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp2Mm, 10) < 1 || parseInt(oMD115.DefMountStamp2Mm, 10) > 12))) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp2Mm");
+			}
+			
+			if (!oMD115.DefMountStamp2Yy && !oMD115.DefMountStamp2Yy.match(/xx/i) && isNaN(parseInt(oMD115.DefMountStamp2Yy, 10))) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp2Yy");
+			}
+			
+			if (!oMD115.DefMountStamp3Mm && !oMD115.DefMountStamp3Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp3Mm, 10) < 1 || parseInt(oMD115.DefMountStamp3Mm, 10) > 12)) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp3Mm");
+			}
+			
+			if (oMD115.DefMountStamp3Yy && !oMD115.DefMountStamp3Yy.match(/xx/i) && isNaN(parseInt(oMD115.DefMountStamp3Yy, 10))) {
+				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp3Yy");
+			}
+			
 			
 			if (!oMD115.LockMountShopMark) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/LockMountShopMark");
@@ -1983,23 +1999,19 @@ sap.ui.define([
 				this._addCIDFieldError("/md115" + sWheelSide + "/LockManufacYy");
 			}
 			
-			// TODO: Lookup from RJC/WMC C114
 			if (!oMD115.DefWheelDesig) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefWheelDesig");
 			}
 			
-			// TODO: Lookup from RJC/WMC C114
 			// Mate Wheel Design Designation
 			if (!oMD115Other.DefWheelDesig) {
 				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelDesig");
 			}
 			
-			// TODO: Lookup from RJC/WMC C111
 			if (!oMD115.DefWheelSnNo) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefWheelSnNo");
 			}
 			
-			// TODO: Lookup from RJC/WMC C111
 			if (!oMD115Other.DefWheelSnNo) {
 				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelSnNo");
 			}
@@ -2071,15 +2083,14 @@ sap.ui.define([
 							this._submitMD115Report("Left");
 						}
 						
+						// TODO: Get report ID and show in messagebox						
 						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated");
 
-						//show a message toast if the registration is successful
-						MessageToast.show(sMessage, {
-							duration: 1500,
-							onClose: function () {
-								this.onNavBack();
-							}.bind(this)
-						});
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+								message: sMessage,
+								persistent: true,
+								type: sap.ui.core.MessageType.Success
+						}));
 					} else {
 						//fetch error message and register to message manager
 						for (var i = 0; i < oData.to_Message.results.length; i++) {
@@ -2150,10 +2161,10 @@ sap.ui.define([
 			
 			// Removed wheel data
 			oMD115.DefWheelManufacturer = oRepair["RwMfg" + sSide];
-			oMD115.DefManufacMm = oRepair["RwStampedMonth" + sSide];
-			oMD115.DefManufacYy = oRepair["RwStampedYear" + sSide];
+			oMD115.DefManufacMm = oRepair["RwStampedMonth" + sSide].replace(/_/g, "");
+			oMD115.DefManufacYy = oRepair["RwStampedYear" + sSide].replace(/_/g, "");
 			oMD115.FlangeFingerReading = parseInt(oRepair["RwFinger" + sSide], 10) + "";
-			oMD115.RimThickness = oRepair["RwScale" + sSide];
+			oMD115.RimThickness = oRepair["RwScale" + sSide].replace(/_/g, "");
 			oMD115.ClassHeatTreatment = oRepair["RwClass" + sSide];
 			oMD115.DefectType = oRepair["WrWhyMadeCode" + sSide];                 
 			
@@ -2177,9 +2188,11 @@ sap.ui.define([
 					
 					var sMessage;
 					var sMessageLength = oData.to_Message.results.length;
-				
+					var sReportKey;
+					
 					// fetch report result
 					if (sMessageLength === 0 || oData.to_Message.results[0].ResponseType === "S") {
+						sReportKey = oData.to_Message.results[0].ResponseMessage;
 						oAddCIDViewModel.setProperty("/md115Success" + sSide, true);
 						
 						if (sSide === "Left") {
@@ -2188,15 +2201,14 @@ sap.ui.define([
 							this._registerComponent();
 						}
 						
-						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportCreated");
+						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportCreated", [sReportKey]);
+						
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+								message: sMessage,
+								persistent: true,
+								type: sap.ui.core.MessageType.Success
+						}));
 
-						//show a message toast if the registration is successful
-						MessageToast.show(sMessage, {
-							duration: 1500,
-							onClose: function () {
-								this.onNavBack();
-							}.bind(this)
-						});
 					} else {
 						//fetch error message and register to message manager
 						for (var i = 0; i < oData.to_Message.results.length; i++) {
