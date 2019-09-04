@@ -2071,25 +2071,26 @@ sap.ui.define([
 					
 					var sMessage;
 					var sMessageLength = oData.to_Message.results.length;
+					var sMDID;
 				
 					// fetch report result
 					if (sMessageLength === 0 || oData.to_Message.results[0].ResponseType === "S") {
 						oAddCIDViewModel.setProperty("/md11Success" + sSide, true);
 						
-						if (sSide === "Left") {
-							this._submitMD11Report("Right");
-						} else if (sSide === "Right") {
-							this._submitMD115Report("Left");
-						}
-						
-						// TODO: Get report ID and show in messagebox						
-						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated");
+						sMDID = oData.to_Message.results[0].ResponseMessage;
+						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated", [sMDID]);
 
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 								message: sMessage,
 								persistent: true,
 								type: sap.ui.core.MessageType.Success
 						}));
+						
+						if (sSide === "Left") {
+							this._submitMD11Report("Right");
+						} else if (sSide === "Right") {
+							this._submitMD115Report("Left");
+						}
 					} else {
 						//fetch error message and register to message manager
 						for (var i = 0; i < oData.to_Message.results.length; i++) {
@@ -2169,8 +2170,8 @@ sap.ui.define([
 			
 			// Populate mate fields
 			oMD115.MateWheelManufacturer = oRepair["RwMfg" + sOtherSide];
-			oMD115.MateManufacMm = oRepair["RwStampedMonth" + sOtherSide];
-			oMD115.MateManufacYy = oRepair["RwStampedYear" + sOtherSide];
+			oMD115.MateManufacMm = oRepair["RwStampedMonth" + sOtherSide].replace(/_/g, "");
+			oMD115.MateManufacYy = oRepair["RwStampedYear" + sOtherSide].replace(/_/g, "");
 			oMD115.MateWheelSnNo = (oMD115Other.DefWheelSnNo  + "") || "";
 			oMD115.MateWheelDesig = (oMD115Other.DefWheelDesig + "") || "";
 			oMD115.MateMountStamp2Mm = oMD115Other.DefMountStamp2Mm || "";
@@ -2191,15 +2192,9 @@ sap.ui.define([
 					
 					// fetch report result
 					if (sMessageLength === 0 || oData.to_Message.results[0].ResponseType === "S") {
-						sReportKey = oData.to_Message.results[0].ResponseMessage;
 						oAddCIDViewModel.setProperty("/md115Success" + sSide, true);
 						
-						if (sSide === "Left") {
-							this._submitMD115Report("Right");
-						} else {
-							this._registerComponent();
-						}
-						
+						sReportKey = oData.to_Message.results[0].ResponseMessage;
 						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportCreated", [sReportKey]);
 						
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
@@ -2207,7 +2202,12 @@ sap.ui.define([
 								persistent: true,
 								type: sap.ui.core.MessageType.Success
 						}));
-
+						
+						if (sSide === "Left") {
+							this._submitMD115Report("Right");
+						} else {
+							this._registerComponent();
+						}
 					} else {
 						//fetch error message and register to message manager
 						for (var i = 0; i < oData.to_Message.results.length; i++) {
