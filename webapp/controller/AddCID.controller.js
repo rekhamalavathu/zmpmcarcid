@@ -1964,22 +1964,21 @@ sap.ui.define([
 				this._addCIDFieldError("/md115" + sWheelSide + "/WheelShopMark");
 			}
 			
-			if (!oMD115.DefMountStamp2Mm && (!oMD115.DefMountStamp2Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp2Mm, 10) < 1 || parseInt(oMD115.DefMountStamp2Mm, 10) > 12))) {
+			if (oMD115.DefMountStamp2Mm && (!oMD115.DefMountStamp2Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp2Mm, 10) < 1 || parseInt(oMD115.DefMountStamp2Mm, 10) > 12))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp2Mm");
 			}
 			
-			if (!oMD115.DefMountStamp2Yy && !oMD115.DefMountStamp2Yy.match(/xx/i) && isNaN(parseInt(oMD115.DefMountStamp2Yy, 10))) {
+			if (oMD115.DefMountStamp2Yy && !oMD115.DefMountStamp2Yy.match(/xx/i) && isNaN(parseInt(oMD115.DefMountStamp2Yy, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp2Yy");
 			}
 			
-			if (!oMD115.DefMountStamp3Mm && !oMD115.DefMountStamp3Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp3Mm, 10) < 1 || parseInt(oMD115.DefMountStamp3Mm, 10) > 12)) {
+			if (oMD115.DefMountStamp3Mm && !oMD115.DefMountStamp3Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp3Mm, 10) < 1 || parseInt(oMD115.DefMountStamp3Mm, 10) > 12)) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp3Mm");
 			}
 			
 			if (oMD115.DefMountStamp3Yy && !oMD115.DefMountStamp3Yy.match(/xx/i) && isNaN(parseInt(oMD115.DefMountStamp3Yy, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp3Yy");
 			}
-			
 			
 			if (!oMD115.LockMountShopMark) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/LockMountShopMark");

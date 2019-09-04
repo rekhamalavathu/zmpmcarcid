@@ -303,7 +303,7 @@ sap.ui.define([
 			// look up AJC for matching side
 			if (sInputId === "idRepairWhyMadeCodeLeft") {
 				this._setMD115FromRJCAndWhyMade("Left");
-			} else if (sInputId === "idRepairWhyMadeCodeLeft") {
+			} else if (sInputId === "idRepairWhyMadeCode") {
 				this._setMD115FromRJCAndWhyMade("Right");
 			}
 		},

@@ -94,7 +94,7 @@ sap.ui.define([
 			// look up RJC for matching side
 			if (sInputId === "idRepairWhyMadeCodeLeft") {
 				this._setMD11FromRJCAndWhyMade("Left");
-			} else if (sInputId === "idRepairWhyMadeCodeLeft") {
+			} else if (sInputId === "idRepairWhyMadeCode") {
 				this._setMD11FromRJCAndWhyMade("Right");
 			}
 		},
