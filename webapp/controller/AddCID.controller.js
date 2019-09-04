@@ -2074,7 +2074,13 @@ sap.ui.define([
 					var sMDID;
 				
 					// fetch report result
-					if (sMessageLength === 0 || oData.to_Message.results[0].ResponseType === "S") {
+					if (sMessageLength === 0) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+								message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportFailed"),
+								persistent: true,
+								type: sap.ui.core.MessageType.Error
+						}));
+					} else if (oData.to_Message.results[0].ResponseType === "S") {
 						oAddCIDViewModel.setProperty("/md11Success" + sSide, true);
 						
 						sMDID = oData.to_Message.results[0].ResponseMessage;
@@ -2191,7 +2197,13 @@ sap.ui.define([
 					var sReportKey;
 					
 					// fetch report result
-					if (sMessageLength === 0 || oData.to_Message.results[0].ResponseType === "S") {
+					if (sMessageLength === 0) {
+						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+								message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportFailed"),
+								persistent: true,
+								type: sap.ui.core.MessageType.Error
+						}));
+					} else if (oData.to_Message.results[0].ResponseType === "S") {
 						oAddCIDViewModel.setProperty("/md115Success" + sSide, true);
 						
 						sReportKey = oData.to_Message.results[0].ResponseMessage;
