@@ -116,6 +116,9 @@ sap.ui.define([
 				return;
 			}
 			
+			// Update message popover with previously created reports so the user knows which reports have been successful
+			this._requiredReportsAlreadyCreated();
+			
 			// If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
 			if (this.getModel("addCIDView").getProperty("/md11RequiredLeft")) {
 				this._submitMD11Report("Left");
@@ -127,6 +130,34 @@ sap.ui.define([
 				this._submitMD115Report("Right");
 			} else {
 				this._registerComponent();
+			}
+		},
+		
+		_addSuccessMessage: function (sReport, sSide) {
+			sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
+				message: this.getView().getModel("i18n").getResourceBundle().getText("message.MDReportAlreadyCreated", [sReport, sSide]),
+				persistent: true,
+				type: sap.ui.core.MessageType.Success
+			}));	
+		},
+		
+		_requiredReportsAlreadyCreated: function () {
+			var oViewObj = this.getModel("addCIDView").getProperty("/");
+			
+			if (oViewObj.md11RequiredLeft && oViewObj.md11SuccessLeft) {
+				this._addSuccessMessage("MD-11", "Left");
+			}
+			
+			if (oViewObj.md11RequiredRight && oViewObj.md11SuccessRight) {
+				this._addSuccessMessage("MD-11", "Right");
+			}
+			
+			if (oViewObj.md115RequiredLeft && oViewObj.md115SuccessLeft) {
+				this._addSuccessMessage("MD-115", "Left");
+			}
+			
+			if (oViewObj.md115RequiredRight && oViewObj.md115SuccessRight) {
+				this._addSuccessMessage("MD-115", "Right");
 			}
 		},
 		
@@ -2064,6 +2095,10 @@ sap.ui.define([
 			oMD11.EquipmentInitial = aSplitCarMark[1];
 			oMD11.EquipmentNumber = aSplitCarMark[2];
 			
+			MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportSubmitting", [sSide]), {
+				duration: 1500
+			});
+			
 			oModel.create("/BearingDefectRptSet", oMD11, {
 				method: "POST",
 				success: function (oData, resp) {
@@ -2186,6 +2221,10 @@ sap.ui.define([
 			oMD115.MateMountStamp3Mm = oMD115Other.MateMountStamp3Mm || "";
 			oMD115.MateMountStamp3Yy = oMD115Other.MateMountStamp3Yy || "";
 			oMD115.MateWhStamp3ShopMark = oMD115Other.MateWhStamp3ShopMark || "";
+			
+			MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportSubmitting", [sSide]), {
+				duration: 1500
+			});
 			
 			oModel.create("/WheelDefectRptSet", oMD115, {
 				method: "POST",

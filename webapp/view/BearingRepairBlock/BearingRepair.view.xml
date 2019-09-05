@@ -182,7 +182,7 @@
 						busy="{RepairsModel>/MD11ElastomericAdapterPadBusy}" showSecondaryValues="true"
 						items="{path: 'RepairsModel>/comboBoxValues/MD11ElastomericAdapterPad', sorter: { path: 'key' } }">
 				<items>
-					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>text}"/>
 				</items>
 			</ComboBox>
 			<Label text="{i18n>label.WheelSerialNumberFailedSide}"/>
