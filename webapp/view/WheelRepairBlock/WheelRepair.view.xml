@@ -120,6 +120,13 @@
 						value="{	path: 'addCIDView>/md115/FailureDate',
 									type: 'sap.ui.model.type.Date',
 									formatOptions: {style: 'short', strictParsing: true} }"/>
+			<Label text="{i18n>label.EquipmentKind}" required="true"/>
+			<ComboBox	id="idMD115EquipmentKind" selectedKey="{addCIDView>/md115/EquipmentKind}" busy="{RepairsModel>/MD115EquipmentKindBusy}"
+						items="{RepairsModel>/comboBoxValues/MD115EquipmentKind}" showSecondaryValues="true">
+				<items>
+					<core:ListItem key="{RepairsModel>key}" text="{RepairsModel>key} - {RepairsModel>text}"/>
+				</items>
+			</ComboBox>
 			<Label text="{i18n>label.MethodOfDetection}" required="true"/>
 			<ComboBox	id="idMD115MethodOfDetection" selectedKey="{addCIDView>/md115/DetectMethod}" busy="{RepairsModel>/MD115DetectMethodBusy}"
 						items="{RepairsModel>/comboBoxValues/MD115DetectMethod}" showSecondaryValues="true">

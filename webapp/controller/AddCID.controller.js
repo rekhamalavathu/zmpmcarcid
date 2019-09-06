@@ -46,6 +46,9 @@ sap.ui.define([
 						} else {
 							this.getModel("addCIDView").setProperty("/cidHeader/repairDate", new Date());
 						}
+						if (oComponentData.startupParameters.CarKind) {
+							this.getModel("addCIDView").setProperty("/cidHeader/carKind", oComponentData.startupParameters.CarKind[0]);
+						}
 						this._onObjectMatched();
 					}
 				}.bind(this)
@@ -1946,18 +1949,20 @@ sap.ui.define([
 				this._addCIDFieldError("/md115/FailureDate", this.getResourceBundle().getText("error.FailureDateAfterRepair"));
 			}
 			
+			if (!oMD115Shared.EquipmentKind) {
+				this._addCIDFieldError("/md115/EquipmentKind");
+			}
+			
 			if (!oMD115Shared.DetectMethod) {
 				this._addCIDFieldError("/md115/DetectMethod");
 			} else if (oMD115Shared.DetectMethod === "D" && !oMD115Shared.DetectMethod) {
 				this._addCIDFieldError("/md115/EquipDerailNo");
 			}
 			
-			// TODO: Lookup from RJC/WMC C208/C209
 			if (!oMD115Shared.JournalSize) {
 				this._addCIDFieldError("/md115/JournalSize");
 			}
 			
-			// TODO: Lookup from RJC/WMC C113
 			if (!oMD115Shared.WheelDiameter) {
 				this._addCIDFieldError("/md115/WheelDiameter");
 			}
@@ -1966,7 +1971,6 @@ sap.ui.define([
 				this._addCIDFieldError("/md115/BrakeShoeStd");
 			}
 			
-			// TODO: Lookup from RJC/WMC C115
 			if (!oMD115Shared.PlateType) {
 				this._addCIDFieldError("/md115/PlateType");
 			}
@@ -2183,6 +2187,7 @@ sap.ui.define([
 		
 			// Add properties from addCIDView>/md115
 			oMD115.FailureDate = oMD115Shared.FailureDate;
+			oMD115.EquipmentKind = oMD115Shared.EquipmentKind;
 			oMD115.JournalSize = oMD115Shared.JournalSize;
 			oMD115.DetectMethod = oMD115Shared.DetectMethod;
 			oMD115.Comments = oMD115Shared.Comments;

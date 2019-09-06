@@ -384,7 +384,8 @@ sap.ui.define([
 					MD115PlateType: [],
 					MD115WheelType: [],
 					MD115DefectLocation: [],
-					MD115NewReconditioned: []
+					MD115NewReconditioned: [],
+					MD115EquipmentKind: []
 				},
 				MD115DetectMethodBusy: true,
 				MD115JournalBearingSizeBusy: true,
@@ -393,7 +394,8 @@ sap.ui.define([
 				MD115PlateTypeBusy: true,
 				MD115WheelTypeBusy: true,
 				MD115DefectLocationBusy: true,
-				MD115NewReconditioned: true
+				MD115NewReconditionedBusy: true,
+				MD115EquipmentKindBusy: true
 			});
 		},
 
@@ -416,6 +418,9 @@ sap.ui.define([
 			var oMD115 = oViewModel.getProperty("/md115");
 			var oMD115Left = oViewModel.getProperty("/md115Left");
 			var oMD115Right = oViewModel.getProperty("/md115Right");
+			
+			var sCarKind = oViewModel.getProperty("/cidHeader/carKind") || "";
+			oViewModel.setProperty("/md115/EquipmentKind", sCarKind);
 			
 			oViewModel.setProperty("/md115Left/DefWheelSnNo", oMD115Left.DefWheelSnNo || oComponentData.RemovedWhSerialL || "");
 			oViewModel.setProperty("/md115Right/DefWheelSnNo", oMD115Right.DefWheelSnNo || oComponentData.RemovedWhSerialR || "");
@@ -441,6 +446,7 @@ sap.ui.define([
 		 * @private
 		 **/
 		_loadComboBoxValues: function () {
+			this._loadCarKind();
 			this._loadMethodOfDetection();
 			this._loadJournalBearingSize();
 			this._loadWheelDiameterAndDesign();
@@ -452,6 +458,26 @@ sap.ui.define([
 			this._loadWheelTypes();
 			this._loadDefectLocation();
 			this._loadNewReconditioned();
+		},
+		
+		_loadCarKind: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_MD_CAR_KIND", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].carkind;
+						oComboBoxItem.text = oData.results[i].carkind_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115EquipmentKind", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115EquipmentKindBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115EquipmentKindBusy", false);
+				}.bind(this)
+			});
 		},
 		
 		_loadMethodOfDetection: function () {
