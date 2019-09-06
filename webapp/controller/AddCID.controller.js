@@ -2167,7 +2167,7 @@ sap.ui.define([
 			if (sSide === "Left" && (!oAddCIDViewModel.getProperty("/md115RequiredLeft") || oAddCIDViewModel.getProperty("/md115SuccessLeft"))) {
 				this._submitMD115Report("Right");
 				return;
-			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md151RequiredRight") || oAddCIDViewModel.getProperty("/md115SuccessRight"))) {
+			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md115RequiredRight") || oAddCIDViewModel.getProperty("/md115SuccessRight"))) {
 				this._registerComponent();
 				return;
 			}
