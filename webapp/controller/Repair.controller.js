@@ -413,16 +413,27 @@ sap.ui.define([
 		_loadInitialMD115Values: function () {
 			var oViewModel = this.getModel("addCIDView");
 			var oComponentData = oViewModel.getProperty("/response");
-			oViewModel.setProperty("/md115Left/DefWheelSnNo", oComponentData.RemovedWhSerialL || "");
-			oViewModel.setProperty("/md115Right/DefWheelSnNo", oComponentData.RemovedWhSerialR || "");
-			oViewModel.setProperty("/md115Left/DefWheelDesig", oComponentData.RemovedWhDesignL || "");
-			oViewModel.setProperty("/md115Right/DefWheelDesig", oComponentData.RemovedWhDesignR || "");
+			var oMD115 = oViewModel.getProperty("/md115");
+			var oMD115Left = oViewModel.getProperty("/md115Left");
+			var oMD115Right = oViewModel.getProperty("/md115Right");
+			
+			oViewModel.setProperty("/md115Left/DefWheelSnNo", oMD115Left.DefWheelSnNo || oComponentData.RemovedWhSerialL || "");
+			oViewModel.setProperty("/md115Right/DefWheelSnNo", oMD115Right.DefWheelSnNo || oComponentData.RemovedWhSerialR || "");
+			oViewModel.setProperty("/md115Left/DefWheelDesig", oMD115Left.DefWheelDesig || oComponentData.RemovedWhDesignL || "");
+			oViewModel.setProperty("/md115Right/DefWheelDesig", oMD115Right.DefWheelDesig || oComponentData.RemovedWhDesignR || "");
 			var sRemovedPlate =  oComponentData.RemovedPlateTypeL || oComponentData.RemovedPlateTypeR || "";
 			// If it exists, set plate type to first character of retrieved plate type value
-			oViewModel.setProperty("/md115/PlateType", sRemovedPlate ? sRemovedPlate.charAt(0) : "");
-			oViewModel.setProperty("/md115/WheelType", oComponentData.RemovedWhTypeL || oComponentData.RemovedWhTypeR || "");
-			oViewModel.setProperty("/md115/JournalSize", oComponentData.RemovedJournalSizeL || oComponentData.RemovedJournalSizeR || "");
-			oViewModel.setProperty("/md115/WheelDiameter", oComponentData.RemovedWhDiaL || oComponentData.RemovedWhDiaR || "");
+			oViewModel.setProperty("/md115/PlateType", oMD115.PlateType || (sRemovedPlate ? sRemovedPlate.charAt(0) : ""));
+			oViewModel.setProperty("/md115/WheelType", oMD115.WheelType || oComponentData.RemovedWhTypeL || oComponentData.RemovedWhTypeR || "");
+			oViewModel.setProperty("/md115/JournalSize", oMD115.JournalSize || oComponentData.RemovedJournalSizeL || oComponentData.RemovedJournalSizeR || "");
+			
+			var sWheelDiameter = oMD115.WheelDiameter || oComponentData.RemovedWhDiaL || oComponentData.RemovedWhDiaR || "";
+			oViewModel.setProperty("/md115/WheelDiameter", sWheelDiameter);
+			
+			// Trigger filtering of Defective Wheel Design Designation comboboxes if Wheel Diameter loaded from removed wheels
+			if (sWheelDiameter) {
+				this.onChangeWheelDiameter();
+			}
 		},
 		
 		/**

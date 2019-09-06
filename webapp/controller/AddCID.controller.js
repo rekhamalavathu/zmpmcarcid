@@ -2102,14 +2102,13 @@ sap.ui.define([
 			oModel.create("/BearingDefectRptSet", oMD11, {
 				method: "POST",
 				success: function (oData, resp) {
-					this.getModel("addCIDView").setProperty("/busy", false);
-					
 					var sMessage;
 					var sMessageLength = oData.to_Message.results.length;
 					var sMDID;
 				
 					// fetch report result
 					if (sMessageLength === 0) {
+						this.getModel("addCIDView").setProperty("/busy", false);
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 								message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportFailed"),
 								persistent: true,
@@ -2133,6 +2132,7 @@ sap.ui.define([
 							this._submitMD115Report("Left");
 						}
 					} else {
+						this.getModel("addCIDView").setProperty("/busy", false);
 						//fetch error message and register to message manager
 						for (var i = 0; i < oData.to_Message.results.length; i++) {
 							sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
@@ -2229,14 +2229,13 @@ sap.ui.define([
 			oModel.create("/WheelDefectRptSet", oMD115, {
 				method: "POST",
 				success: function (oData, resp) {
-					this.getModel("addCIDView").setProperty("/busy", false);
-					
 					var sMessage;
 					var sMessageLength = oData.to_Message.results.length;
 					var sReportKey;
 					
 					// fetch report result
 					if (sMessageLength === 0) {
+						this.getModel("addCIDView").setProperty("/busy", false);
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 								message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportFailed"),
 								persistent: true,
@@ -2260,6 +2259,7 @@ sap.ui.define([
 							this._registerComponent();
 						}
 					} else {
+						this.getModel("addCIDView").setProperty("/busy", false);
 						//fetch error message and register to message manager
 						for (var i = 0; i < oData.to_Message.results.length; i++) {
 							sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({

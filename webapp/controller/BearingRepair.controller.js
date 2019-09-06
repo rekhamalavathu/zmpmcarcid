@@ -1398,6 +1398,13 @@ sap.ui.define([
 			
 			// AJC and WhyMade not null and corresponds to MD11 rule
 			if (sRule && sWhyMade && (mMD11RJCWhyMade["R" + sRule + "W" + sWhyMade] === "MD-11")) {
+				var sRemovedWhSerialL = oModel.getProperty("/response/RemovedWhSerialL");
+				var sRemovedWhSerialR = oModel.getProperty("/response/RemovedWhSerialR");
+				var sWheelSnFailedSideL = oModel.getProperty("/md11Left/WheelSnFailedSide");
+				var sWheelSnFailedSideR = oModel.getProperty("/md11Right/WheelSnFailedSide");
+			
+				oModel.setProperty("/md11Left/WheelSnFailedSide", sWheelSnFailedSideL || sRemovedWhSerialL || "");
+				oModel.setProperty("/md11Right/WheelSnFailedSide", sWheelSnFailedSideR || sRemovedWhSerialR || "");
 				oModel.setProperty("/md11Required" + sWheelSide, true);
 			} else {
 				oModel.setProperty("/md11Required" + sWheelSide, false);
