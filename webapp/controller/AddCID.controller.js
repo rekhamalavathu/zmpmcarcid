@@ -2100,7 +2100,7 @@ sap.ui.define([
 			oMD11.EquipmentNumber = aSplitCarMark[2];
 			
 			MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportSubmitting", [sSide]), {
-				duration: 1500
+				duration: 4000
 			});
 			
 			oModel.create("/BearingDefectRptSet", oMD11, {
@@ -2228,7 +2228,7 @@ sap.ui.define([
 			oMD115.MateWhStamp3ShopMark = oMD115Other.MateWhStamp3ShopMark || "";
 			
 			MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportSubmitting", [sSide]), {
-				duration: 1500
+				duration: 4000
 			});
 			
 			oModel.create("/WheelDefectRptSet", oMD115, {
