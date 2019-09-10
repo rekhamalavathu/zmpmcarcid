@@ -1979,11 +1979,11 @@ sap.ui.define([
 				this._addCIDFieldError("/md115/WheelType");
 			}
 			
-			if (!oMD115.FrontDiscoloration) {
+			if (isNaN(parseInt(oMD115.FrontDiscoloration, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/FrontDiscoloration");
 			}
 			
-			if (!oMD115.BackDiscoloration) {
+			if (isNaN(parseInt(oMD115.BackDiscoloration, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/BackDiscoloration");
 			}
 			
