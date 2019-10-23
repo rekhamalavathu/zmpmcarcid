@@ -541,7 +541,9 @@ sap.ui.define([
 						aComboBoxItems.push(oComboBoxItem);
 					}
 					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelDesignation", aComboBoxItems);
-					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelDiameter", Object.values(mWheelDiameters));
+					// cannot use Object.values(<map>) in IE11
+					var aWheelDiameters = Object.keys(mWheelDiameters).map(function(sKey) {return mWheelDiameters[sKey];});
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelDiameter", aWheelDiameters);
 					this.getModel("RepairsModel").setProperty("/MD115WheelDesignationBusy", false);
 				}.bind(this),
 				error: function (sMsg) {
