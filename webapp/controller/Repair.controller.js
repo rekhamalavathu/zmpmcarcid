@@ -21,7 +21,7 @@ sap.ui.define([
 			this.setModel(this._createViewModel(), "RepairsModel");
 			this.getModel("RepairsModel").setSizeLimit(10000000);
 			this._initScreenValues();
-
+			this._loadComboBoxValues();
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCode", this._getRemovedJobCode, this);
 			sap.ui.getCore().getEventBus().subscribe("onLoadRemovedJobCodeLeft", this._getRemovedJobCodeLeft, this);
 
@@ -270,6 +270,8 @@ sap.ui.define([
 					// this._getRemovedQualifier(removedJobCode, "idRepairRemovedQualifier");
 				}
 				this._determineWhyMadeCode();
+				//Get rule from RJC and compare to Why Made to determine if MD-115 report/fields required
+				this._setMD115FromRJCAndWhyMade("Right");
 				break;
 
 			case "idRepairRJCLeft":
@@ -288,8 +290,32 @@ sap.ui.define([
 					}
 				}
 				this._determineWhyMadeCodeLeft();
+				//Get rule from RJC and compare to Why Made to determine if MD-115 report/fields required
+				this._setMD115FromRJCAndWhyMade("Left");
 				break;
 			}
+		},
+		
+		onChangeWhyMadeCode: function (oEvent) {
+			var sInputId = this.getElementRealID(oEvent.getSource().getId());
+			
+			// Left: idRepairWhyMadeCodeLeft, Right: idRepairWhyMadeCode
+			// look up AJC for matching side
+			if (sInputId === "idRepairWhyMadeCodeLeft") {
+				this._setMD115FromRJCAndWhyMade("Left");
+			} else if (sInputId === "idRepairWhyMadeCode") {
+				this._setMD115FromRJCAndWhyMade("Right");
+			}
+		},
+		
+		// Update filter to wheel designation
+		onChangeWheelDiameter: function (oEvent) {
+			var sDiameter = this.getModel("addCIDView").getProperty("/md115/WheelDiameter");
+			
+			this.getView().byId("idMD115WheelDesignationLeft").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
+																						new Filter("valid", FilterOperator.EQ, "X")				]);
+			this.getView().byId("idMD115WheelDesignationRight").getBinding("items").filter([	new Filter("diameter", FilterOperator.EQ, sDiameter),
+																						new Filter("valid", FilterOperator.EQ, "X")				]);
 		},
 
 		/**
@@ -346,8 +372,30 @@ sap.ui.define([
 					ConditionCodeLeft: [],
 					RemovedJobCodeLeft: [],
 					RemovedQualifierLeft: [],
-					WhyMadeCodeLeft: []
-				}
+					WhyMadeCodeLeft: [],
+					MD115DetectMethod: [],
+					MD115JournalBearingSize: [],
+					MD115BrakeShoe: [],
+					MD115WheelDesignation: [],
+					MD115WheelDiameter: [],
+					MD115BodyMountedBrakes: [],
+					MD115BrakeMisalignment: [],
+					MD115StuckBrakes: [],
+					MD115PlateType: [],
+					MD115WheelType: [],
+					MD115DefectLocation: [],
+					MD115NewReconditioned: [],
+					MD115EquipmentKind: []
+				},
+				MD115DetectMethodBusy: true,
+				MD115JournalBearingSizeBusy: true,
+				MD115WheelDesignationBusy: true,
+				MD115BrakeShoeBusy: true,
+				MD115PlateTypeBusy: true,
+				MD115WheelTypeBusy: true,
+				MD115DefectLocationBusy: true,
+				MD115NewReconditionedBusy: true,
+				MD115EquipmentKindBusy: true
 			});
 		},
 
@@ -358,6 +406,272 @@ sap.ui.define([
 		_initScreenValues: function () {
 			this._getAppliedJobCode();
 			this._getAppliedJobCodeLeft();
+		},
+		
+		/**
+		 * Set as many MD-115 fields from removed wheelset component
+		 * @private
+		 **/ 
+		_loadInitialMD115Values: function () {
+			var oViewModel = this.getModel("addCIDView");
+			var oComponentData = oViewModel.getProperty("/response");
+			var oMD115 = oViewModel.getProperty("/md115");
+			var oMD115Left = oViewModel.getProperty("/md115Left");
+			var oMD115Right = oViewModel.getProperty("/md115Right");
+			
+			var sCarKind = oViewModel.getProperty("/cidHeader/carKind") || "";
+			oViewModel.setProperty("/md115/EquipmentKind", sCarKind);
+			
+			oViewModel.setProperty("/md115Left/DefWheelSnNo", oMD115Left.DefWheelSnNo || oComponentData.RemovedWhSerialL || "");
+			oViewModel.setProperty("/md115Right/DefWheelSnNo", oMD115Right.DefWheelSnNo || oComponentData.RemovedWhSerialR || "");
+			oViewModel.setProperty("/md115Left/DefWheelDesig", oMD115Left.DefWheelDesig || oComponentData.RemovedWhDesignL || "");
+			oViewModel.setProperty("/md115Right/DefWheelDesig", oMD115Right.DefWheelDesig || oComponentData.RemovedWhDesignR || "");
+			var sRemovedPlate =  oComponentData.RemovedPlateTypeL || oComponentData.RemovedPlateTypeR || "";
+			// If it exists, set plate type to first character of retrieved plate type value
+			oViewModel.setProperty("/md115/PlateType", oMD115.PlateType || (sRemovedPlate ? sRemovedPlate.charAt(0) : ""));
+			oViewModel.setProperty("/md115/WheelType", oMD115.WheelType || oComponentData.RemovedWhTypeL || oComponentData.RemovedWhTypeR || "");
+			oViewModel.setProperty("/md115/JournalSize", oMD115.JournalSize || oComponentData.RemovedJournalSizeL || oComponentData.RemovedJournalSizeR || "");
+			
+			var sWheelDiameter = oMD115.WheelDiameter || oComponentData.RemovedWhDiaL || oComponentData.RemovedWhDiaR || "";
+			oViewModel.setProperty("/md115/WheelDiameter", sWheelDiameter);
+			
+			// Trigger filtering of Defective Wheel Design Designation comboboxes if Wheel Diameter loaded from removed wheels
+			if (sWheelDiameter) {
+				this.onChangeWheelDiameter();
+			}
+		},
+		
+		/**
+		 * Load values for ComboBox controls (MD-115)
+		 * @private
+		 **/
+		_loadComboBoxValues: function () {
+			this._loadCarKind();
+			this._loadMethodOfDetection();
+			this._loadJournalBearingSize();
+			this._loadWheelDiameterAndDesign();
+			this._loadBrakeShoe();
+			this._loadBodyMountedBrakes();
+			this._loadBrakeMisalignment();
+			this._loadStuckBrakes();
+			this._loadPlateTypes();
+			this._loadWheelTypes();
+			this._loadDefectLocation();
+			this._loadNewReconditioned();
+		},
+		
+		_loadCarKind: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_MD_CAR_KIND", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].carkind;
+						oComboBoxItem.text = oData.results[i].carkind_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115EquipmentKind", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115EquipmentKindBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115EquipmentKindBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadMethodOfDetection: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_MTHD_DETECT", {
+				filters: [new Filter("md_report", FilterOperator.EQ, "MD-115")],
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].detect_method;
+						oComboBoxItem.text = oData.results[i].detect_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115DetectMethod", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115DetectMethodBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115DetectMethodBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadJournalBearingSize: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_JRM_BRG_SIZE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].bearing_size;
+						oComboBoxItem.text = oData.results[i].bearing_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115JournalBearingSize", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115JournalBearingSizeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115JournalBearingSizeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadWheelDiameterAndDesign: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			var sWheelDiameter;
+			var mWheelDiameters = {};
+			this.getModel().read("/ZMPM_CDS_CAR_WHEEL_DESIG", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						sWheelDiameter = oData.results[i].wheel_nom_dia + "";
+						if (oData.results[i].valid) {
+							mWheelDiameters[sWheelDiameter] = {diameter: sWheelDiameter};
+						}
+
+						oComboBoxItem = {};
+						oComboBoxItem.designation = oData.results[i].wheel_desig;
+						oComboBoxItem.diameter = sWheelDiameter;
+						oComboBoxItem.valid = oData.results[i].valid;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelDesignation", aComboBoxItems);
+					// cannot use Object.values(<map>) in IE11
+					var aWheelDiameters = Object.keys(mWheelDiameters).map(function(sKey) {return mWheelDiameters[sKey];});
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelDiameter", aWheelDiameters);
+					this.getModel("RepairsModel").setProperty("/MD115WheelDesignationBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115WheelDesignationBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadBrakeShoe: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_BRAKE_SHOE_TYPE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].brakeshoe_type;
+						oComboBoxItem.text = oData.results[i].brakeshoe_type_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BrakeShoe", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115BrakeShoeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadBodyMountedBrakes: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}	];
+									
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BodyMountedBrakes", aComboBoxItems);
+		},
+		
+		_loadBrakeMisalignment: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}	];
+									
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115BrakeMisalignment", aComboBoxItems);
+		},
+		
+		_loadStuckBrakes: function () {
+			var aComboBoxItems = [	{key: "Y", text: "Yes"},
+									{key: "N", text: "No"}	];
+									
+			this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115StuckBrakes", aComboBoxItems);
+		},
+		
+		_loadPlateTypes: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_WHEEL_PLATE_TYPE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].plate_type;
+						oComboBoxItem.text = oData.results[i].plate_type_desc;
+						oComboBoxItem.railinc_plate_type = oData.results[i].railinc_plate_type;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115PlateType", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115PlateTypeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115PlateTypeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadWheelTypes: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_WHEEL_TYPE", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].wheel_type;
+						oComboBoxItem.text = oData.results[i].wheel_type_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115WheelType", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115WheelTypeBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115WheelTypeBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadDefectLocation: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_DEFECT_LOC", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].defect_loc;
+						oComboBoxItem.text = oData.results[i].defect_loc_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115DefectLocation", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115DefectLocationBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115DefectLocationBusy", false);
+				}.bind(this)
+			});
+		},
+		
+		_loadNewReconditioned: function () {
+			var aComboBoxItems = [];
+			var oComboBoxItem;
+			this.getModel().read("/ZMPM_CDS_CAR_NEW_RECOND", {
+				success: function (oData) {
+					for (var i = 0; i < oData.results.length; i++) {
+						oComboBoxItem = {};
+						oComboBoxItem.key = oData.results[i].new_recond;
+						oComboBoxItem.text = oData.results[i].new_recond_desc;
+						aComboBoxItems.push(oComboBoxItem);
+					}
+					this.getModel("RepairsModel").setProperty("/comboBoxValues/MD115NewReconditioned", aComboBoxItems);
+					this.getModel("RepairsModel").setProperty("/MD115NewReconditionedBusy", false);
+				}.bind(this),
+				error: function (sMsg) {
+					this.getModel("RepairsModel").setProperty("/MD115NewReconditionedBusy", false);
+				}.bind(this)
+			});
 		},
 
 		/** 
@@ -1253,7 +1567,32 @@ sap.ui.define([
 
 				});
 			}
+		},
+		
+		/** 
+		 * Determine if RJC and Why Made Code correspond to MD115 report requirement
+		 * @private 
+		 * @param {String} sWheelSide - Side of wheelset to check if RJC and Why Made correspond to MD115
+		 */
+		_setMD115FromRJCAndWhyMade: function (sWheelSide) {
+			var oModel = this.getModel("addCIDView");
+			
+			if (!oModel) {
+				return;
+			}
+			var mRJCWhyMade = oModel.getProperty("/RJCRuleWhyMadeMap");
+			var mRemovedJobCodeRules = oModel.getProperty("/RJCRuleMap");
+			var sRemovedJobCode = oModel.getProperty("/response/WrRemovedJobCode" + sWheelSide);
+			var sRule = mRemovedJobCodeRules[sRemovedJobCode];
+			var sWhyMade = oModel.getProperty("/response/WrWhyMadeCode" + sWheelSide);
+			
+			// RJC and WhyMade not null and corresponds to MD-115 rule
+			if (sRule && sWhyMade && (mRJCWhyMade["R" + sRule + "W" + sWhyMade] === "MD-115")) {
+				oModel.setProperty("/md115Required" + sWheelSide, true);
+				this._loadInitialMD115Values();
+			} else {
+				oModel.setProperty("/md115Required" + sWheelSide, false);
+			}
 		}
-
 	});
 });
