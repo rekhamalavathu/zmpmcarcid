@@ -43,6 +43,8 @@ sap.ui.define([
 						var oMessage = sap.ui.getCore().getMessageManager().getMessageModel().getData();
 						if (oMessage.length === 0) {
 
+							this._padDates(oData);
+
 							var oViewModel = this.getModel("addCIDView");
 							oViewModel.setProperty("/wheelSetVisible", oData.WheelSetFlag);
 							oViewModel.setProperty("/bolsterSetVisible", oData.BolsterFlag);
@@ -247,6 +249,22 @@ sap.ui.define([
 			oResponse.EmerValveFlag = false;
 			oResponse.ServValveFlag = false;
 			oResponse.SlakAdjustFlag = false;
-		}
+		},
+		
+		/**
+		 * Pad date strings with 0
+		 * @private
+		 * @param {Object} oComponent - Component object
+		 **/
+		 _padDates: function (oComponent) {
+			var aDateFields = [	"RwStampedMonthLeft", "RwStampedYearLeft", "RwStampedMonthRight", "RwStampedYearRight",
+								"AwStampedMonthLeft", "AwStampedYearLeft", "AwStampedMonthRight", "AwStampedYearRight"];
+			
+			aDateFields.forEach(function (sDateField) {
+				if (oComponent[sDateField] !== "") {
+					oComponent[sDateField] = ("00" + oComponent[sDateField]).slice(-2);
+				}
+			});
+		 }
 	});
 }());

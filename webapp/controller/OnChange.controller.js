@@ -64,7 +64,8 @@ sap.ui.define([
 			var oInputControl = oEvent.getSource();
 
 			if (oInput !== "") {
-				if (oInput < 1 || oInput > 12) {
+				// Ensure month is between "01" and "12", zero-padded
+				if (oInput < 1 || oInput > 12 || (oInput < 10 && oInput.charAt(0) !== "0")) {
 					oInputControl.setValueState(sap.ui.core.ValueState.Error);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
 
@@ -85,7 +86,8 @@ sap.ui.define([
 			var oInputControl = oEvent.getSource();
 
 			if (oInput !== "") {
-				if (oInput > 99) {
+				// Ensure year is between "00" and "99", zero-padded
+				if (oInput < 0 || oInput > 99 || (oInput < 10 && oInput.charAt(0) !== "0")) {
 					oInputControl.setValueState(sap.ui.core.ValueState.Error);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
 
