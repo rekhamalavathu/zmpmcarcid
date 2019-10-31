@@ -64,11 +64,11 @@ sap.ui.define([
 			var oInputControl = oEvent.getSource();
 
 			if (oInput !== "") {
+				var nMonth = parseInt(oInput, 10);
 				// Ensure month is between "01" and "12", zero-padded
-				if (oInput < 1 || oInput > 12 || (oInput < 10 && oInput.charAt(0) !== "0")) {
+				if (isNaN(nMonth) || nMonth < 1 || nMonth > 12 || (nMonth < 10 && oInput.charAt(0) !== "0")) {
 					oInputControl.setValueState(sap.ui.core.ValueState.Error);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-
 				} else {
 					oInputControl.setValueState(sap.ui.core.ValueState.None);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
@@ -86,11 +86,12 @@ sap.ui.define([
 			var oInputControl = oEvent.getSource();
 
 			if (oInput !== "") {
+				var nYear = parseInt(oInput, 10);
 				// Ensure year is between "00" and "99", zero-padded
-				if (oInput < 0 || oInput > 99 || (oInput < 10 && oInput.charAt(0) !== "0")) {
+				if (isNaN(nYear) || nYear < 0 || nYear > 99 || (nYear < 10 && oInput.charAt(0) !== "0") ||
+						(nYear === 0 && oInput !== "00")) {
 					oInputControl.setValueState(sap.ui.core.ValueState.Error);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-
 				} else {
 					oInputControl.setValueState(sap.ui.core.ValueState.None);
 					this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
@@ -141,22 +142,15 @@ sap.ui.define([
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
 
-			if (oInput === "" || oInput === "00") {
+			// Ensure month is between "01" and "12", zero-padded
+			var nMonth = parseInt(oInput, 10);
+			
+			if (isNaN(nMonth) || nMonth < 1 || nMonth > 12 || (nMonth < 10 && oInput.charAt(0) !== "0")) {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-
 			} else {
-				if (oInput !== "") {
-					// Ensure month is between "01" and "12", zero-padded
-					if (oInput < 1 || oInput > 12 || (oInput < 10 && oInput.charAt(0) !== "0")) {
-						oInputControl.setValueState(sap.ui.core.ValueState.Error);
-						this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-
-					} else {
-						oInputControl.setValueState(sap.ui.core.ValueState.None);
-						this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
-					}
-				}
+				oInputControl.setValueState(sap.ui.core.ValueState.None);
+				this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
 			}
 		},
 
@@ -168,24 +162,17 @@ sap.ui.define([
 		onChangeMandatoryYear: function (oEvent) {
 			var oInput = oEvent.getParameter("value");
 			var oInputControl = oEvent.getSource();
-
-			// "00" is a valid year
-			if (oInput === "") {
+				
+			// Ensure year is between "00" and "99", zero-padded
+			var nYear = parseInt(oInput, 10);
+			
+			if (isNaN(nYear) || nYear < 0 || nYear > 99 || (nYear < 10 && oInput.charAt(0) !== "0") ||
+					(nYear === 0 && oInput !== "00")) {
 				oInputControl.setValueState(sap.ui.core.ValueState.Error);
 				this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-
 			} else {
-				if (oInput !== "") {
-					// Ensure year is between "00" and "99", zero-padded
-				if (oInput < 0 || oInput > 99 || (oInput < 10 && oInput.charAt(0) !== "0")) {
-						oInputControl.setValueState(sap.ui.core.ValueState.Error);
-						this.getModel("addCIDView").setProperty("/buttonSetEnable", false);
-
-					} else {
-						oInputControl.setValueState(sap.ui.core.ValueState.None);
-						this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
-					}
-				}
+				oInputControl.setValueState(sap.ui.core.ValueState.None);
+				this.getModel("addCIDView").setProperty("/buttonSetEnable", true);
 			}
 		},
 
