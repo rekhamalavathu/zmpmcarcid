@@ -2042,11 +2042,13 @@ sap.ui.define([
 				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelDesig");
 			}
 			
-			if (!oMD115.DefWheelSnNo) {
+			// Serial number must be entirely numeric
+			if (!(/^\d+$/.test(oMD115.DefWheelSnNo))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefWheelSnNo");
 			}
 			
-			if (!oMD115Other.DefWheelSnNo) {
+			// Serial number must be entirely numeric
+			if (!(/^\d+$/.test(oMD115Other.DefWheelSnNo))) {
 				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelSnNo");
 			}
 			
@@ -2091,8 +2093,8 @@ sap.ui.define([
 			oMD11.DetectMethod = oMD11Shared.DetectMethod || "";
 			oMD11.DetectionDesc = oMD11Shared.DetectionDesc || "";
 			
-			// convert Wheel SN to string
-			oMD11.WheelSnFailedSide = oMD11.WheelSnFailedSide + "";
+			// convert Wheel SN to string (empty if serial number contains non-digit characters)
+			oMD11.WheelSnFailedSide = /^\d+$/.test(oMD11.WheelSnFailedSide) ? oMD11.WheelSnFailedSide + "" : "";
 			
 			var sCarMark = oHeader.carMark;
 			var aSplitCarMark = sCarMark.match(/^([A-Za-z]+)([0-9]+)$/);
