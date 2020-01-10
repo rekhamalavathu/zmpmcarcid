@@ -239,7 +239,7 @@
 			<Input	id="idMD115Hub2WheelShopMarkLeft"
 					value="{	path: 'addCIDView>/md115Left/DefWhStamp2ShopMark',
 								type: 'sap.ui.model.type.String',
-								constraints : { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+								constraints : { maxLength: '4', search: '^(|[A-Za-z]{2,4})$' } }"/>
 			<Label text="{i18n>label.Hub3MountingDateMonth}"/>
 			<MaskInput id="idMD115Hub3MountingDateMonthLeft" value="{addCIDView>/md115Left/DefMountStamp3Mm}" mask="CD" placeholderSymbol="_">
 				<rules>
@@ -257,7 +257,7 @@
 			<Input	id="idMD115Hub3WheelShopMarkLeft"
 					value="{	path: 'addCIDView>/md115Left/DefWhStamp3ShopMark', 
 								type: 'sap.ui.model.type.String', 
-								constraints: { minLength: '2', maxLength: '4', search: '^[A-Za-z]*$' } }"/>
+								constraints: { maxLength: '4', search: '^(|[A-Za-z]{2,4})$' } }"/>
 			<Label text="{i18n>label.LockingTabMountingShopMark}" required="{addCIDView>/md115RequiredLeft}"/>
 			<Input id="idMD115LockingTabMountingShopMarkLeft" enabled="{addCIDView>/md115RequiredLeft}"
 					value="{	path: 'addCIDView>/md115Left/LockMountShopMark',
