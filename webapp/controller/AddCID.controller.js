@@ -132,7 +132,7 @@ sap.ui.define([
 			} else if (this.getModel("addCIDView").getProperty("/md115RequiredRight")) {
 				this._submitMD115Report("Right");
 			} else {
-				this._registerComponent();
+				this._showMD11IDandRegisterComponent();
 			}
 		},
 		
@@ -161,6 +161,39 @@ sap.ui.define([
 			
 			if (oViewObj.md115RequiredRight && oViewObj.md115SuccessRight) {
 				this._addSuccessMessage("MD-115", "Right");
+			}
+		},
+		
+		_showMD11IDandRegisterComponent: function () {
+			var oViewObj = this.getModel("addCIDView").getProperty("/");
+			var sMD11SuccessMessage = "";
+			var sMD11IdLeft = oViewObj.md11IdLeft;
+			var sMD11IdRight = oViewObj.md11IdRight;
+			
+			if (oViewObj.md11RequiredLeft && oViewObj.md11SuccessLeft) {
+				sMD11SuccessMessage += "\n" + "Left" + ": " + sMD11IdLeft;
+			}
+			
+			if (oViewObj.md11RequiredRight && oViewObj.md11SuccessRight) {
+				sMD11SuccessMessage += "\n" + "Right" + ": " + sMD11IdRight;
+			}
+			
+			if (sMD11SuccessMessage) {
+				MessageBox.show(
+					this.getView().getModel("i18n").getResourceBundle().getText("message.MD11IdPreSuccessMessage") + "\n" +
+							sMD11SuccessMessage + "\n" + 
+							this.getView().getModel("i18n").getResourceBundle().getText("message.MD11IdPostSuccessMessage"),
+					{
+						icon: MessageBox.Icon.SUCCESS,
+						title: this.getView().getModel("i18n").getResourceBundle().getText("message.MDReportSuccess"),
+						actions: [MessageBox.Action.OK],
+						onClose: function() { 
+							this._registerComponent();
+						}
+					}
+				);
+			} else {
+				this._registerComponent();
 			}
 		},
 		
@@ -2124,8 +2157,9 @@ sap.ui.define([
 						oAddCIDViewModel.setProperty("/md11Success" + sSide, true);
 						
 						sMDID = oData.to_Message.results[0].ResponseMessage;
+						oAddCIDViewModel.setProperty("/md11Id" + sSide, sMDID);
 						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated", [sMDID]);
-
+					
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 								message: sMessage,
 								persistent: true,
@@ -2174,7 +2208,7 @@ sap.ui.define([
 				this._submitMD115Report("Right");
 				return;
 			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md115RequiredRight") || oAddCIDViewModel.getProperty("/md115SuccessRight"))) {
-				this._registerComponent();
+				this._showMD11IDandRegisterComponent();
 				return;
 			}
 			
@@ -2263,7 +2297,7 @@ sap.ui.define([
 						if (sSide === "Left") {
 							this._submitMD115Report("Right");
 						} else {
-							this._registerComponent();
+						this._showMD11IDandRegisterComponent();
 						}
 					} else {
 						this.getModel("addCIDView").setProperty("/busy", false);
