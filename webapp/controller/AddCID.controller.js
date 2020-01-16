@@ -181,7 +181,7 @@ sap.ui.define([
 			if (sMD11SuccessMessage) {
 				MessageBox.show(
 					this.getView().getModel("i18n").getResourceBundle().getText("message.MD11IdPreSuccessMessage") + "\n" +
-							sMD11SuccessMessage + "\n" + 
+							sMD11SuccessMessage + "\n\n" + 
 							this.getView().getModel("i18n").getResourceBundle().getText("message.MD11IdPostSuccessMessage"),
 					{
 						icon: MessageBox.Icon.SUCCESS,
@@ -425,8 +425,8 @@ sap.ui.define([
 				RimThickness: "",
 				JournalSize: "",
 				DefectType: "",
-				FrontDiscoloration: "",
-				BackDiscoloration: "",
+				FrontDiscoloration: 0,
+				BackDiscoloration: 0,
 				MountDateMm: "",
 				MountDateYy: "",
 				WheelShopMark: "",
