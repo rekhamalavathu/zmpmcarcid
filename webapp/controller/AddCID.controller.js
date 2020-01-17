@@ -189,7 +189,7 @@ sap.ui.define([
 						actions: [MessageBox.Action.OK],
 						onClose: function() { 
 							this._registerComponent();
-						}
+						}.bind(this)
 					}
 				);
 			} else {
