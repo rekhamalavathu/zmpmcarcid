@@ -43,11 +43,10 @@
 					<core:ListItem key="{carlocid}" text="{carlocid}"/>
 				</items>
 			</ComboBox>-->
-			<ComboBox id="idLocation" items="{path: '/ZMPM_CDS_CAR_LOCATION', sorter: [{ path: 'carlocid'}],  
-			    filters: {path: 'addCIDView>/cidHeader/locationFilter'}}"
+			<ComboBox id="idLocation" items="{path: 'addCIDView>/Location', sorter: [{ path: 'carlocid'}]}"
 				selectedKey="{addCIDView>/cidHeader/location}" showSecondaryValues="true" selectionChange="onChangeLocation" change="onChangeLocation">
 				<items>
-					<core:ListItem key="{carlocid}" text="{carlocid}"/>
+					<core:ListItem key="{addCIDView>carlocid}" text="{addCIDView>carlocid}"/>
 				</items>
 			</ComboBox>
 			<!--Retrieve-->

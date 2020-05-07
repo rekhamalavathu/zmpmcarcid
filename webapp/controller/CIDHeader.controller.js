@@ -14,7 +14,6 @@ sap.ui.define([
 		 */
 		onRetrievePress: function () {
 			this.getModel("addCIDView").setProperty("/busy", true);
-
 			var oModel = this.getView().getModel();
 			var cidHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 

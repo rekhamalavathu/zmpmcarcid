@@ -49,17 +49,23 @@ sap.ui.define([
 						if (oComponentData.startupParameters.CarKind) {
 							this.getModel("addCIDView").setProperty("/cidHeader/carKind", oComponentData.startupParameters.CarKind[0]);
 							var aFilter = [];
-							if(oComponentData.startupParameters.CarKind[0]=== "A"){
-								var locationFilter  = new sap.ui.model.Filter("articulatedind", sap.ui.model.FilterOperator.EQ, "Y");
-							}
-							else if(oComponentData.startupParameters.CarKind[0]=== "D" || oComponentData.startupParameters.CarKind[0]=== "M"){
-								locationFilter  = new sap.ui.model.Filter("drawbarind", sap.ui.model.FilterOperator.EQ, "Y");
-							}
-							else {
-								locationFilter  = new sap.ui.model.Filter("stdcarind", sap.ui.model.FilterOperator.EQ, "Y");
+							if (oComponentData.startupParameters.CarKind[0] === "A") {
+								var locationFilter = new sap.ui.model.Filter("articulatedind", sap.ui.model.FilterOperator.EQ, "Y");
+							} else if (oComponentData.startupParameters.CarKind[0] === "D" || oComponentData.startupParameters.CarKind[0] === "M") {
+								locationFilter = new sap.ui.model.Filter("drawbarind", sap.ui.model.FilterOperator.EQ, "Y");
+							} else {
+								locationFilter = new sap.ui.model.Filter("stdcarind", sap.ui.model.FilterOperator.EQ, "Y");
 							}
 							aFilter.push(locationFilter);
-							this.getModel("addCIDView").setProperty("/cidHeader/locationFilter",aFilter);
+							this.getModel().read("/ZMPM_CDS_CAR_LOCATION", {
+
+								filters: aFilter,
+								success: function (oData) {
+									this.getModel("addCIDView").setProperty("/Location", oData.results);
+								}.bind(this),
+								error: function (err) {}.bind(this)
+							});
+
 						}
 						this._onObjectMatched();
 					}
@@ -85,7 +91,7 @@ sap.ui.define([
 					this.getModel("addCIDView").setProperty("/slackAdjusterSetVisible", false);
 				}.bind(this)
 			});
-			
+
 			// this.getModel("addCIDView").setProperty("/busy", false);
 		},
 
@@ -99,11 +105,10 @@ sap.ui.define([
 		onSavePress: function () {
 			// Perform Field Registration Web Service call
 			this.getModel("addCIDView").setProperty("/busy", true);
-			
+
 			var oResponse = this.getModel("addCIDView").getProperty("/response");
 			var oHeader = this.getModel("addCIDView").getProperty("/cidHeader");
 			var oOriData = this.getModel("addCIDView").getProperty("/oCloneData");
-			
 
 			sap.ui.getCore().getMessageManager().removeAllMessages();
 
@@ -130,10 +135,10 @@ sap.ui.define([
 				this.getModel("addCIDView").setProperty("/busy", false);
 				return;
 			}
-			
+
 			// Update message popover with previously created reports so the user knows which reports have been successful
 			this._requiredReportsAlreadyCreated();
-			
+
 			// If MD11 or MD115, first send all reports to Railinc. Need success before submitting to /ComponentSet
 			if (this.getModel("addCIDView").getProperty("/md11RequiredLeft")) {
 				this._submitMD11Report("Left");
@@ -147,59 +152,58 @@ sap.ui.define([
 				this._showMD11IDandRegisterComponent();
 			}
 		},
-		
+
 		_addSuccessMessage: function (sReport, sSide) {
 			sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 				message: this.getView().getModel("i18n").getResourceBundle().getText("message.MDReportAlreadyCreated", [sReport, sSide]),
 				persistent: true,
 				type: sap.ui.core.MessageType.Success
-			}));	
+			}));
 		},
-		
+
 		_requiredReportsAlreadyCreated: function () {
 			var oViewObj = this.getModel("addCIDView").getProperty("/");
-			
+
 			if (oViewObj.md11RequiredLeft && oViewObj.md11SuccessLeft) {
 				this._addSuccessMessage("MD-11", "Left");
 			}
-			
+
 			if (oViewObj.md11RequiredRight && oViewObj.md11SuccessRight) {
 				this._addSuccessMessage("MD-11", "Right");
 			}
-			
+
 			if (oViewObj.md115RequiredLeft && oViewObj.md115SuccessLeft) {
 				this._addSuccessMessage("MD-115", "Left");
 			}
-			
+
 			if (oViewObj.md115RequiredRight && oViewObj.md115SuccessRight) {
 				this._addSuccessMessage("MD-115", "Right");
 			}
 		},
-		
+
 		_showMD11IDandRegisterComponent: function () {
 			var oViewObj = this.getModel("addCIDView").getProperty("/");
 			var sMD11SuccessMessage = "";
 			var sMD11IdLeft = oViewObj.md11IdLeft;
 			var sMD11IdRight = oViewObj.md11IdRight;
-			
+
 			if (oViewObj.md11RequiredLeft && oViewObj.md11SuccessLeft) {
 				sMD11SuccessMessage += "\n" + "Left" + ": " + sMD11IdLeft;
 			}
-			
+
 			if (oViewObj.md11RequiredRight && oViewObj.md11SuccessRight) {
 				sMD11SuccessMessage += "\n" + "Right" + ": " + sMD11IdRight;
 			}
-			
+
 			if (sMD11SuccessMessage) {
 				MessageBox.show(
 					this.getView().getModel("i18n").getResourceBundle().getText("message.MD11IdPreSuccessMessage") + "\n" +
-							sMD11SuccessMessage + "\n\n" + 
-							this.getView().getModel("i18n").getResourceBundle().getText("message.MD11IdPostSuccessMessage"),
-					{
+					sMD11SuccessMessage + "\n\n" +
+					this.getView().getModel("i18n").getResourceBundle().getText("message.MD11IdPostSuccessMessage"), {
 						icon: MessageBox.Icon.SUCCESS,
 						title: this.getView().getModel("i18n").getResourceBundle().getText("message.MDReportSuccess"),
 						actions: [MessageBox.Action.OK],
-						onClose: function() { 
+						onClose: function () {
 							this._registerComponent();
 						}.bind(this)
 					}
@@ -208,13 +212,13 @@ sap.ui.define([
 				this._registerComponent();
 			}
 		},
-		
+
 		_registerComponent: function () {
 			var updateFlag = this.getModel("addCIDView").getProperty("/response/UpdateFlag");
 			var oResponse = this.getModel("addCIDView").getProperty("/response");
 			var oOriData = this.getModel("addCIDView").getProperty("/oCloneData");
 			var oModel = this.getView().getModel();
-			
+
 			var sMessage;
 
 			// check if any changes has been made to component data to trigger CREG field registration
@@ -428,7 +432,7 @@ sap.ui.define([
 				WheelSnFailedSide: "",
 				to_Message: []
 			};
-			
+
 			var oMD115Left = {
 				DefWheelDesig: "",
 				EquipmentSide: "",
@@ -447,7 +451,7 @@ sap.ui.define([
 				DefManufacYy: "",
 				DefWheelManufacturer: "",
 				DefMountStamp2Mm: "",
-				DefMountStamp2Yy:"",
+				DefMountStamp2Yy: "",
 				DefWhStamp2ShopMark: "",
 				DefMountStamp3Mm: "",
 				DefMountStamp3Yy: "",
@@ -463,7 +467,7 @@ sap.ui.define([
 				NumCrackInches: 0,
 				to_Message: []
 			};
-			
+
 			return new JSONModel({
 				busy: true,
 				busyDelay: 0,
@@ -504,7 +508,7 @@ sap.ui.define([
 					WhyMadeCode: [],
 					Location: []
 				},
-				
+
 				md11: {
 					EquipmentInitial: "",
 					EquipmentNumber: "",
@@ -515,7 +519,7 @@ sap.ui.define([
 					DefectMethod: "",
 					DetectionDesc: ""
 				},
-				
+
 				md115: {
 					EquipmentInitial: "",
 					EquipmentNumber: "",
@@ -533,21 +537,21 @@ sap.ui.define([
 					BrakeShoeStd: "",
 					Comments: ""
 				},
-				
+
 				md11Left: oMD11Left,
 				md11Right: JSON.parse(JSON.stringify(oMD11Left)),
 				md11RequiredLeft: false,
 				md11RequiredRight: false,
 				md11SuccessLeft: false,
 				md11SuccessRight: false,
-				
+
 				md115Left: oMD115Left,
 				md115Right: JSON.parse(JSON.stringify(oMD115Left)),
 				md115RequiredLeft: false,
 				md115RequiredRight: false,
 				md115SuccessLeft: false,
 				md115SuccessRight: false,
-				
+
 				response: {},
 				oCloneData: {}
 			});
@@ -1561,7 +1565,7 @@ sap.ui.define([
 				if (oResponse.BolsterCastMonth === "" || oResponse.BolsterCastMonth === undefined || oResponse.BolsterAarDesignCode === "" ||
 					oResponse.BolsterAarDesignCode === undefined || oResponse.BolsterMfgPatternNo === "" || oResponse.BolsterMfgPatternNo ===
 					undefined || oResponse.BolsterWearPlate === "" || oResponse.BolsterWearPlate === undefined || oResponse.BolsterCastYear === "" ||
-					oResponse.BolsterCastYear === undefined || oResponse.BolsterAarCode === "" || oResponse.BolsterAarCode === undefined ) {
+					oResponse.BolsterCastYear === undefined || oResponse.BolsterAarCode === "" || oResponse.BolsterAarCode === undefined) {
 					this.getModel("addCIDView").setProperty("/hasError", true);
 
 					if (oResponse.BolsterCastMonth === "" || oResponse.BolsterCastMonth === undefined) {
@@ -1909,7 +1913,7 @@ sap.ui.define([
 				}
 			}
 		},
-		
+
 		_addCIDFieldError: function (sErrorTargetPath, sErrorMessage) {
 			sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
 				message: sErrorMessage || this.getResourceBundle().getText("error.requiredField"),
@@ -1920,17 +1924,17 @@ sap.ui.define([
 			}));
 			this.getModel("addCIDView").setProperty("/hasError", true);
 		},
-		
+
 		_checkMandatoryFieldsMD11: function () {
 			if (this.getModel("addCIDView").getProperty("/md11RequiredLeft")) {
 				this._checkMandatoryFieldMD11("Left");
 			}
-			
+
 			if (this.getModel("addCIDView").getProperty("/md11RequiredRight")) {
 				this._checkMandatoryFieldMD11("Right");
 			}
 		},
-		
+
 		/**
 		 * to check mandatory fields for Wheel Set during Field Registration
 		 * @private
@@ -1941,243 +1945,247 @@ sap.ui.define([
 			var oAddCIDViewModel = this.getModel("addCIDView");
 			var oMD11 = oAddCIDViewModel.getProperty("/md11" + sWheelSide);
 			var oMD11Shared = oAddCIDViewModel.getProperty("/md11");
-			
+
 			if (oMD11Shared.FailureDate > new Date(oAddCIDViewModel.getProperty("/cidHeader/repairDate"))) {
 				this._addCIDFieldError("/md11/FailureDate", this.getResourceBundle().getText("error.FailureDateAfterRepair"));
 			}
-			
+
 			if (!oMD11Shared.Derailment) {
 				this._addCIDFieldError("/md11/Derailment");
 			}
-			
+
 			if (!oMD11Shared.BearingSize) {
 				this._addCIDFieldError("/md11/BearingSize");
 			}
-			
+
 			if (!oMD11.AdapterCondition) {
 				this._addCIDFieldError("/md11" + sWheelSide + "/AdapterCondition");
 			}
-			
+
 			if (!oMD11.AdtpadCondition) {
 				this._addCIDFieldError("/md11" + sWheelSide + "/AdtpadCondition");
 			}
-			
+
 			if (!oMD11.BurntOff) {
 				this._addCIDFieldError("/md11" + sWheelSide + "/BurntOff");
 			}
-			
+
 			if (!oMD11.ElasAdtpad) {
 				this._addCIDFieldError("/md11" + sWheelSide + "/ElasAdtpad");
 			}
 		},
-		
+
 		_checkMandatoryFieldsMD115: function () {
 			if (this.getModel("addCIDView").getProperty("/md115RequiredLeft")) {
 				this._checkMandatoryFieldMD115("Left");
 			}
-			
+
 			if (this.getModel("addCIDView").getProperty("/md115RequiredRight")) {
 				this._checkMandatoryFieldMD115("Right");
 			}
 		},
-		
+
 		_checkMandatoryFieldMD115: function (sWheelSide) {
 			var oAddCIDViewModel = this.getModel("addCIDView");
 			var sOtherSide = (sWheelSide === "Left") ? "Right" : "Left";
 			var oMD115 = oAddCIDViewModel.getProperty("/md115" + sWheelSide);
 			var oMD115Other = oAddCIDViewModel.getProperty("/md115" + sOtherSide);
 			var oMD115Shared = oAddCIDViewModel.getProperty("/md115");
-			
+
 			if (!oMD115Shared.FailureDate) {
 				this._addCIDFieldError("/md115/FailureDate");
 			} else if (oMD115Shared.FailureDate > new Date(oAddCIDViewModel.getProperty("/cidHeader/repairDate"))) {
 				this._addCIDFieldError("/md115/FailureDate", this.getResourceBundle().getText("error.FailureDateAfterRepair"));
 			}
-			
+
 			if (!oMD115Shared.EquipmentKind) {
 				this._addCIDFieldError("/md115/EquipmentKind");
 			}
-			
+
 			if (!oMD115Shared.DetectMethod) {
 				this._addCIDFieldError("/md115/DetectMethod");
 			} else if (oMD115Shared.DetectMethod === "D" && !oMD115Shared.DetectMethod) {
 				this._addCIDFieldError("/md115/EquipDerailNo");
 			}
-			
+
 			if (!oMD115Shared.JournalSize) {
 				this._addCIDFieldError("/md115/JournalSize");
 			}
-			
+
 			if (!oMD115Shared.WheelDiameter) {
 				this._addCIDFieldError("/md115/WheelDiameter");
 			}
-			
+
 			if (!oMD115Shared.BrakeShoeStd) {
 				this._addCIDFieldError("/md115/BrakeShoeStd");
 			}
-			
+
 			if (!oMD115Shared.PlateType) {
 				this._addCIDFieldError("/md115/PlateType");
 			}
-			
+
 			if (!oMD115Shared.WheelType) {
 				this._addCIDFieldError("/md115/WheelType");
 			}
-			
+
 			if (isNaN(parseInt(oMD115.FrontDiscoloration, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/FrontDiscoloration");
 			}
-			
+
 			if (isNaN(parseInt(oMD115.BackDiscoloration, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/BackDiscoloration");
 			}
-			
-			if (!oMD115.MountDateMm || (!oMD115.MountDateMm.match(/xx/i) && (parseInt(oMD115.MountDateMm, 10) < 1 || parseInt(oMD115.MountDateMm, 10) > 12))) {
+
+			if (!oMD115.MountDateMm || (!oMD115.MountDateMm.match(/xx/i) && (parseInt(oMD115.MountDateMm, 10) < 1 || parseInt(oMD115.MountDateMm,
+					10) > 12))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/MountDateMm");
 			}
-			
+
 			if (!oMD115.MountDateYy || (!oMD115.MountDateYy.match(/xx/i) && isNaN(parseInt(oMD115.MountDateYy, 10)))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/MountDateYy");
 			}
-			
+
 			if (!oMD115.WheelShopMark) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/WheelShopMark");
 			}
-			
-			if (oMD115.DefMountStamp2Mm && (!oMD115.DefMountStamp2Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp2Mm, 10) < 1 || parseInt(oMD115.DefMountStamp2Mm, 10) > 12))) {
+
+			if (oMD115.DefMountStamp2Mm && (!oMD115.DefMountStamp2Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp2Mm, 10) < 1 || parseInt(
+					oMD115.DefMountStamp2Mm, 10) > 12))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp2Mm");
 			}
-			
+
 			if (oMD115.DefMountStamp2Yy && !oMD115.DefMountStamp2Yy.match(/xx/i) && isNaN(parseInt(oMD115.DefMountStamp2Yy, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp2Yy");
 			}
-			
-			if (oMD115.DefMountStamp3Mm && !oMD115.DefMountStamp3Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp3Mm, 10) < 1 || parseInt(oMD115.DefMountStamp3Mm, 10) > 12)) {
+
+			if (oMD115.DefMountStamp3Mm && !oMD115.DefMountStamp3Mm.match(/xx/i) && (parseInt(oMD115.DefMountStamp3Mm, 10) < 1 || parseInt(
+					oMD115.DefMountStamp3Mm, 10) > 12)) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp3Mm");
 			}
-			
+
 			if (oMD115.DefMountStamp3Yy && !oMD115.DefMountStamp3Yy.match(/xx/i) && isNaN(parseInt(oMD115.DefMountStamp3Yy, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefMountStamp3Yy");
 			}
-			
+
 			if (!oMD115.LockMountShopMark) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/LockMountShopMark");
 			}
-			
+
 			if (!oMD115.NewReconditioned) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/NewReconditioned");
 			} else if (oMD115.NewReconditioned === "R" && !oMD115.RecondShopMark) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/RecondShopMark");
 			}
-			
+
 			if (!oMD115.LockManufacMm || parseInt(oMD115.LockManufacMm, 10) < 1 || parseInt(oMD115.LockManufacMm, 10) > 12) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/LockManufacMm");
 			}
-			
+
 			if (!oMD115.LockManufacYy) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/LockManufacYy");
 			}
-			
+
 			if (!oMD115.DefWheelDesig) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefWheelDesig");
 			}
-			
+
 			// Mate Wheel Design Designation
 			if (!oMD115Other.DefWheelDesig) {
 				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelDesig");
 			}
-			
+
 			// Serial number must be entirely numeric
 			if (!(/^\d+$/.test(oMD115.DefWheelSnNo))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefWheelSnNo");
 			}
-			
+
 			// Serial number must be entirely numeric
 			if (!(/^\d+$/.test(oMD115Other.DefWheelSnNo))) {
 				this._addCIDFieldError("/md115" + sOtherSide + "/DefWheelSnNo");
 			}
-			
+
 			if (!oMD115.BrakeShoeFailedWheel) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/BrakeShoeFailedWheel");
 			}
-			
+
 			if (!oMD115.DefectLocation) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/DefectLocation");
 			}
-			
+
 			if (isNaN(parseInt(oMD115.NumCrackInches, 10))) {
 				this._addCIDFieldError("/md115" + sWheelSide + "/NumCrackInches");
 			}
 		},
-		
+
 		_submitMD11Report: function (sSide) {
 			var oModel = this.getView().getModel();
 			var oAddCIDViewModel = this.getModel("addCIDView");
 			var oHeader = oAddCIDViewModel.getProperty("/cidHeader");
 			var oMD11 = oAddCIDViewModel.getProperty("/md11" + sSide);
 			var oMD11Shared = oAddCIDViewModel.getProperty("/md11");
-			
+
 			// Sequence of MD-11/115 reports: 11L, 11R, 115L, 115R
 			if (sSide === "Left" && (!oAddCIDViewModel.getProperty("/md11RequiredLeft") || oAddCIDViewModel.getProperty("/md11SuccessLeft"))) {
 				this._submitMD11Report("Right");
 				return;
-			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md11RequiredRight") || oAddCIDViewModel.getProperty("/md11SuccessRight"))) {
+			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md11RequiredRight") || oAddCIDViewModel.getProperty(
+					"/md11SuccessRight"))) {
 				this._submitMD115Report("Left");
 				return;
 			}
-			
+
 			oMD11.EquipmentSide = (sSide === "Left") ? "L" : "R";
 			oMD11.ComponentLocation = oHeader.location;
 			oMD11.RepairDate = oHeader.repairDate;
 			oMD11.WhyMadeCode = oAddCIDViewModel.getProperty("/response/BrWhyMadeCode" + sSide);
-		
+
 			// Add properties from addCIDView>/md11
 			oMD11.FailureDate = oMD11Shared.FailureDate || null;
 			oMD11.Derailment = oMD11Shared.Derailment;
 			oMD11.BearingSize = oMD11Shared.BearingSize;
 			oMD11.DetectMethod = oMD11Shared.DetectMethod || "";
 			oMD11.DetectionDesc = oMD11Shared.DetectionDesc || "";
-			
+
 			// convert Wheel SN to string (empty if serial number contains non-digit characters)
 			oMD11.WheelSnFailedSide = /^\d+$/.test(oMD11.WheelSnFailedSide) ? oMD11.WheelSnFailedSide + "" : "";
-			
+
 			var sCarMark = oHeader.carMark;
 			var aSplitCarMark = sCarMark.match(/^([A-Za-z]+)([0-9]+)$/);
 			oMD11.EquipmentInitial = aSplitCarMark[1];
 			oMD11.EquipmentNumber = aSplitCarMark[2];
-			
+
 			MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportSubmitting", [sSide]), {
 				duration: 4000
 			});
-			
+
 			oModel.create("/BearingDefectRptSet", oMD11, {
 				method: "POST",
 				success: function (oData, resp) {
 					var sMessage;
 					var sMessageLength = oData.to_Message.results.length;
 					var sMDID;
-				
+
 					// fetch report result
 					if (sMessageLength === 0) {
 						this.getModel("addCIDView").setProperty("/busy", false);
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
-								message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportFailed"),
-								persistent: true,
-								type: sap.ui.core.MessageType.Error
+							message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportFailed"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
 						}));
 					} else if (oData.to_Message.results[0].ResponseType === "S") {
 						oAddCIDViewModel.setProperty("/md11Success" + sSide, true);
-						
+
 						sMDID = oData.to_Message.results[0].ResponseMessage;
 						oAddCIDViewModel.setProperty("/md11Id" + sSide, sMDID);
 						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD11ReportCreated", [sMDID]);
-					
+
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
-								message: sMessage,
-								persistent: true,
-								type: sap.ui.core.MessageType.Success
+							message: sMessage,
+							persistent: true,
+							type: sap.ui.core.MessageType.Success
 						}));
-						
+
 						if (sSide === "Left") {
 							this._submitMD11Report("Right");
 						} else if (sSide === "Right") {
@@ -2204,7 +2212,7 @@ sap.ui.define([
 				}.bind(this)
 			});
 		},
-		
+
 		_submitMD115Report: function (sSide) {
 			var oModel = this.getView().getModel();
 			var oAddCIDViewModel = this.getModel("addCIDView");
@@ -2214,25 +2222,26 @@ sap.ui.define([
 			var oMD115 = oAddCIDViewModel.getProperty("/md115" + sSide);
 			var oMD115Other = oAddCIDViewModel.getProperty("/md115" + sOtherSide);
 			var oMD115Shared = oAddCIDViewModel.getProperty("/md115");
-			
+
 			// Sequence of MD-11/115 reports: 11L, 11R, 115L, 115R
 			if (sSide === "Left" && (!oAddCIDViewModel.getProperty("/md115RequiredLeft") || oAddCIDViewModel.getProperty("/md115SuccessLeft"))) {
 				this._submitMD115Report("Right");
 				return;
-			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md115RequiredRight") || oAddCIDViewModel.getProperty("/md115SuccessRight"))) {
+			} else if (sSide === "Right" && (!oAddCIDViewModel.getProperty("/md115RequiredRight") || oAddCIDViewModel.getProperty(
+					"/md115SuccessRight"))) {
 				this._showMD11IDandRegisterComponent();
 				return;
 			}
-			
+
 			oMD115.EquipmentSide = (sSide === "Left") ? "L" : "R";
 			oMD115.AxleLocation = oHeader.location;
 			oMD115.RepairDate = oHeader.repairDate;
 			oMD115.WheelsetCid = oHeader.cid || "";
-			
+
 			oMD115.FrontDiscoloration = oMD115.FrontDiscoloration + "";
 			oMD115.BackDiscoloration = oMD115.BackDiscoloration + "";
 			oMD115.NumCrackInches = oMD115.NumCrackInches + "";
-		
+
 			// Add properties from addCIDView>/md115
 			oMD115.FailureDate = oMD115Shared.FailureDate;
 			oMD115.EquipmentKind = oMD115Shared.EquipmentKind;
@@ -2244,15 +2253,15 @@ sap.ui.define([
 			oMD115.PlateType = oMD115Shared.PlateType;
 			oMD115.WheelType = oMD115Shared.WheelType;
 			oMD115.WheelDiameter = oMD115Shared.WheelDiameter;
-			
+
 			// convert Wheel SN to string
 			oMD115.DefWheelSnNo = oMD115.DefWheelSnNo + "";
-			
+
 			var sCarMark = oHeader.carMark;
 			var aSplitCarMark = sCarMark.match(/^([A-Za-z]+)([0-9]+)$/);
 			oMD115.EquipmentInitial = aSplitCarMark[1];
 			oMD115.EquipmentNumber = aSplitCarMark[2];
-			
+
 			// Removed wheel data
 			oMD115.DefWheelManufacturer = oRepair["RwMfg" + sSide];
 			oMD115.DefManufacMm = oRepair["RwStampedMonth" + sSide].replace(/_/g, "");
@@ -2260,13 +2269,13 @@ sap.ui.define([
 			oMD115.FlangeFingerReading = parseInt(oRepair["RwFinger" + sSide], 10) + "";
 			oMD115.RimThickness = oRepair["RwScale" + sSide].replace(/_/g, "");
 			oMD115.ClassHeatTreatment = oRepair["RwClass" + sSide];
-			oMD115.DefectType = oRepair["WrWhyMadeCode" + sSide];                 
-			
+			oMD115.DefectType = oRepair["WrWhyMadeCode" + sSide];
+
 			// Populate mate fields
 			oMD115.MateWheelManufacturer = oRepair["RwMfg" + sOtherSide];
 			oMD115.MateManufacMm = oRepair["RwStampedMonth" + sOtherSide].replace(/_/g, "");
 			oMD115.MateManufacYy = oRepair["RwStampedYear" + sOtherSide].replace(/_/g, "");
-			oMD115.MateWheelSnNo = (oMD115Other.DefWheelSnNo  + "") || "";
+			oMD115.MateWheelSnNo = (oMD115Other.DefWheelSnNo + "") || "";
 			oMD115.MateWheelDesig = (oMD115Other.DefWheelDesig + "") || "";
 			oMD115.MateMountStamp2Mm = oMD115Other.DefMountStamp2Mm || "";
 			oMD115.MateMountStamp2Yy = oMD115Other.MateMountStamp2Yy || "";
@@ -2274,42 +2283,42 @@ sap.ui.define([
 			oMD115.MateMountStamp3Mm = oMD115Other.MateMountStamp3Mm || "";
 			oMD115.MateMountStamp3Yy = oMD115Other.MateMountStamp3Yy || "";
 			oMD115.MateWhStamp3ShopMark = oMD115Other.MateWhStamp3ShopMark || "";
-			
+
 			MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportSubmitting", [sSide]), {
 				duration: 4000
 			});
-			
+
 			oModel.create("/WheelDefectRptSet", oMD115, {
 				method: "POST",
 				success: function (oData, resp) {
 					var sMessage;
 					var sMessageLength = oData.to_Message.results.length;
 					var sReportKey;
-					
+
 					// fetch report result
 					if (sMessageLength === 0) {
 						this.getModel("addCIDView").setProperty("/busy", false);
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
-								message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportFailed"),
-								persistent: true,
-								type: sap.ui.core.MessageType.Error
+							message: this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportFailed"),
+							persistent: true,
+							type: sap.ui.core.MessageType.Error
 						}));
 					} else if (oData.to_Message.results[0].ResponseType === "S") {
 						oAddCIDViewModel.setProperty("/md115Success" + sSide, true);
-						
+
 						sReportKey = oData.to_Message.results[0].ResponseMessage;
 						sMessage = this.getView().getModel("i18n").getResourceBundle().getText("message.MD115ReportCreated", [sReportKey]);
-						
+
 						sap.ui.getCore().getMessageManager().addMessages(new sap.ui.core.message.Message({
-								message: sMessage,
-								persistent: true,
-								type: sap.ui.core.MessageType.Success
+							message: sMessage,
+							persistent: true,
+							type: sap.ui.core.MessageType.Success
 						}));
-						
+
 						if (sSide === "Left") {
 							this._submitMD115Report("Right");
 						} else {
-						this._showMD11IDandRegisterComponent();
+							this._showMD11IDandRegisterComponent();
 						}
 					} else {
 						this.getModel("addCIDView").setProperty("/busy", false);
@@ -2332,7 +2341,7 @@ sap.ui.define([
 				}.bind(this)
 			});
 		},
-		
+
 		_loadRJCRulesMap: function () {
 			var mRJCRules = {};
 			var oRJCItem;
@@ -2347,11 +2356,10 @@ sap.ui.define([
 					}
 					this.getModel("addCIDView").setProperty("/RJCRuleMap", mRJCRules);
 				}.bind(this),
-				error: function (sMsg) {
-				}.bind(this)
+				error: function (sMsg) {}.bind(this)
 			});
 		},
-		
+
 		_loadRJCWhyMadeMap: function () {
 			var mRJCWhyMade = {};
 			var oMDItem;
@@ -2368,8 +2376,7 @@ sap.ui.define([
 					}
 					this.getModel("addCIDView").setProperty("/RJCRuleWhyMadeMap", mRJCWhyMade);
 				}.bind(this),
-				error: function (sMsg) {
-				}.bind(this)
+				error: function (sMsg) {}.bind(this)
 			});
 		}
 	});
