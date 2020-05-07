@@ -48,6 +48,18 @@ sap.ui.define([
 						}
 						if (oComponentData.startupParameters.CarKind) {
 							this.getModel("addCIDView").setProperty("/cidHeader/carKind", oComponentData.startupParameters.CarKind[0]);
+							var aFilter = [];
+							if(oComponentData.startupParameters.CarKind[0]=== "A"){
+								var locationFilter  = new sap.ui.model.Filter("articulatedind", sap.ui.model.FilterOperator.EQ, "Y");
+							}
+							else if(oComponentData.startupParameters.CarKind[0]=== "D" || oComponentData.startupParameters.CarKind[0]=== "M"){
+								locationFilter  = new sap.ui.model.Filter("drawbarind", sap.ui.model.FilterOperator.EQ, "Y");
+							}
+							else {
+								locationFilter  = new sap.ui.model.Filter("stdcarind", sap.ui.model.FilterOperator.EQ, "Y");
+							}
+							aFilter.push(locationFilter);
+							this.getModel("addCIDView").setProperty("/cidHeader/locationFilter",aFilter);
 						}
 						this._onObjectMatched();
 					}
@@ -73,7 +85,7 @@ sap.ui.define([
 					this.getModel("addCIDView").setProperty("/slackAdjusterSetVisible", false);
 				}.bind(this)
 			});
-
+			
 			// this.getModel("addCIDView").setProperty("/busy", false);
 		},
 

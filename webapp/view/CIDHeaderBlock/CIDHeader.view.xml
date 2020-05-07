@@ -36,8 +36,15 @@
 			<core:Title text=""/>
 			<!--Location-->
 			<Label text="{i18n>location}"/>
-			<ComboBox id="idLocation" items="{path: '/ZMPM_CDS_CAR_LOCATION', sorter: [{ path: 'carlocid'}],  
+	<!--	<ComboBox id="idLocation" items="{path: '/ZMPM_CDS_CAR_LOCATION', sorter: [{ path: 'carlocid'}],  
 			    filters: [{ path: 'articulatedind', operator: 'EQ', value1: 'Y' }, { path: 'drawbarind', operator: 'EQ', value1: 'Y' }, { path: 'stdcarind', operator: 'EQ', value1: 'Y' }]}"
+				selectedKey="{addCIDView>/cidHeader/location}" showSecondaryValues="true" selectionChange="onChangeLocation" change="onChangeLocation">
+				<items>
+					<core:ListItem key="{carlocid}" text="{carlocid}"/>
+				</items>
+			</ComboBox>-->
+			<ComboBox id="idLocation" items="{path: '/ZMPM_CDS_CAR_LOCATION', sorter: [{ path: 'carlocid'}],  
+			    filters: {path: 'addCIDView>/cidHeader/locationFilter'}}"
 				selectedKey="{addCIDView>/cidHeader/location}" showSecondaryValues="true" selectionChange="onChangeLocation" change="onChangeLocation">
 				<items>
 					<core:ListItem key="{carlocid}" text="{carlocid}"/>
