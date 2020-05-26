@@ -7,7 +7,29 @@ sap.ui.define([
 	"use strict";
 
 	com.nscorp.car.common.controller.BaseController.extend("com.nscorp.car.componentid.controller.CIDHeader", {
+		
+//	PM00001423 - Add Barcode scan for Component ID
+		onScanPress: function (oEvent) {
+			var _self = this;
+			jQuery.sap.require("sap.ndc.BarcodeScanner");
+			sap.ndc.BarcodeScanner.scan(
+				function (mResult) {
+					alert("We got a bar code\n" +
+						"Result: " + mResult.text + "\n" +
+						"Format: " + mResult.format + "\n" +
+						"Cancelled: " + mResult.cancelled);
+					_self.getView().byId("idComponentId").setValue(mResult.text);
+				},
+				function (Error) {
+					alert("Scanning failed: " + Error);
+				},
+				function (mParams) {
+					alert("Value entered: " + mParams.newValue);
+				}
+			);
 
+		},
+//PM00001423 - End
 		/**
 		 * perform Component Lookup web service call when Retrieve Button is clicked
 		 * @public
