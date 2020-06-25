@@ -564,6 +564,9 @@ sap.ui.define([
 							this.getModel("WOModel").setProperty("/WheelsetsLocation", oDataStation.results[0].to_WcsLocData.cnsgnmntsloc);
 							this.getModel("WOModel").setProperty("/ProgramLocation", oDataStation.results[0].to_WcsLocData.programsloc);
 							this.getModel("WOModel").setProperty("/Plant", oDataStation.results[0].to_WcsLocData.plant);
+							//Start of code change made for PM00001432 - 6000008188, EAM CAR - Plant C237 required 8001SLOC f
+							this.getModel("WOModel").setProperty("/StorLocIndicator", oDataStation.results[0].to_WcsLocData.Stolocindicator);
+							//End of code change made for PM00001432 - 6000008188, EAM CAR - Plant C237 required 8001SLOC f
 							this.getModel("addCIDView").setProperty("/busy", false);
 						}.bind(this)
 					});

@@ -1055,12 +1055,16 @@ sap.ui.define([
 				oWheelSet = this.getModel("addCIDView").getProperty("/response"),
 				oContext = {};
 
+			//Start of code change made for PM00001432 - 6000008188, EAM CAR - Plant C237 required 8001SLOC f
 			// Determine Material context for Sloc, Special Stock and Vendor Number
 			for (var i = 0; i < aRule.length; i++) {
 				if (this._compareRule(oWheelSet.WsConditionCode, aRule[i].ConditionCodeCheck, aRule[i].ConditionCode)) {
 					oContext.StorageLocation = this.getModel("WOModel").getProperty("/WheelsetsLocation");
 					oContext.SpecialStock = aRule[i].SpecialStock;
 					oContext.VendorNumber = aRule[i].Vendor;
+					if(this._oController.getModel("WOModel").getProperty("/StorLocIndicator") !== "X" || sBadOrderStatus !== "PR"){
+						break;
+					}
 					break;
 				} else {
 					//If program order, use Program Location; otherwise Repair Location
@@ -1070,6 +1074,14 @@ sap.ui.define([
 						oContext.StorageLocation = this.getModel("WOModel").getProperty("/RepairsLocation");
 					}
 				}
+				
+				if(this._oController.getModel("WOModel").getProperty("/StorLocIndicator") === "X"){
+					if(sBadOrderStatus === "PR" && oContext.StorageLocation === "8000"){
+						oContext.StorageLocation = "8001"; 
+						break;
+					}
+				}
+				//End of code change made for PM00001432 - 6000008188, EAM CAR - Plant C237 required 8001SLOC f
 			}
 			return oContext;
 		},
