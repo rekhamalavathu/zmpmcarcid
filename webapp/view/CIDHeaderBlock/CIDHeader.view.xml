@@ -8,6 +8,9 @@
 			<!--Component ID-->
 			<Label text="{i18n>cid}"/>
 			<Input id="idComponentId" value="{addCIDView>/cidHeader/cid}" maxLength="14"/>
+			<!--	PM00001423 - Add Barcode scan for Component ID-->
+			<Button text="Scan" press="onScanPress" width="30%" icon="sap-icon://bar-code"/>
+								
 			<!--Responsibility-->
 			<Label text="{i18n>responsibility}"/>
 			<ComboBox id="idRepairRespCode" selectedKey="{addCIDView>/cidHeader/responsibility}"
@@ -36,11 +39,17 @@
 			<core:Title text=""/>
 			<!--Location-->
 			<Label text="{i18n>location}"/>
-			<ComboBox id="idLocation" items="{path: '/ZMPM_CDS_CAR_LOCATION', sorter: [{ path: 'carlocid'}],  
+	<!--	<ComboBox id="idLocation" items="{path: '/ZMPM_CDS_CAR_LOCATION', sorter: [{ path: 'carlocid'}],  
 			    filters: [{ path: 'articulatedind', operator: 'EQ', value1: 'Y' }, { path: 'drawbarind', operator: 'EQ', value1: 'Y' }, { path: 'stdcarind', operator: 'EQ', value1: 'Y' }]}"
 				selectedKey="{addCIDView>/cidHeader/location}" showSecondaryValues="true" selectionChange="onChangeLocation" change="onChangeLocation">
 				<items>
 					<core:ListItem key="{carlocid}" text="{carlocid}"/>
+				</items>
+			</ComboBox>-->
+			<ComboBox id="idLocation" items="{path: 'addCIDView>/Location', sorter: [{ path: 'carlocid'}]}"
+				selectedKey="{addCIDView>/cidHeader/location}" showSecondaryValues="true" selectionChange="onChangeLocation" change="onChangeLocation">
+				<items>
+					<core:ListItem key="{addCIDView>carlocid}" text="{addCIDView>carlocid}"/>
 				</items>
 			</ComboBox>
 			<!--Retrieve-->
