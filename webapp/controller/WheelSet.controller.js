@@ -1062,25 +1062,25 @@ sap.ui.define([
 					oContext.StorageLocation = this.getModel("WOModel").getProperty("/WheelsetsLocation");
 					oContext.SpecialStock = aRule[i].SpecialStock;
 					oContext.VendorNumber = aRule[i].Vendor;
-					if(this._oController.getModel("WOModel").getProperty("/StorLocIndicator") !== "X" || sBadOrderStatus !== "PR"){
-						break;
-					}
+					//if(this.getModel("WOModel").getProperty("/StorLocIndicator") !== "X" || sBadOrderStatus !== "CR03"){
+					//	break;
+					//}
 					break;
 				} else {
 					//If program order, use Program Location; otherwise Repair Location
-					if (sBadOrderStatus === "PR") {
+					if (sBadOrderStatus === "CR03") {
 						oContext.StorageLocation = this.getModel("WOModel").getProperty("/ProgramLocation");
 					} else {
 						oContext.StorageLocation = this.getModel("WOModel").getProperty("/RepairsLocation");
 					}
 				}
 				
-				if(this._oController.getModel("WOModel").getProperty("/StorLocIndicator") === "X"){
-					if(sBadOrderStatus === "PR" && oContext.StorageLocation === "8000"){
+			/*	if(this.getModel("WOModel").getProperty("/StorLocIndicator") === "X"){
+					if(sBadOrderStatus === "CR03" && oContext.StorageLocation === "8000"){
 						oContext.StorageLocation = "8001"; 
 						break;
 					}
-				}
+				}*/
 				//End of code change made for PM00001432 - 6000008188, EAM CAR - Plant C237 required 8001SLOC f
 			}
 			return oContext;

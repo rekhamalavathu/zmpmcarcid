@@ -9,7 +9,7 @@
 			<Label text="{i18n>cid}"/>
 			<Input id="idComponentId" value="{addCIDView>/cidHeader/cid}" maxLength="14"/>
 			<!--	PM00001423 - Add Barcode scan for Component ID-->
-			<Button text="Scan" press="onScanPress" width="30%" icon="sap-icon://bar-code"/>
+			<!--<Button text="Scan" press="onScanPress" width="30%" icon="sap-icon://bar-code"/>-->
 								
 			<!--Responsibility-->
 			<Label text="{i18n>responsibility}"/>
