@@ -7,9 +7,13 @@
 			<core:Title text=""/>
 			<!--Component ID-->
 			<Label text="{i18n>cid}"/>
-			<Input id="idComponentId" value="{addCIDView>/cidHeader/cid}" maxLength="14"/>
+			<Input id="idComponentId" value="{addCIDView>/cidHeader/cid}" maxLength="14">
+			<layoutData>
+					<l:GridData span="L7 M7 S7"/>
+				</layoutData>
+			</Input>	
 			<!--	PM00001423 - Add Barcode scan for Component ID-->
-			<!--<Button text="Scan" press="onScanPress" width="30%" icon="sap-icon://bar-code"/>-->
+			<Button press="onScanPress" width="1%" icon="sap-icon://bar-code"/>
 								
 			<!--Responsibility-->
 			<Label text="{i18n>responsibility}"/>
